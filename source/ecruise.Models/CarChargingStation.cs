@@ -104,23 +104,10 @@ namespace ecruise.Models
                     CarChargingStationId == other.CarChargingStationId ||
                     CarChargingStationId.Equals(other.CarChargingStationId)
                 ) &&
-                (
-                    CarId == other.CarId ||
-                    CarId.Equals(other.CarId)
-                ) &&
-                (
-                    ChargingStationId == other.ChargingStationId ||
-                    ChargingStationId.Equals(other.ChargingStationId)
-                ) &&
-                (
-                    ChargeStart == other.ChargeStart ||
-                    ChargeStart.Equals(other.ChargeStart)
-                ) &&
-                (
-                    ChargeEnd == other.ChargeEnd ||
-                    ChargeEnd != null &&
-                    ChargeEnd.Equals(other.ChargeEnd)
-                );
+                (CarId == other.CarId || CarId.Equals(other.CarId)) &&
+                (ChargingStationId == other.ChargingStationId || ChargingStationId.Equals(other.ChargingStationId)) &&
+                (ChargeStart == other.ChargeStart || ChargeStart.Equals(other.ChargeStart)) &&
+                (ChargeEnd == other.ChargeEnd || ChargeEnd != null && ChargeEnd.Equals(other.ChargeEnd));
         }
 
         /// <summary>
