@@ -4,19 +4,20 @@ using Newtonsoft.Json;
 
 namespace ecruise.Models
 {
-    public class CarMaintenance :  IEquatable<CarMaintenance>
+    public class CarMaintenance
+        : IEquatable<CarMaintenance>
     {
-
         /// <summary>
         /// Initializes a new instance of the <see cref="CarMaintenance" /> class.
         /// </summary>
         /// <param name="carMaintenanceId">CarMaintenanceId.</param>
-        /// <param name="carId">See &#39;#/definitions/Car&#39;.</param>
-        /// <param name="maintenanceId">See &#39;#/definitions/Maintenance&#39;.</param>
-        /// <param name="invoiceItemId">See &#39;#/definitions/InvoiceItem&#39;.</param>
+        /// <param name="carId">See #/definitions/Car.</param>
+        /// <param name="maintenanceId">See #/definitions/Maintenance.</param>
+        /// <param name="invoiceItemId">See #/definitions/InvoiceItem.</param>
         /// <param name="plannedDate">PlannedDate.</param>
         /// <param name="completedDate">CompletedDate.</param>
-        public CarMaintenance(int? carMaintenanceId, int? carId, int? maintenanceId, int? invoiceItemId, DateTime? plannedDate, DateTime? completedDate)
+        public CarMaintenance(int carMaintenanceId, int carId, int maintenanceId, int invoiceItemId,
+            DateTime? plannedDate, DateTime? completedDate)
         {
             CarMaintenanceId = carMaintenanceId;
             CarId = carId;
@@ -24,32 +25,36 @@ namespace ecruise.Models
             InvoiceItemId = invoiceItemId;
             PlannedDate = plannedDate;
             CompletedDate = completedDate;
-            
         }
 
         /// <summary>
         /// Gets or Sets CarMaintenanceId
         /// </summary>
-        public int? CarMaintenanceId { get; set; }
+        public int CarMaintenanceId { get; }
+
         /// <summary>
-        /// See &#39;#/definitions/Car&#39;
+        /// See #/definitions/Car
         /// </summary>
-        /// <value>See &#39;#/definitions/Car&#39;</value>
-        public int? CarId { get; set; }
+        /// <value>See #/definitions/Car</value>
+        public int CarId { get; }
+
         /// <summary>
-        /// See &#39;#/definitions/Maintenance&#39;
+        /// See #/definitions/Maintenance
         /// </summary>
-        /// <value>See &#39;#/definitions/Maintenance&#39;</value>
-        public int? MaintenanceId { get; set; }
+        /// <value>See #/definitions/Maintenance</value>
+        public int MaintenanceId { get; }
+
         /// <summary>
-        /// See &#39;#/definitions/InvoiceItem&#39;
+        /// See #/definitions/InvoiceItem
         /// </summary>
-        /// <value>See &#39;#/definitions/InvoiceItem&#39;</value>
-        public int? InvoiceItemId { get; set; }
+        /// <value>See #/definitions/InvoiceItem</value>
+        public int InvoiceItemId { get; }
+
         /// <summary>
         /// Gets or Sets PlannedDate
         /// </summary>
-        public DateTime? PlannedDate { get; set; }
+        public DateTime? PlannedDate { get; }
+
         /// <summary>
         /// Gets or Sets CompletedDate
         /// </summary>
@@ -102,40 +107,18 @@ namespace ecruise.Models
         /// <returns>Boolean</returns>
         public bool Equals(CarMaintenance other)
         {
-
             if (ReferenceEquals(null, other)) return false;
             if (ReferenceEquals(this, other)) return true;
 
-            return 
-                (
-                    CarMaintenanceId == other.CarMaintenanceId ||
-                    CarMaintenanceId != null &&
-                    CarMaintenanceId.Equals(other.CarMaintenanceId)
-                ) && 
-                (
-                    CarId == other.CarId ||
-                    CarId != null &&
-                    CarId.Equals(other.CarId)
-                ) && 
-                (
-                    MaintenanceId == other.MaintenanceId ||
-                    MaintenanceId != null &&
-                    MaintenanceId.Equals(other.MaintenanceId)
-                ) && 
-                (
-                    InvoiceItemId == other.InvoiceItemId ||
-                    InvoiceItemId != null &&
-                    InvoiceItemId.Equals(other.InvoiceItemId)
-                ) && 
-                (
-                    PlannedDate == other.PlannedDate ||
-                    PlannedDate != null &&
-                    PlannedDate.Equals(other.PlannedDate)
-                ) && 
+            return
+                (CarMaintenanceId == other.CarMaintenanceId || CarMaintenanceId.Equals(other.CarMaintenanceId)) &&
+                (CarId == other.CarId || CarId.Equals(other.CarId)) &&
+                (MaintenanceId == other.MaintenanceId || MaintenanceId.Equals(other.MaintenanceId)) &&
+                (InvoiceItemId == other.InvoiceItemId || InvoiceItemId.Equals(other.InvoiceItemId)) &&
+                (PlannedDate == other.PlannedDate || PlannedDate != null && PlannedDate.Equals(other.PlannedDate)) &&
                 (
                     CompletedDate == other.CompletedDate ||
-                    CompletedDate != null &&
-                    CompletedDate.Equals(other.CompletedDate)
+                    CompletedDate != null && CompletedDate.Equals(other.CompletedDate)
                 );
         }
 
@@ -148,18 +131,14 @@ namespace ecruise.Models
             unchecked
             {
                 int hash = 41;
-                if (CarMaintenanceId != null)
-                    hash = hash * 59 + CarMaintenanceId.GetHashCode();
-                if (CarId != null)
-                    hash = hash * 59 + CarId.GetHashCode();
-                if (MaintenanceId != null)
-                    hash = hash * 59 + MaintenanceId.GetHashCode();
-                if (InvoiceItemId != null)
-                    hash = hash * 59 + InvoiceItemId.GetHashCode();
+
+                hash = hash * 59 + CarMaintenanceId.GetHashCode();
+                hash = hash * 59 + CarId.GetHashCode();
+                hash = hash * 59 + MaintenanceId.GetHashCode();
+                hash = hash * 59 + InvoiceItemId.GetHashCode();
                 if (PlannedDate != null)
                     hash = hash * 59 + PlannedDate.GetHashCode();
-                if (CompletedDate != null)
-                    hash = hash * 59 + CompletedDate.GetHashCode();
+
                 return hash;
             }
         }
@@ -177,6 +156,5 @@ namespace ecruise.Models
         }
 
         #endregion Operators
-
     }
 }

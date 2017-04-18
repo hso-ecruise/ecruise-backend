@@ -4,20 +4,17 @@ using Newtonsoft.Json;
 
 namespace ecruise.Models
 {
-    public class InvoiceItem :  IEquatable<InvoiceItem>
+    public class InvoiceItem
+        : IEquatable<InvoiceItem>
     {
         /// <summary>
         /// Gets or Sets Type
         /// </summary>
         public enum TypeEnum
         {
-            DEBIT,
-            CREDIT
+            Debit,
+            Credit
         }
-        /// <summary>
-        /// Gets or Sets Type
-        /// </summary>
-        public TypeEnum? Type { get; set; }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="InvoiceItem" /> class.
@@ -27,37 +24,41 @@ namespace ecruise.Models
         /// <param name="reason">Text which will appear on the invoice. Can contain the name of the service or some other reason. .</param>
         /// <param name="type">Type (default to TypeEnum.DEBITEnum).</param>
         /// <param name="amount">Amount.</param>
-        public InvoiceItem(int? invoiceItemId, int? invoiceId, string reason, TypeEnum? type, double? amount)
+        public InvoiceItem(int invoiceItemId, int invoiceId, string reason, TypeEnum type, double amount)
         {
             InvoiceItemId = invoiceItemId;
             InvoiceId = invoiceId;
             Reason = reason;
-            if (type == null)
-                Type = TypeEnum.DEBIT;
-            else
-                Type = type;
+            Type = type;
             Amount = amount;
-            
         }
 
         /// <summary>
         /// Gets or Sets InvoiceItemId
         /// </summary>
-        public int? InvoiceItemId { get; set; }
+        public int InvoiceItemId { get; }
+
         /// <summary>
         /// See &#39;#/definitions/Invoice&#39;
         /// </summary>
         /// <value>See &#39;#/definitions/Invoice&#39;</value>
-        public int? InvoiceId { get; set; }
+        public int InvoiceId { get; }
+
         /// <summary>
         /// Text which will appear on the invoice. Can contain the name of the service or some other reason. 
         /// </summary>
         /// <value>Text which will appear on the invoice. Can contain the name of the service or some other reason. </value>
-        public string Reason { get; set; }
+        public string Reason { get; }
+
+        /// <summary>
+        /// Gets or Sets Type
+        /// </summary>
+        public TypeEnum Type { get; }
+
         /// <summary>
         /// Gets or Sets Amount
         /// </summary>
-        public double? Amount { get; set; }
+        public double Amount { get; }
 
         /// <summary>
         /// Returns the string presentation of the object
@@ -105,34 +106,29 @@ namespace ecruise.Models
         /// <returns>Boolean</returns>
         public bool Equals(InvoiceItem other)
         {
-
             if (ReferenceEquals(null, other)) return false;
             if (ReferenceEquals(this, other)) return true;
 
-            return 
+            return
                 (
                     InvoiceItemId == other.InvoiceItemId ||
-                    InvoiceItemId != null &&
                     InvoiceItemId.Equals(other.InvoiceItemId)
-                ) && 
+                ) &&
                 (
                     InvoiceId == other.InvoiceId ||
-                    InvoiceId != null &&
                     InvoiceId.Equals(other.InvoiceId)
-                ) && 
+                ) &&
                 (
                     Reason == other.Reason ||
                     Reason != null &&
                     Reason.Equals(other.Reason)
-                ) && 
+                ) &&
                 (
                     Type == other.Type ||
-                    Type != null &&
                     Type.Equals(other.Type)
-                ) && 
+                ) &&
                 (
-                    Amount == other.Amount ||
-                    Amount != null &&
+                    Math.Abs(Amount - other.Amount) < 0.0001 ||
                     Amount.Equals(other.Amount)
                 );
         }
@@ -146,16 +142,14 @@ namespace ecruise.Models
             unchecked
             {
                 int hash = 41;
-                if (InvoiceItemId != null)
-                    hash = hash * 59 + InvoiceItemId.GetHashCode();
-                if (InvoiceId != null)
-                    hash = hash * 59 + InvoiceId.GetHashCode();
+
+                hash = hash * 59 + InvoiceItemId.GetHashCode();
+                hash = hash * 59 + InvoiceId.GetHashCode();
                 if (Reason != null)
                     hash = hash * 59 + Reason.GetHashCode();
-                if (Type != null)
-                    hash = hash * 59 + Type.GetHashCode();
-                if (Amount != null)
-                    hash = hash * 59 + Amount.GetHashCode();
+                hash = hash * 59 + Type.GetHashCode();
+                hash = hash * 59 + Amount.GetHashCode();
+
                 return hash;
             }
         }
@@ -173,6 +167,5 @@ namespace ecruise.Models
         }
 
         #endregion Operators
-
     }
 }
