@@ -4,7 +4,8 @@ using Newtonsoft.Json;
 
 namespace ecruise.Models
 {
-    public class Error :  IEquatable<Error>
+    public class Error 
+        : IEquatable<Error>
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="Error" /> class.
@@ -12,28 +13,30 @@ namespace ecruise.Models
         /// <param name="code">Unique error code.</param>
         /// <param name="message">Basic error message.</param>
         /// <param name="description">Detailed error message.</param>
-        public Error(int? code, string message, string description)
+        public Error(int code, string message, string description)
         {
             Code = code;
             Message = message;
-            Description = description;       
+            Description = description;
         }
 
         /// <summary>
         /// Unique error code
         /// </summary>
         /// <value>Unique error code</value>
-        public int? Code { get; set; }
+        public int Code { get; }
+
         /// <summary>
         /// Basic error message
         /// </summary>
         /// <value>Basic error message</value>
-        public string Message { get; set; }
+        public string Message { get; }
+
         /// <summary>
         /// Detailed error message
         /// </summary>
         /// <value>Detailed error message</value>
-        public string Description { get; set; }
+        public string Description { get; }
 
         /// <summary>
         /// Returns the string presentation of the object
@@ -79,26 +82,13 @@ namespace ecruise.Models
         /// <returns>Boolean</returns>
         public bool Equals(Error other)
         {
-
             if (ReferenceEquals(null, other)) return false;
             if (ReferenceEquals(this, other)) return true;
 
-            return 
-                (
-                    this.Code == other.Code ||
-                    this.Code != null &&
-                    this.Code.Equals(other.Code)
-                ) && 
-                (
-                    this.Message == other.Message ||
-                    this.Message != null &&
-                    this.Message.Equals(other.Message)
-                ) && 
-                (
-                    this.Description == other.Description ||
-                    this.Description != null &&
-                    this.Description.Equals(other.Description)
-                );
+            return
+                (Code == other.Code || Code.Equals(other.Code)) &&
+                (Message == other.Message || Message.Equals(other.Message)) &&
+                (Description == other.Description || Description.Equals(other.Description));
         }
 
         /// <summary>
@@ -110,8 +100,7 @@ namespace ecruise.Models
             unchecked
             {
                 int hash = 41;
-                if (Code != null)
-                    hash = hash * 59 + Code.GetHashCode();
+                hash = hash * 59 + Code.GetHashCode();
                 if (Message != null)
                     hash = hash * 59 + Message.GetHashCode();
                 if (Description != null)
@@ -133,6 +122,5 @@ namespace ecruise.Models
         }
 
         #endregion Operators
-
     }
 }
