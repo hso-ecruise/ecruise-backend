@@ -4,11 +4,13 @@ using Newtonsoft.Json;
 
 namespace ecruise.Models
 {
-    public class Customer : IEquatable<Customer>
+    public class Customer
+        : IEquatable<Customer>
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="Customer" /> class.
         /// </summary>
+        /// <param name="customerId">CustomerId.</param>
         /// <param name="email">Email.</param>
         /// <param name="phoneNumber">PhoneNumber.</param>
         /// <param name="firstName">FirstName.</param>
@@ -21,10 +23,11 @@ namespace ecruise.Models
         /// <param name="addressExtraLine">Extra line for the user's address. Can contain various detail information about the user&#39;s address. .</param>
         /// <param name="activated">True if the user has activated his account by clicking on the link in the activation email. .</param>
         /// <param name="verified">True if the user has verified his account at our head-quarter by bringing us his driver&#39;s license. .</param>
-        public Customer(string email, string phoneNumber, string firstName, string lastName, string country,
-            string city, int? zipCode, string street, string houseNumber, string addressExtraLine, bool? activated,
-            bool? verified)
+        public Customer(int customerId, string email, string phoneNumber, string firstName, string lastName,
+            string country, string city, int zipCode, string street, string houseNumber, string addressExtraLine,
+            bool activated, bool verified)
         {
+            CustomerId = customerId;
             Email = email;
             PhoneNumber = phoneNumber;
             FirstName = firstName;
@@ -38,6 +41,12 @@ namespace ecruise.Models
             Activated = activated;
             Verified = verified;
         }
+
+
+        /// <summary>
+        /// Gets or Sets a CustomerId
+        /// </summary>
+        public int CustomerId { get; }
 
         /// <summary>
         /// Gets or Sets Email
@@ -72,7 +81,7 @@ namespace ecruise.Models
         /// <summary>
         /// Gets or Sets ZipCode
         /// </summary>
-        public int? ZipCode { get; set; }
+        public int ZipCode { get; set; }
 
         /// <summary>
         /// Gets or Sets Street
@@ -94,13 +103,13 @@ namespace ecruise.Models
         /// True if the user has activated his account by clicking on the   link in the activation email. 
         /// </summary>
         /// <value>True if the user has activated his account by clicking on the   link in the activation email. </value>
-        public bool? Activated { get; set; }
+        public bool Activated { get; set; }
 
         /// <summary>
         /// True if the user has verified his account at our head-quarter   by bringing us his driver&#39;s license. 
         /// </summary>
         /// <value>True if the user has verified his account at our head-quarter   by bringing us his driver&#39;s license. </value>
-        public bool? Verified { get; set; }
+        public bool Verified { get; set; }
 
         /// <summary>
         /// Returns the string presentation of the object
@@ -110,6 +119,7 @@ namespace ecruise.Models
         {
             var sb = new StringBuilder();
             sb.Append("class Customer {\n");
+            sb.Append("  CustomerId: ").Append(CustomerId).Append("\n");
             sb.Append("  Email: ").Append(Email).Append("\n");
             sb.Append("  PhoneNumber: ").Append(PhoneNumber).Append("\n");
             sb.Append("  FirstName: ").Append(FirstName).Append("\n");
@@ -160,6 +170,10 @@ namespace ecruise.Models
 
             return
                 (
+                    CustomerId == other.CustomerId ||
+                    CustomerId.Equals(other.CustomerId)
+                ) &&
+                (
                     Email == other.Email ||
                     Email != null &&
                     Email.Equals(other.Email)
@@ -191,7 +205,6 @@ namespace ecruise.Models
                 ) &&
                 (
                     ZipCode == other.ZipCode ||
-                    ZipCode != null &&
                     ZipCode.Equals(other.ZipCode)
                 ) &&
                 (
@@ -211,12 +224,10 @@ namespace ecruise.Models
                 ) &&
                 (
                     Activated == other.Activated ||
-                    Activated != null &&
                     Activated.Equals(other.Activated)
                 ) &&
                 (
                     Verified == other.Verified ||
-                    Verified != null &&
                     Verified.Equals(other.Verified)
                 );
         }
@@ -231,30 +242,8 @@ namespace ecruise.Models
             {
                 int hash = 41;
 
-                if (Email != null)
-                    hash = hash * 59 + Email.GetHashCode();
-                if (PhoneNumber != null)
-                    hash = hash * 59 + PhoneNumber.GetHashCode();
-                if (FirstName != null)
-                    hash = hash * 59 + FirstName.GetHashCode();
-                if (LastName != null)
-                    hash = hash * 59 + LastName.GetHashCode();
-                if (Country != null)
-                    hash = hash * 59 + Country.GetHashCode();
-                if (City != null)
-                    hash = hash * 59 + City.GetHashCode();
-                if (ZipCode != null)
-                    hash = hash * 59 + ZipCode.GetHashCode();
-                if (Street != null)
-                    hash = hash * 59 + Street.GetHashCode();
-                if (HouseNumber != null)
-                    hash = hash * 59 + HouseNumber.GetHashCode();
-                if (AddressExtraLine != null)
-                    hash = hash * 59 + AddressExtraLine.GetHashCode();
-                if (Activated != null)
-                    hash = hash * 59 + Activated.GetHashCode();
-                if (Verified != null)
-                    hash = hash * 59 + Verified.GetHashCode();
+                hash = hash * 59 + CustomerId.GetHashCode();
+
                 return hash;
             }
         }
