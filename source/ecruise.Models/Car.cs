@@ -52,25 +52,37 @@ namespace ecruise.Models
         /// <param name="lastKnownPositionLatitude">LastKnownPositionLatitude.</param>
         /// <param name="lastKnownPositionLongitude">LastKnownPositionLongitude.</param>
         /// <param name="lastKnownPositionDate">LastKnownPositionDate.</param>
+        /// <exception cref="ArgumentNullException">The described argument has an invalid value.</exception>
         public Car(int carId, string licensePlate, ChargingStateEnum chargingState, BookingStateEnum bookingState,
             int mileage, double chargeLevel, int kilowatts, string manufacturer, string model,
-            string yearOfConstruction, double? lastKnownPositionLatitude, double? lastKnownPositionLongitude,
+            int yearOfConstruction, double? lastKnownPositionLatitude, double? lastKnownPositionLongitude,
             DateTime? lastKnownPositionDate)
         {
             if (carId == 0)
-                throw new ArgumentNullException("CarId is a required property for Car and cannot be zero");
+                throw new ArgumentNullException(
+                    nameof(carId) + " is a required property for Car and cannot be zero");
+            if (kilowatts == 0)
+                throw new ArgumentNullException(
+                    nameof(kilowatts) + " is a required property for Car and cannot be zero");
+            if (yearOfConstruction == 0)
+                throw new ArgumentNullException(
+                    nameof(yearOfConstruction) + " is a required property for Car and cannot be zero");
 
             CarId = carId;
             LicensePlate = licensePlate ??
                            throw new ArgumentNullException(
-                               "LicensePlate is a required property for Car and cannot be null");
+                               nameof(licensePlate) + " is a required property for Car and cannot be null");
             ChargingState = chargingState;
             BookingState = bookingState;
             Mileage = mileage;
             ChargeLevel = chargeLevel;
             Kilowatts = kilowatts;
-            Manufacturer = manufacturer;
-            Model = model;
+            Manufacturer = manufacturer ??
+                           throw new ArgumentNullException(
+                               nameof(manufacturer) + " is a required property for Car and cannot be null");
+            Model = model ??
+                    throw new ArgumentNullException(
+                        nameof(model) + " is a required property for Car and cannot be null");
             YearOfConstruction = yearOfConstruction;
             LastKnownPositionLatitude = lastKnownPositionLatitude;
             LastKnownPositionLongitude = lastKnownPositionLongitude;
@@ -80,12 +92,12 @@ namespace ecruise.Models
         /// <summary>
         /// Gets or Sets CarId
         /// </summary>
-        public int CarId { get; set; }
+        public int CarId { get; }
 
         /// <summary>
         /// Gets or Sets LicensePlate
         /// </summary>
-        public string LicensePlate { get; set; }
+        public string LicensePlate { get; }
 
         /// <summary>
         /// Gets or Sets Mileage
@@ -101,22 +113,22 @@ namespace ecruise.Models
         /// <summary>
         /// Gets or Sets Kilowatts
         /// </summary>
-        public int Kilowatts { get; set; }
+        public int Kilowatts { get; }
 
         /// <summary>
         /// Gets or Sets Manufacturer
         /// </summary>
-        public string Manufacturer { get; set; }
+        public string Manufacturer { get; }
 
         /// <summary>
         /// Gets or Sets Model
         /// </summary>
-        public string Model { get; set; }
+        public string Model { get; }
 
         /// <summary>
         /// Gets or Sets YearOfConstruction
         /// </summary>
-        public string YearOfConstruction { get; set; }
+        public int YearOfConstruction { get; }
 
         /// <summary>
         /// Gets or Sets LastKnownPositionLatitude
@@ -191,52 +203,25 @@ namespace ecruise.Models
             if (ReferenceEquals(this, other)) return true;
 
             return
-                (
-                    CarId == other.CarId ||
-                    CarId.Equals(other.CarId)
+                (CarId == other.CarId || CarId.Equals(other.CarId)) &&
+                (LicensePlate == other.LicensePlate ||
+                 LicensePlate != null && LicensePlate.Equals(other.LicensePlate)
                 ) &&
-                (
-                    LicensePlate == other.LicensePlate ||
-                    LicensePlate != null &&
-                    LicensePlate.Equals(other.LicensePlate)
+                (ChargingState == other.ChargingState ||
+                 ChargingState != null && ChargingState.Equals(other.ChargingState)
                 ) &&
-                (
-                    ChargingState == other.ChargingState ||
-                    ChargingState != null &&
-                    ChargingState.Equals(other.ChargingState)
+                (BookingState == other.BookingState ||
+                 BookingState != null && BookingState.Equals(other.BookingState)
                 ) &&
-                (
-                    BookingState == other.BookingState ||
-                    BookingState != null &&
-                    BookingState.Equals(other.BookingState)
+                (Mileage == other.Mileage || Mileage.Equals(other.Mileage)) &&
+                (Math.Abs(ChargeLevel - other.ChargeLevel) < 0.00001 || ChargeLevel.Equals(other.ChargeLevel)) &&
+                (Kilowatts == other.Kilowatts || Kilowatts.Equals(other.Kilowatts)) &&
+                (Manufacturer == other.Manufacturer ||
+                 Manufacturer != null && Manufacturer.Equals(other.Manufacturer)
                 ) &&
-                (
-                    Mileage == other.Mileage ||
-                    Mileage.Equals(other.Mileage)
-                ) &&
-                (
-                    Math.Abs(ChargeLevel - other.ChargeLevel) < 0.00001 ||
-                    ChargeLevel.Equals(other.ChargeLevel)
-                ) &&
-                (
-                    Kilowatts == other.Kilowatts ||
-                    Kilowatts.Equals(other.Kilowatts)
-                ) &&
-                (
-                    Manufacturer == other.Manufacturer ||
-                    Manufacturer != null &&
-                    Manufacturer.Equals(other.Manufacturer)
-                ) &&
-                (
-                    Model == other.Model ||
-                    Model != null &&
-                    Model.Equals(other.Model)
-                ) &&
-                (
-                    YearOfConstruction == other.YearOfConstruction ||
-                    YearOfConstruction != null &&
-                    YearOfConstruction.Equals(other.YearOfConstruction)
-                ) &&
+                (Model == other.Model || Model != null && Model.Equals(other.Model)) &&
+                (YearOfConstruction == other.YearOfConstruction ||
+                 YearOfConstruction.Equals(other.YearOfConstruction)) &&
                 (
                     LastKnownPositionLatitude.HasValue && other.LastKnownPositionLatitude.HasValue &&
                     Math.Abs(LastKnownPositionLatitude.Value - other.LastKnownPositionLatitude.Value) < 0.0001 ||
@@ -249,10 +234,8 @@ namespace ecruise.Models
                     LastKnownPositionLongitude != null &&
                     LastKnownPositionLongitude.Equals(other.LastKnownPositionLongitude)
                 ) &&
-                (
-                    LastKnownPositionDate == other.LastKnownPositionDate ||
-                    LastKnownPositionDate != null &&
-                    LastKnownPositionDate.Equals(other.LastKnownPositionDate)
+                (LastKnownPositionDate == other.LastKnownPositionDate ||
+                 LastKnownPositionDate != null && LastKnownPositionDate.Equals(other.LastKnownPositionDate)
                 );
         }
 
@@ -265,32 +248,17 @@ namespace ecruise.Models
             unchecked
             {
                 int hash = 41;
-                if (CarId != null)
-                    hash = hash * 59 + CarId.GetHashCode();
+
+                hash = hash * 59 + CarId.GetHashCode();
                 if (LicensePlate != null)
                     hash = hash * 59 + LicensePlate.GetHashCode();
-                if (ChargingState != null)
-                    hash = hash * 59 + ChargingState.GetHashCode();
-                if (BookingState != null)
-                    hash = hash * 59 + BookingState.GetHashCode();
-                if (Mileage != null)
-                    hash = hash * 59 + Mileage.GetHashCode();
-                if (ChargeLevel != null)
-                    hash = hash * 59 + ChargeLevel.GetHashCode();
-                if (Kilowatts != null)
-                    hash = hash * 59 + Kilowatts.GetHashCode();
+                hash = hash * 59 + Kilowatts.GetHashCode();
                 if (Manufacturer != null)
                     hash = hash * 59 + Manufacturer.GetHashCode();
                 if (Model != null)
                     hash = hash * 59 + Model.GetHashCode();
-                if (YearOfConstruction != null)
-                    hash = hash * 59 + YearOfConstruction.GetHashCode();
-                if (LastKnownPositionLatitude != null)
-                    hash = hash * 59 + LastKnownPositionLatitude.GetHashCode();
-                if (LastKnownPositionLongitude != null)
-                    hash = hash * 59 + LastKnownPositionLongitude.GetHashCode();
-                if (LastKnownPositionDate != null)
-                    hash = hash * 59 + LastKnownPositionDate.GetHashCode();
+                hash = hash * 59 + YearOfConstruction.GetHashCode();
+
                 return hash;
             }
         }
