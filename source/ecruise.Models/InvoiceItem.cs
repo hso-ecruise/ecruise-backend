@@ -1,0 +1,178 @@
+using System;
+using System.Text;
+using Newtonsoft.Json;
+
+namespace ecruise.Models
+{
+    public class InvoiceItem :  IEquatable<InvoiceItem>
+    {
+        /// <summary>
+        /// Gets or Sets Type
+        /// </summary>
+        public enum TypeEnum
+        {
+            DEBIT,
+            CREDIT
+        }
+        /// <summary>
+        /// Gets or Sets Type
+        /// </summary>
+        public TypeEnum? Type { get; set; }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="InvoiceItem" /> class.
+        /// </summary>
+        /// <param name="invoiceItemId">InvoiceItemId.</param>
+        /// <param name="invoiceId">See &#39;#/definitions/Invoice&#39;.</param>
+        /// <param name="reason">Text which will appear on the invoice. Can contain the name of the service or some other reason. .</param>
+        /// <param name="type">Type (default to TypeEnum.DEBITEnum).</param>
+        /// <param name="amount">Amount.</param>
+        public InvoiceItem(int? invoiceItemId, int? invoiceId, string reason, TypeEnum? type, double? amount)
+        {
+            InvoiceItemId = invoiceItemId;
+            InvoiceId = invoiceId;
+            Reason = reason;
+            if (type == null)
+                Type = TypeEnum.DEBIT;
+            else
+                Type = type;
+            Amount = amount;
+            
+        }
+
+        /// <summary>
+        /// Gets or Sets InvoiceItemId
+        /// </summary>
+        public int? InvoiceItemId { get; set; }
+        /// <summary>
+        /// See &#39;#/definitions/Invoice&#39;
+        /// </summary>
+        /// <value>See &#39;#/definitions/Invoice&#39;</value>
+        public int? InvoiceId { get; set; }
+        /// <summary>
+        /// Text which will appear on the invoice. Can contain the name of the service or some other reason. 
+        /// </summary>
+        /// <value>Text which will appear on the invoice. Can contain the name of the service or some other reason. </value>
+        public string Reason { get; set; }
+        /// <summary>
+        /// Gets or Sets Amount
+        /// </summary>
+        public double? Amount { get; set; }
+
+        /// <summary>
+        /// Returns the string presentation of the object
+        /// </summary>
+        /// <returns>String presentation of the object</returns>
+        public override string ToString()
+        {
+            var sb = new StringBuilder();
+            sb.Append("class InvoiceItem {\n");
+            sb.Append("  InvoiceItemId: ").Append(InvoiceItemId).Append("\n");
+            sb.Append("  InvoiceId: ").Append(InvoiceId).Append("\n");
+            sb.Append("  Reason: ").Append(Reason).Append("\n");
+            sb.Append("  Type: ").Append(Type).Append("\n");
+            sb.Append("  Amount: ").Append(Amount).Append("\n");
+            sb.Append("}\n");
+            return sb.ToString();
+        }
+
+        /// <summary>
+        /// Returns the JSON string presentation of the object
+        /// </summary>
+        /// <returns>JSON string presentation of the object</returns>
+        public string ToJson()
+        {
+            return JsonConvert.SerializeObject(this, Formatting.Indented);
+        }
+
+        /// <summary>
+        /// Returns true if objects are equal
+        /// </summary>
+        /// <param name="obj">Object to be compared</param>
+        /// <returns>Boolean</returns>
+        public override bool Equals(object obj)
+        {
+            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            if (obj.GetType() != GetType()) return false;
+            return Equals((InvoiceItem)obj);
+        }
+
+        /// <summary>
+        /// Returns true if InvoiceItem instances are equal
+        /// </summary>
+        /// <param name="other">Instance of InvoiceItem to be compared</param>
+        /// <returns>Boolean</returns>
+        public bool Equals(InvoiceItem other)
+        {
+
+            if (ReferenceEquals(null, other)) return false;
+            if (ReferenceEquals(this, other)) return true;
+
+            return 
+                (
+                    InvoiceItemId == other.InvoiceItemId ||
+                    InvoiceItemId != null &&
+                    InvoiceItemId.Equals(other.InvoiceItemId)
+                ) && 
+                (
+                    InvoiceId == other.InvoiceId ||
+                    InvoiceId != null &&
+                    InvoiceId.Equals(other.InvoiceId)
+                ) && 
+                (
+                    Reason == other.Reason ||
+                    Reason != null &&
+                    Reason.Equals(other.Reason)
+                ) && 
+                (
+                    Type == other.Type ||
+                    Type != null &&
+                    Type.Equals(other.Type)
+                ) && 
+                (
+                    Amount == other.Amount ||
+                    Amount != null &&
+                    Amount.Equals(other.Amount)
+                );
+        }
+
+        /// <summary>
+        /// Gets the hash code
+        /// </summary>
+        /// <returns>Hash code</returns>
+        public override int GetHashCode()
+        {
+            unchecked
+            {
+                int hash = 41;
+                if (InvoiceItemId != null)
+                    hash = hash * 59 + InvoiceItemId.GetHashCode();
+                if (InvoiceId != null)
+                    hash = hash * 59 + InvoiceId.GetHashCode();
+                if (Reason != null)
+                    hash = hash * 59 + Reason.GetHashCode();
+                if (Type != null)
+                    hash = hash * 59 + Type.GetHashCode();
+                if (Amount != null)
+                    hash = hash * 59 + Amount.GetHashCode();
+                return hash;
+            }
+        }
+
+        #region Operators
+
+        public static bool operator ==(InvoiceItem left, InvoiceItem right)
+        {
+            return Equals(left, right);
+        }
+
+        public static bool operator !=(InvoiceItem left, InvoiceItem right)
+        {
+            return !Equals(left, right);
+        }
+
+        #endregion Operators
+
+    }
+}
