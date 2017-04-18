@@ -10,34 +10,50 @@ namespace ecruise.Models
         /// <summary>
         /// Initializes a new instance of the <see cref="Customer" /> class.
         /// </summary>
-        /// <param name="customerId">CustomerId.</param>
-        /// <param name="email">Email.</param>
-        /// <param name="phoneNumber">PhoneNumber.</param>
-        /// <param name="firstName">FirstName.</param>
-        /// <param name="lastName">LastName.</param>
-        /// <param name="country">Country.</param>
-        /// <param name="city">City.</param>
-        /// <param name="zipCode">ZipCode.</param>
-        /// <param name="street">Street.</param>
-        /// <param name="houseNumber">HouseNumber.</param>
-        /// <param name="addressExtraLine">Extra line for the user's address. Can contain various detail information about the user&#39;s address. .</param>
-        /// <param name="activated">True if the user has activated his account by clicking on the link in the activation email. .</param>
-        /// <param name="verified">True if the user has verified his account at our head-quarter by bringing us his driver&#39;s license. .</param>
+        /// <param name="customerId">CustomerId (required)</param>
+        /// <param name="email">Email (required)</param>
+        /// <param name="phoneNumber">PhoneNumber (required)</param>
+        /// <param name="firstName">FirstName (required)</param>
+        /// <param name="lastName">LastName (required)</param>
+        /// <param name="country">Country (required)</param>
+        /// <param name="city">City (required)</param>
+        /// <param name="zipCode">ZipCode (required)</param>
+        /// <param name="street">Street (required)</param>
+        /// <param name="houseNumber">HouseNumber (required)</param>
+        /// <param name="addressExtraLine">Extra line for the user's address. Can contain various detail information about the user's address. (required)</param>
+        /// <param name="activated">True if the user has activated his account by clicking on the link in the activation email. (required)</param>
+        /// <param name="verified">True if the user has verified his account at our head-quarter by bringing us his driver's license. (required)</param>
         public Customer(int customerId, string email, string phoneNumber, string firstName, string lastName,
             string country, string city, int zipCode, string street, string houseNumber, string addressExtraLine,
             bool activated, bool verified)
         {
+            if (customerId == 0)
+                throw new ArgumentNullException(
+                    nameof(customerId) + " is a required property for Customer and cannot be zero");
+
             CustomerId = customerId;
-            Email = email;
-            PhoneNumber = phoneNumber;
-            FirstName = firstName;
-            LastName = lastName;
-            Country = country;
-            City = city;
+            Email =
+                email ?? throw new ArgumentNullException(nameof(email) +
+                                                         " is a required property for Customer and cannot be null");
+            PhoneNumber = phoneNumber ??
+                          throw new ArgumentNullException(nameof(phoneNumber) +
+                                                          " is a required property for Customer and cannot be null");
+            FirstName = firstName ?? throw new ArgumentNullException(
+                            nameof(firstName) + " is a required property for Customer and cannot be null");
+            LastName = lastName ?? throw new ArgumentNullException(
+                           nameof(lastName) + " is a required property for Customer and cannot be null");
+            Country = country ?? throw new ArgumentNullException(
+                          nameof(country) + " is a required property for Customer and cannot be null");
+            City = city ?? throw new ArgumentNullException(
+                       nameof(city) + " is a required property for Customer and cannot be null");
             ZipCode = zipCode;
-            Street = street;
-            HouseNumber = houseNumber;
-            AddressExtraLine = addressExtraLine;
+            Street = street ?? throw new ArgumentNullException(
+                         nameof(street) + " is a required property for Customer and cannot be null");
+            HouseNumber = houseNumber ?? throw new ArgumentNullException(
+                              nameof(houseNumber) + " is a required property for Customer and cannot be null");
+            AddressExtraLine = addressExtraLine ?? throw new ArgumentNullException(
+                                   nameof(addressExtraLine) +
+                                   " is a required property for Customer and cannot be null");
             Activated = activated;
             Verified = verified;
         }
@@ -94,21 +110,21 @@ namespace ecruise.Models
         public string HouseNumber { get; set; }
 
         /// <summary>
-        /// Extra line for the user&#39;s address. Can contain various    detail information about the user&#39;s address. 
+        /// Extra line for the user's address. Can contain various detail information about the user's address. 
         /// </summary>
-        /// <value>Extra line for the user&#39;s address. Can contain various    detail information about the user&#39;s address. </value>
+        /// <value>Extra line for the user's address. Can contain various detail information about the user's address. </value>
         public string AddressExtraLine { get; set; }
 
         /// <summary>
-        /// True if the user has activated his account by clicking on the   link in the activation email. 
+        /// True if the user has activated his account by clicking on the link in the activation email. 
         /// </summary>
-        /// <value>True if the user has activated his account by clicking on the   link in the activation email. </value>
+        /// <value>True if the user has activated his account by clicking on the link in the activation email. </value>
         public bool Activated { get; set; }
 
         /// <summary>
-        /// True if the user has verified his account at our head-quarter   by bringing us his driver&#39;s license. 
+        /// True if the user has verified his account at our head-quarter by bringing us his driver's license. 
         /// </summary>
-        /// <value>True if the user has verified his account at our head-quarter   by bringing us his driver&#39;s license. </value>
+        /// <value>True if the user has verified his account at our head-quarter by bringing us his driver's license.</value>
         public bool Verified { get; set; }
 
         /// <summary>
@@ -169,67 +185,19 @@ namespace ecruise.Models
             if (ReferenceEquals(this, other)) return true;
 
             return
-                (
-                    CustomerId == other.CustomerId ||
-                    CustomerId.Equals(other.CustomerId)
-                ) &&
-                (
-                    Email == other.Email ||
-                    Email != null &&
-                    Email.Equals(other.Email)
-                ) &&
-                (
-                    PhoneNumber == other.PhoneNumber ||
-                    PhoneNumber != null &&
-                    PhoneNumber.Equals(other.PhoneNumber)
-                ) &&
-                (
-                    FirstName == other.FirstName ||
-                    FirstName != null &&
-                    FirstName.Equals(other.FirstName)
-                ) &&
-                (
-                    LastName == other.LastName ||
-                    LastName != null &&
-                    LastName.Equals(other.LastName)
-                ) &&
-                (
-                    Country == other.Country ||
-                    Country != null &&
-                    Country.Equals(other.Country)
-                ) &&
-                (
-                    City == other.City ||
-                    City != null &&
-                    City.Equals(other.City)
-                ) &&
-                (
-                    ZipCode == other.ZipCode ||
-                    ZipCode.Equals(other.ZipCode)
-                ) &&
-                (
-                    Street == other.Street ||
-                    Street != null &&
-                    Street.Equals(other.Street)
-                ) &&
-                (
-                    HouseNumber == other.HouseNumber ||
-                    HouseNumber != null &&
-                    HouseNumber.Equals(other.HouseNumber)
-                ) &&
-                (
-                    AddressExtraLine == other.AddressExtraLine ||
-                    AddressExtraLine != null &&
-                    AddressExtraLine.Equals(other.AddressExtraLine)
-                ) &&
-                (
-                    Activated == other.Activated ||
-                    Activated.Equals(other.Activated)
-                ) &&
-                (
-                    Verified == other.Verified ||
-                    Verified.Equals(other.Verified)
-                );
+                (CustomerId == other.CustomerId || CustomerId.Equals(other.CustomerId)) &&
+                (Email == other.Email || Email.Equals(other.Email)) &&
+                (PhoneNumber == other.PhoneNumber || PhoneNumber.Equals(other.PhoneNumber)) &&
+                (FirstName == other.FirstName || FirstName.Equals(other.FirstName)) &&
+                (LastName == other.LastName || LastName.Equals(other.LastName)) &&
+                (Country == other.Country || Country.Equals(other.Country)) &&
+                (City == other.City || City.Equals(other.City)) &&
+                (ZipCode == other.ZipCode || ZipCode.Equals(other.ZipCode)) &&
+                (Street == other.Street || Street.Equals(other.Street)) &&
+                (HouseNumber == other.HouseNumber || HouseNumber.Equals(other.HouseNumber)) &&
+                (AddressExtraLine == other.AddressExtraLine || AddressExtraLine.Equals(other.AddressExtraLine)) &&
+                (Activated == other.Activated || Activated.Equals(other.Activated)) &&
+                (Verified == other.Verified || Verified.Equals(other.Verified));
         }
 
         /// <summary>

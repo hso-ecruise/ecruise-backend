@@ -4,16 +4,21 @@ using Newtonsoft.Json;
 
 namespace ecruise.Models
 {
-    public class Invoice :  IEquatable<Invoice>
+    public class Invoice
+        : IEquatable<Invoice>
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="Invoice" /> class.
         /// </summary>
-        /// <param name="invoiceId">InvoiceId.</param>
-        /// <param name="totalAmount">TotalAmount.</param>
-        /// <param name="paid">Paid.</param>
-        public Invoice(int? invoiceId, double? totalAmount, bool? paid)
+        /// <param name="invoiceId">InvoiceId (required)</param>
+        /// <param name="totalAmount">TotalAmount (required)</param>
+        /// <param name="paid">Paid (required)</param>
+        public Invoice(int invoiceId, double totalAmount, bool paid)
         {
+            if (invoiceId == 0)
+                throw new ArgumentNullException(
+                    nameof(invoiceId) + " is a required property for Invoice and cannot be zero");
+
             InvoiceId = invoiceId;
             TotalAmount = totalAmount;
             Paid = paid;
@@ -22,15 +27,17 @@ namespace ecruise.Models
         /// <summary>
         /// Gets or Sets InvoiceId
         /// </summary>
-        public int? InvoiceId { get; set; }
+        public int InvoiceId { get; }
+
         /// <summary>
         /// Gets or Sets TotalAmount
         /// </summary>
-        public double? TotalAmount { get; set; }
+        public double TotalAmount { get; set; }
+
         /// <summary>
         /// Gets or Sets Paid
         /// </summary>
-        public bool? Paid { get; set; }
+        public bool Paid { get; set; }
 
         /// <summary>
         /// Returns the string presentation of the object
@@ -76,26 +83,13 @@ namespace ecruise.Models
         /// <returns>Boolean</returns>
         public bool Equals(Invoice other)
         {
-
             if (ReferenceEquals(null, other)) return false;
             if (ReferenceEquals(this, other)) return true;
 
-            return 
-                (
-                    InvoiceId == other.InvoiceId ||
-                    InvoiceId != null &&
-                    InvoiceId.Equals(other.InvoiceId)
-                ) && 
-                (
-                    TotalAmount == other.TotalAmount ||
-                    TotalAmount != null &&
-                    TotalAmount.Equals(other.TotalAmount)
-                ) && 
-                (
-                    Paid == other.Paid ||
-                    Paid != null &&
-                    Paid.Equals(other.Paid)
-                );
+            return
+                (InvoiceId == other.InvoiceId || InvoiceId.Equals(other.InvoiceId)) &&
+                (Math.Abs(TotalAmount - other.TotalAmount) < 0.0001 || TotalAmount.Equals(other.TotalAmount)) &&
+                (Paid == other.Paid || Paid.Equals(other.Paid));
         }
 
         /// <summary>
@@ -104,17 +98,12 @@ namespace ecruise.Models
         /// <returns>Hash code</returns>
         public override int GetHashCode()
         {
-            // credit: http://stackoverflow.com/a/263416/677735
-            unchecked // Overflow is fine, just wrap
+            unchecked
             {
                 int hash = 41;
-                // Suitable nullity checks etc, of course :)
-                    if (InvoiceId != null)
-                    hash = hash * 59 + InvoiceId.GetHashCode();
-                    if (TotalAmount != null)
-                    hash = hash * 59 + TotalAmount.GetHashCode();
-                    if (Paid != null)
-                    hash = hash * 59 + Paid.GetHashCode();
+
+                hash = hash * 59 + InvoiceId.GetHashCode();
+
                 return hash;
             }
         }
@@ -132,6 +121,5 @@ namespace ecruise.Models
         }
 
         #endregion Operators
-
     }
 }

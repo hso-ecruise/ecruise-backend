@@ -10,14 +10,24 @@ namespace ecruise.Models
         /// <summary>
         /// Initializes a new instance of the <see cref="CarChargingStation" /> class.
         /// </summary>
-        /// <param name="carChargingStationId">CarChargingStationId.</param>
-        /// <param name="carId">CarId.</param>
-        /// <param name="chargingStationId">ChargingStationId.</param>
-        /// <param name="chargeStart">ChargeStart.</param>
-        /// <param name="chargeEnd">ChargeEnd.</param>
-        public CarChargingStation(int carChargingStationId, int carId, int chargingStationId, DateTime chargeStart,
-            DateTime? chargeEnd)
+        /// <param name="carChargingStationId">CarChargingStationId (required)</param>
+        /// <param name="carId">CarId (required)</param>
+        /// <param name="chargingStationId">ChargingStationId (required)</param>
+        /// <param name="chargeStart">ChargeStart (required)</param>
+        /// <param name="chargeEnd">ChargeEnd</param>
+        public CarChargingStation(int carChargingStationId, int carId, int chargingStationId,
+            DateTime chargeStart, DateTime? chargeEnd)
         {
+            if (carChargingStationId == 0)
+                throw new ArgumentNullException(
+                    nameof(carChargingStationId) + " is a required property for CarChargingStation and cannot be zero");
+            if (carId == 0)
+                throw new ArgumentNullException(
+                    nameof(carId) + " is a required property for CarChargingStation and cannot be zero");
+            if (chargingStationId == 0)
+                throw new ArgumentNullException(
+                    nameof(chargingStationId) + " is a required property for CarChargingStation and cannot be zero");
+
             CarChargingStationId = carChargingStationId;
             CarId = carId;
             ChargingStationId = chargingStationId;

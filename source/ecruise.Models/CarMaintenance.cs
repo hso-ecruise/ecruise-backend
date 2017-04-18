@@ -10,15 +10,28 @@ namespace ecruise.Models
         /// <summary>
         /// Initializes a new instance of the <see cref="CarMaintenance" /> class.
         /// </summary>
-        /// <param name="carMaintenanceId">CarMaintenanceId.</param>
-        /// <param name="carId">See #/definitions/Car.</param>
-        /// <param name="maintenanceId">See #/definitions/Maintenance.</param>
-        /// <param name="invoiceItemId">See #/definitions/InvoiceItem.</param>
-        /// <param name="plannedDate">PlannedDate.</param>
-        /// <param name="completedDate">CompletedDate.</param>
+        /// <param name="carMaintenanceId">CarMaintenanceId (required)</param>
+        /// <param name="carId">See #/definitions/Car  (required)</param>
+        /// <param name="maintenanceId">See #/definitions/Maintenance (required)</param>
+        /// <param name="invoiceItemId">See #/definitions/InvoiceItem (required)</param>
+        /// <param name="plannedDate">PlannedDate</param>
+        /// <param name="completedDate">CompletedDate</param>
         public CarMaintenance(int carMaintenanceId, int carId, int maintenanceId, int invoiceItemId,
             DateTime? plannedDate, DateTime? completedDate)
         {
+            if (carMaintenanceId == 0)
+                throw new ArgumentNullException(
+                    nameof(carMaintenanceId) + " is a required property for CarMaintenance and cannot be zero");
+            if (carId == 0)
+                throw new ArgumentNullException(
+                    nameof(carId) + " is a required property for CarMaintenance and cannot be zero");
+            if (maintenanceId == 0)
+                throw new ArgumentNullException(
+                    nameof(maintenanceId) + " is a required property for CarMaintenance and cannot be zero");
+            if (invoiceItemId == 0)
+                throw new ArgumentNullException(
+                    nameof(invoiceItemId) + " is a required property for CarMaintenance and cannot be zero");
+
             CarMaintenanceId = carMaintenanceId;
             CarId = carId;
             MaintenanceId = maintenanceId;

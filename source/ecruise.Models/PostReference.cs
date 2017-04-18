@@ -4,30 +4,35 @@ using Newtonsoft.Json;
 
 namespace ecruise.Models
 {
-    public class PostReference :  IEquatable<PostReference>
+    public class PostReference
+        : IEquatable<PostReference>
     {
-
         /// <summary>
         /// Initializes a new instance of the <see cref="PostReference" /> class.
         /// </summary>
-        /// <param name="id">The ressource's unique identifier .</param>
-        /// <param name="url">URL to the ressource .</param>
-        public PostReference(int? id, string url)
+        /// <param name="id">The ressource's unique identifier (required)</param>
+        /// <param name="url">URL to the ressource (required)</param>
+        public PostReference(int id, string url)
         {
+            if (id == 0)
+                throw new ArgumentNullException(
+                    nameof(id) + " is a required property for PostReference and cannot be zero");
             Id = id;
-            Url = url;
+            Url = url ?? throw new ArgumentNullException(
+                      nameof(url) + " is a required property for Maintenance and cannot be null");
         }
 
         /// <summary>
-        /// The ressource&#39;s unique identifier 
+        /// The ressource's unique identifier 
         /// </summary>
-        /// <value>The ressource&#39;s unique identifier </value>
-        public int? Id { get; set; }
+        /// <value>The ressource's unique identifier</value>
+        public int Id { get; }
+
         /// <summary>
         /// URL to the ressource 
         /// </summary>
         /// <value>URL to the ressource </value>
-        public string Url { get; set; }
+        public string Url { get; }
 
         /// <summary>
         /// Returns the string presentation of the object
@@ -72,21 +77,12 @@ namespace ecruise.Models
         /// <returns>Boolean</returns>
         public bool Equals(PostReference other)
         {
-
             if (ReferenceEquals(null, other)) return false;
             if (ReferenceEquals(this, other)) return true;
 
-            return 
-                (
-                    Id == other.Id ||
-                    Id != null &&
-                    Id.Equals(other.Id)
-                ) && 
-                (
-                    Url == other.Url ||
-                    Url != null &&
-                    Url.Equals(other.Url)
-                );
+            return
+                (Id == other.Id || Id.Equals(other.Id)) &&
+                (Url == other.Url || Url.Equals(other.Url));
         }
 
         /// <summary>
@@ -98,10 +94,10 @@ namespace ecruise.Models
             unchecked
             {
                 int hash = 41;
-                if (Id != null)
-                    hash = hash * 59 + Id.GetHashCode();
-                if (Url != null)
-                    hash = hash * 59 + Url.GetHashCode();
+
+                hash = hash * 59 + Id.GetHashCode();
+                hash = hash * 59 + Url.GetHashCode();
+
                 return hash;
             }
         }
@@ -119,6 +115,5 @@ namespace ecruise.Models
         }
 
         #endregion Operators
-
     }
 }

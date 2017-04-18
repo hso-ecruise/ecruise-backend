@@ -4,7 +4,8 @@ using Newtonsoft.Json;
 
 namespace ecruise.Models
 {
-    public class Car : IEquatable<Car>
+    public class Car
+        : IEquatable<Car>
     {
         /// <summary>
         /// Gets or Sets ChargingState
@@ -27,31 +28,21 @@ namespace ecruise.Models
         }
 
         /// <summary>
-        /// Gets or Sets ChargingState
-        /// </summary>
-        public ChargingStateEnum? ChargingState { get; set; }
-
-        /// <summary>
-        /// Gets or Sets BookingState
-        /// </summary>
-        public BookingStateEnum? BookingState { get; set; }
-
-        /// <summary>
         /// Initializes a new instance of the <see cref="Car" /> class.
         /// </summary>
-        /// <param name="carId">CarId.</param>
-        /// <param name="licensePlate">LicensePlate.</param>
-        /// <param name="chargingState">ChargingState.</param>
-        /// <param name="bookingState">BookingState.</param>
-        /// <param name="mileage">Mileage.</param>
-        /// <param name="chargeLevel">Current charging level of the car. From 0. to 100..</param>
-        /// <param name="kilowatts">Kilowatts.</param>
-        /// <param name="manufacturer">Manufacturer.</param>
-        /// <param name="model">Model.</param>
-        /// <param name="yearOfConstruction">YearOfConstruction.</param>
-        /// <param name="lastKnownPositionLatitude">LastKnownPositionLatitude.</param>
-        /// <param name="lastKnownPositionLongitude">LastKnownPositionLongitude.</param>
-        /// <param name="lastKnownPositionDate">LastKnownPositionDate.</param>
+        /// <param name="carId">CarId (required)</param>
+        /// <param name="licensePlate">LicensePlate (required)</param>
+        /// <param name="chargingState">ChargingState (required)</param>
+        /// <param name="bookingState">BookingState (required)</param>
+        /// <param name="mileage">Mileage (required)</param>
+        /// <param name="chargeLevel">Current charging level of the car. From 0. to 100. (required)</param>
+        /// <param name="kilowatts">Kilowatts (required)</param>
+        /// <param name="manufacturer">Manufacturer (required)</param>
+        /// <param name="model">Model (required)</param>
+        /// <param name="yearOfConstruction">YearOfConstruction (required)</param>
+        /// <param name="lastKnownPositionLatitude">LastKnownPositionLatitude</param>
+        /// <param name="lastKnownPositionLongitude">LastKnownPositionLongitude</param>
+        /// <param name="lastKnownPositionDate">LastKnownPositionDate</param>
         /// <exception cref="ArgumentNullException">The described argument has an invalid value.</exception>
         public Car(int carId, string licensePlate, ChargingStateEnum chargingState, BookingStateEnum bookingState,
             int mileage, double chargeLevel, int kilowatts, string manufacturer, string model,
@@ -98,6 +89,16 @@ namespace ecruise.Models
         /// Gets or Sets LicensePlate
         /// </summary>
         public string LicensePlate { get; }
+
+        /// <summary>
+        /// Gets or Sets ChargingState
+        /// </summary>
+        public ChargingStateEnum ChargingState { get; set; }
+
+        /// <summary>
+        /// Gets or Sets BookingState
+        /// </summary>
+        public BookingStateEnum BookingState { get; set; }
 
         /// <summary>
         /// Gets or Sets Mileage
@@ -204,22 +205,14 @@ namespace ecruise.Models
 
             return
                 (CarId == other.CarId || CarId.Equals(other.CarId)) &&
-                (LicensePlate == other.LicensePlate ||
-                 LicensePlate != null && LicensePlate.Equals(other.LicensePlate)
-                ) &&
-                (ChargingState == other.ChargingState ||
-                 ChargingState != null && ChargingState.Equals(other.ChargingState)
-                ) &&
-                (BookingState == other.BookingState ||
-                 BookingState != null && BookingState.Equals(other.BookingState)
-                ) &&
+                (LicensePlate == other.LicensePlate || LicensePlate.Equals(other.LicensePlate)) &&
+                (ChargingState == other.ChargingState || ChargingState.Equals(other.ChargingState)) &&
+                (BookingState == other.BookingState || BookingState.Equals(other.BookingState)) &&
                 (Mileage == other.Mileage || Mileage.Equals(other.Mileage)) &&
                 (Math.Abs(ChargeLevel - other.ChargeLevel) < 0.00001 || ChargeLevel.Equals(other.ChargeLevel)) &&
                 (Kilowatts == other.Kilowatts || Kilowatts.Equals(other.Kilowatts)) &&
-                (Manufacturer == other.Manufacturer ||
-                 Manufacturer != null && Manufacturer.Equals(other.Manufacturer)
-                ) &&
-                (Model == other.Model || Model != null && Model.Equals(other.Model)) &&
+                (Manufacturer == other.Manufacturer || Manufacturer.Equals(other.Manufacturer)) &&
+                (Model == other.Model || Model.Equals(other.Model)) &&
                 (YearOfConstruction == other.YearOfConstruction ||
                  YearOfConstruction.Equals(other.YearOfConstruction)) &&
                 (
@@ -250,13 +243,10 @@ namespace ecruise.Models
                 int hash = 41;
 
                 hash = hash * 59 + CarId.GetHashCode();
-                if (LicensePlate != null)
-                    hash = hash * 59 + LicensePlate.GetHashCode();
+                hash = hash * 59 + LicensePlate.GetHashCode();
                 hash = hash * 59 + Kilowatts.GetHashCode();
-                if (Manufacturer != null)
-                    hash = hash * 59 + Manufacturer.GetHashCode();
-                if (Model != null)
-                    hash = hash * 59 + Model.GetHashCode();
+                hash = hash * 59 + Manufacturer.GetHashCode();
+                hash = hash * 59 + Model.GetHashCode();
                 hash = hash * 59 + YearOfConstruction.GetHashCode();
 
                 return hash;

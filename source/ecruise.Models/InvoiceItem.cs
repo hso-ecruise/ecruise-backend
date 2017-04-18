@@ -19,16 +19,28 @@ namespace ecruise.Models
         /// <summary>
         /// Initializes a new instance of the <see cref="InvoiceItem" /> class.
         /// </summary>
-        /// <param name="invoiceItemId">InvoiceItemId.</param>
-        /// <param name="invoiceId">See &#39;#/definitions/Invoice&#39;.</param>
-        /// <param name="reason">Text which will appear on the invoice. Can contain the name of the service or some other reason. .</param>
-        /// <param name="type">Type (default to TypeEnum.DEBITEnum).</param>
-        /// <param name="amount">Amount.</param>
+        /// <param name="invoiceItemId">InvoiceItemId (required)</param>
+        /// <param name="invoiceId">See #/definitions/Invoice (required)</param>
+        /// <param name="reason">Text which will appear on the invoice. Can contain the name of the service or some other reason. (required)</param>
+        /// <param name="type">Type (required)</param>
+        /// <param name="amount">Amount (required)</param>
         public InvoiceItem(int invoiceItemId, int invoiceId, string reason, TypeEnum type, double amount)
         {
+            if (invoiceItemId == 0)
+                throw new ArgumentNullException(nameof(invoiceItemId) +
+                                                " is a required property for InvoiceItem and cannot be zero");
+            if (invoiceId == 0)
+                throw new ArgumentNullException(nameof(invoiceId) +
+                                                " is a required property for InvoiceItem and cannot be zero");
+            if (Math.Abs(amount) < 0.0001)
+                throw new ArgumentNullException(nameof(amount) +
+                                                " is a required property for InvoiceItem and cannot be zero");
+
             InvoiceItemId = invoiceItemId;
             InvoiceId = invoiceId;
-            Reason = reason;
+            Reason = reason ??
+                     throw new ArgumentNullException(nameof(reason) +
+                                                     " is a required property for InvoiceItem and cannot be null");
             Type = type;
             Amount = amount;
         }
@@ -39,9 +51,9 @@ namespace ecruise.Models
         public int InvoiceItemId { get; }
 
         /// <summary>
-        /// See &#39;#/definitions/Invoice&#39;
+        /// See #/definitions/Invoice
         /// </summary>
-        /// <value>See &#39;#/definitions/Invoice&#39;</value>
+        /// <value>See #/definitions/Invoice</value>
         public int InvoiceId { get; }
 
         /// <summary>
@@ -110,27 +122,11 @@ namespace ecruise.Models
             if (ReferenceEquals(this, other)) return true;
 
             return
-                (
-                    InvoiceItemId == other.InvoiceItemId ||
-                    InvoiceItemId.Equals(other.InvoiceItemId)
-                ) &&
-                (
-                    InvoiceId == other.InvoiceId ||
-                    InvoiceId.Equals(other.InvoiceId)
-                ) &&
-                (
-                    Reason == other.Reason ||
-                    Reason != null &&
-                    Reason.Equals(other.Reason)
-                ) &&
-                (
-                    Type == other.Type ||
-                    Type.Equals(other.Type)
-                ) &&
-                (
-                    Math.Abs(Amount - other.Amount) < 0.0001 ||
-                    Amount.Equals(other.Amount)
-                );
+                (InvoiceItemId == other.InvoiceItemId || InvoiceItemId.Equals(other.InvoiceItemId)) &&
+                (InvoiceId == other.InvoiceId || InvoiceId.Equals(other.InvoiceId)) &&
+                (Reason == other.Reason || Reason.Equals(other.Reason)) &&
+                (Type == other.Type || Type.Equals(other.Type)) &&
+                (Math.Abs(Amount - other.Amount) < 0.0001 || Amount.Equals(other.Amount));
         }
 
         /// <summary>
@@ -145,8 +141,7 @@ namespace ecruise.Models
 
                 hash = hash * 59 + InvoiceItemId.GetHashCode();
                 hash = hash * 59 + InvoiceId.GetHashCode();
-                if (Reason != null)
-                    hash = hash * 59 + Reason.GetHashCode();
+                hash = hash * 59 + Reason.GetHashCode();
                 hash = hash * 59 + Type.GetHashCode();
                 hash = hash * 59 + Amount.GetHashCode();
 

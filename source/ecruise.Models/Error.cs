@@ -4,20 +4,25 @@ using Newtonsoft.Json;
 
 namespace ecruise.Models
 {
-    public class Error 
+    public class Error
         : IEquatable<Error>
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="Error" /> class.
         /// </summary>
-        /// <param name="code">Unique error code.</param>
-        /// <param name="message">Basic error message.</param>
-        /// <param name="description">Detailed error message.</param>
+        /// <param name="code">Unique error code (required)</param>
+        /// <param name="message">Basic error message (required)</param>
+        /// <param name="description">Detailed error message (required)</param>
         public Error(int code, string message, string description)
         {
+            if (code == 0)
+                throw new ArgumentNullException(nameof(code) + " is a required property for Error and cannot be zero");
+
             Code = code;
-            Message = message;
-            Description = description;
+            Message = message ?? throw new ArgumentNullException(nameof(message) +
+                                                                 " is a required property for Error and cannot be null");
+            Description = description ?? throw new ArgumentNullException(nameof(description) +
+                                                                         " is a required property for Error and cannot be null");
         }
 
         /// <summary>
@@ -100,11 +105,11 @@ namespace ecruise.Models
             unchecked
             {
                 int hash = 41;
+
                 hash = hash * 59 + Code.GetHashCode();
-                if (Message != null)
-                    hash = hash * 59 + Message.GetHashCode();
-                if (Description != null)
-                    hash = hash * 59 + Description.GetHashCode();
+                hash = hash * 59 + Message.GetHashCode();
+                hash = hash * 59 + Description.GetHashCode();
+
                 return hash;
             }
         }

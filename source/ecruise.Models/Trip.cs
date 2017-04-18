@@ -4,25 +4,35 @@ using Newtonsoft.Json;
 
 namespace ecruise.Models
 {
-    public class Trip 
+    public class Trip
         : IEquatable<Trip>
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="Trip" /> class.
         /// </summary>
-        /// <param name="tripId">TripId.</param>
-        /// <param name="carId">See #/definitions/Car.</param>
-        /// <param name="customerId">See #/definitions/Customer.</param>
-        /// <param name="startDate">Date and time when the trip started.</param>
-        /// <param name="endDate">Date and time when the trip ended.</param>
-        /// <param name="startPositionLatitude">StartPositionLatitude.</param>
-        /// <param name="startPositionLongitude">StartPositionLongitude.</param>
-        /// <param name="endPositionLatitude">EndPositionLatitude.</param>
-        /// <param name="endPositionLongitude">EndPositionLongitude.</param>
+        /// <param name="tripId">TripId (required)</param>
+        /// <param name="carId">See #/definitions/Car (required)</param>
+        /// <param name="customerId">See #/definitions/Customer (required)</param>
+        /// <param name="startDate">Date and time when the trip started (required)</param>
+        /// <param name="endDate">Date and time when the trip ended</param>
+        /// <param name="startPositionLatitude">StartPositionLatitude (required)</param>
+        /// <param name="startPositionLongitude">StartPositionLongitude (required)</param>
+        /// <param name="endPositionLatitude">EndPositionLatitude</param>
+        /// <param name="endPositionLongitude">EndPositionLongitude</param>
         public Trip(int tripId, int carId, int customerId, DateTime startDate, DateTime? endDate,
             double startPositionLatitude, double startPositionLongitude, double? endPositionLatitude,
             double? endPositionLongitude)
         {
+            if (tripId == 0)
+                throw new ArgumentNullException(
+                    nameof(tripId) + " is a required property for Trip and cannot be zero");
+            if (carId == 0)
+                throw new ArgumentNullException(
+                    nameof(carId) + " is a required property for Trip and cannot be zero");
+            if (customerId == 0)
+                throw new ArgumentNullException(
+                    nameof(customerId) + " is a required property for Trip and cannot be zero");
+
             TripId = tripId;
             CarId = carId;
             CustomerId = customerId;
@@ -42,13 +52,13 @@ namespace ecruise.Models
         /// <summary>
         /// See #/definitions/Car
         /// </summary>
-        /// <value>See &#39;#/definitions/Car&#39;</value>
+        /// <value>See '#/definitions/Car'</value>
         public int CarId { get; }
 
         /// <summary>
-        /// See &#39;#/definitions/Customer&#39;
+        /// See '#/definitions/Customer'
         /// </summary>
-        /// <value>See &#39;#/definitions/Customer&#39;</value>
+        /// <value>See '#/definitions/Customer'</value>
         public int CustomerId { get; }
 
         /// <summary>
@@ -137,27 +147,11 @@ namespace ecruise.Models
             if (ReferenceEquals(this, other)) return true;
 
             return
-                (
-                    TripId == other.TripId ||
-                    TripId.Equals(other.TripId)
-                ) &&
-                (
-                    CarId == other.CarId ||
-                    CarId.Equals(other.CarId)
-                ) &&
-                (
-                    CustomerId == other.CustomerId ||
-                    CustomerId.Equals(other.CustomerId)
-                ) &&
-                (
-                    StartDate == other.StartDate ||
-                    StartDate.Equals(other.StartDate)
-                ) &&
-                (
-                    EndDate == other.EndDate ||
-                    EndDate != null &&
-                    EndDate.Equals(other.EndDate)
-                ) &&
+                (TripId == other.TripId || TripId.Equals(other.TripId)) &&
+                (CarId == other.CarId || CarId.Equals(other.CarId)) &&
+                (CustomerId == other.CustomerId || CustomerId.Equals(other.CustomerId)) &&
+                (StartDate == other.StartDate || StartDate.Equals(other.StartDate)) &&
+                (EndDate == other.EndDate || EndDate != null && EndDate.Equals(other.EndDate)) &&
                 (
                     Math.Abs(StartPositionLatitude - other.StartPositionLatitude) < 0.0001 ||
                     StartPositionLatitude.Equals(other.StartPositionLatitude)

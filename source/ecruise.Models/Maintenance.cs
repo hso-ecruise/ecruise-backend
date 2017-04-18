@@ -4,40 +4,53 @@ using Newtonsoft.Json;
 
 namespace ecruise.Models
 {
-    public class Maintenance :  IEquatable<Maintenance>
+    public class Maintenance
+        : IEquatable<Maintenance>
     {
-
         /// <summary>
         /// Initializes a new instance of the <see cref="Maintenance" /> class.
         /// </summary>
-        /// <param name="maintenenaceId">MaintenenaceId.</param>
-        /// <param name="spontaneously">Spontaneously.</param>
-        /// <param name="atMileage">AtMileage.</param>
-        /// <param name="atDate">AtDate.</param>
-        public Maintenance(int? maintenenaceId, bool? spontaneously, int? atMileage, DateTime? atDate)
+        /// <param name="maintenenaceId">MaintenenaceId (required)</param>
+        /// <param name="spontaneously">Spontaneously (required)</param>
+        /// <param name="atMileage">AtMileage</param>
+        /// <param name="atDate">AtDate</param>
+        public Maintenance(int maintenenaceId, bool spontaneously, int? atMileage, DateTime? atDate)
         {
+            if (maintenenaceId == 0)
+                throw new ArgumentNullException(
+                    nameof(maintenenaceId) + " is a required property for Maintenance and cannot be zero");
+            if (spontaneously && (atMileage.HasValue || atDate.HasValue))
+                throw new ArgumentNullException("Neither " + nameof(atMileage) + " nor " + nameof(atDate) +
+                                                " can have a value if the Maintenance is spontaneous.");
+            if (!spontaneously && (!atMileage.HasValue && !atDate.HasValue))
+                throw new ArgumentNullException("Either " + nameof(atMileage) + " or " + nameof(atDate) +
+                                                " is required to have a value if the Maintenance is planned");
+
             MaintenenaceId = maintenenaceId;
             Spontaneously = spontaneously;
             AtMileage = atMileage;
-            AtDate = atDate;            
+            AtDate = atDate;
         }
 
         /// <summary>
         /// Gets or Sets MaintenenaceId
         /// </summary>
-        public int? MaintenenaceId { get; set; }
+        public int MaintenenaceId { get; }
+
         /// <summary>
         /// Gets or Sets Spontaneously
         /// </summary>
-        public bool? Spontaneously { get; set; }
+        public bool Spontaneously { get; }
+
         /// <summary>
         /// Gets or Sets AtMileage
         /// </summary>
-        public int? AtMileage { get; set; }
+        public int? AtMileage { get; }
+
         /// <summary>
         /// Gets or Sets AtDate
         /// </summary>
-        public DateTime? AtDate { get; set; }
+        public DateTime? AtDate { get; }
 
         /// <summary>
         /// Returns the string presentation of the object
@@ -84,31 +97,14 @@ namespace ecruise.Models
         /// <returns>Boolean</returns>
         public bool Equals(Maintenance other)
         {
-
             if (ReferenceEquals(null, other)) return false;
             if (ReferenceEquals(this, other)) return true;
 
-            return 
-                (
-                    MaintenenaceId == other.MaintenenaceId ||
-                    MaintenenaceId != null &&
-                    MaintenenaceId.Equals(other.MaintenenaceId)
-                ) && 
-                (
-                    Spontaneously == other.Spontaneously ||
-                    Spontaneously != null &&
-                    Spontaneously.Equals(other.Spontaneously)
-                ) && 
-                (
-                    AtMileage == other.AtMileage ||
-                    AtMileage != null &&
-                    AtMileage.Equals(other.AtMileage)
-                ) && 
-                (
-                    AtDate == other.AtDate ||
-                    AtDate != null &&
-                    AtDate.Equals(other.AtDate)
-                );
+            return
+                (MaintenenaceId == other.MaintenenaceId || MaintenenaceId.Equals(other.MaintenenaceId)) &&
+                (Spontaneously == other.Spontaneously || Spontaneously.Equals(other.Spontaneously)) &&
+                (AtMileage == other.AtMileage || AtMileage != null && AtMileage.Equals(other.AtMileage)) &&
+                (AtDate == other.AtDate || AtDate != null && AtDate.Equals(other.AtDate));
         }
 
         /// <summary>
@@ -120,15 +116,14 @@ namespace ecruise.Models
             unchecked
             {
                 int hash = 41;
-                // Suitable nullity checks etc, of course :)
-                    if (MaintenenaceId != null)
-                    hash = hash * 59 + MaintenenaceId.GetHashCode();
-                    if (Spontaneously != null)
-                    hash = hash * 59 + Spontaneously.GetHashCode();
-                    if (AtMileage != null)
+
+                hash = hash * 59 + MaintenenaceId.GetHashCode();
+                hash = hash * 59 + Spontaneously.GetHashCode();
+                if (AtMileage != null)
                     hash = hash * 59 + AtMileage.GetHashCode();
-                    if (AtDate != null)
+                if (AtDate != null)
                     hash = hash * 59 + AtDate.GetHashCode();
+
                 return hash;
             }
         }
@@ -146,6 +141,5 @@ namespace ecruise.Models
         }
 
         #endregion Operators
-
     }
 }
