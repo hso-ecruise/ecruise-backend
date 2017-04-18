@@ -4,7 +4,8 @@ using Newtonsoft.Json;
 
 namespace ecruise.Models
 {
-    public class CarChargingStation :  IEquatable<CarChargingStation>
+    public class CarChargingStation
+        : IEquatable<CarChargingStation>
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="CarChargingStation" /> class.
@@ -14,31 +15,36 @@ namespace ecruise.Models
         /// <param name="chargingStationId">ChargingStationId.</param>
         /// <param name="chargeStart">ChargeStart.</param>
         /// <param name="chargeEnd">ChargeEnd.</param>
-        public CarChargingStation(int? carChargingStationId, int? carId, int? chargingStationId, DateTime? chargeStart, DateTime? chargeEnd)
+        public CarChargingStation(int carChargingStationId, int carId, int chargingStationId, DateTime chargeStart,
+            DateTime? chargeEnd)
         {
             CarChargingStationId = carChargingStationId;
             CarId = carId;
             ChargingStationId = chargingStationId;
             ChargeStart = chargeStart;
-            ChargeEnd = chargeEnd;            
+            ChargeEnd = chargeEnd;
         }
 
         /// <summary>
         /// Gets or Sets CarChargingStationId
         /// </summary>
-        public int? CarChargingStationId { get; set; }
+        public int CarChargingStationId { get; }
+
         /// <summary>
         /// Gets or Sets CarId
         /// </summary>
-        public int? CarId { get; set; }
+        public int CarId { get; }
+
         /// <summary>
         /// Gets or Sets ChargingStationId
         /// </summary>
-        public int? ChargingStationId { get; set; }
+        public int ChargingStationId { get; }
+
         /// <summary>
         /// Gets or Sets ChargeStart
         /// </summary>
-        public DateTime? ChargeStart { get; set; }
+        public DateTime ChargeStart { get; }
+
         /// <summary>
         /// Gets or Sets ChargeEnd
         /// </summary>
@@ -90,31 +96,26 @@ namespace ecruise.Models
         /// <returns>Boolean</returns>
         public bool Equals(CarChargingStation other)
         {
-
             if (ReferenceEquals(null, other)) return false;
             if (ReferenceEquals(this, other)) return true;
 
-            return 
+            return
                 (
                     CarChargingStationId == other.CarChargingStationId ||
-                    CarChargingStationId != null &&
                     CarChargingStationId.Equals(other.CarChargingStationId)
-                ) && 
+                ) &&
                 (
                     CarId == other.CarId ||
-                    CarId != null &&
                     CarId.Equals(other.CarId)
-                ) && 
+                ) &&
                 (
                     ChargingStationId == other.ChargingStationId ||
-                    ChargingStationId != null &&
                     ChargingStationId.Equals(other.ChargingStationId)
-                ) && 
+                ) &&
                 (
                     ChargeStart == other.ChargeStart ||
-                    ChargeStart != null &&
                     ChargeStart.Equals(other.ChargeStart)
-                ) && 
+                ) &&
                 (
                     ChargeEnd == other.ChargeEnd ||
                     ChargeEnd != null &&
@@ -131,16 +132,12 @@ namespace ecruise.Models
             unchecked
             {
                 int hash = 41;
-                if (CarChargingStationId != null)
-                    hash = hash * 59 + CarChargingStationId.GetHashCode();
-                if (CarId != null)
-                    hash = hash * 59 + CarId.GetHashCode();
-                if (ChargingStationId != null)
-                    hash = hash * 59 + ChargingStationId.GetHashCode();
-                if (ChargeStart != null)
-                    hash = hash * 59 + ChargeStart.GetHashCode();
-                if (ChargeEnd != null)
-                    hash = hash * 59 + ChargeEnd.GetHashCode();
+
+                hash = hash * 59 + CarChargingStationId.GetHashCode();
+                hash = hash * 59 + CarId.GetHashCode();
+                hash = hash * 59 + ChargingStationId.GetHashCode();
+                hash = hash * 59 + ChargeStart.GetHashCode();
+
                 return hash;
             }
         }
@@ -158,6 +155,5 @@ namespace ecruise.Models
         }
 
         #endregion Operators
-
     }
 }
