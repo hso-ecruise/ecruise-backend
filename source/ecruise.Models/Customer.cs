@@ -230,4 +230,138 @@ namespace ecruise.Models
 
         #endregion Operators
     }
+
+    public class Address
+    {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Address" /> class.
+        /// </summary>
+        /// <param name="country">Country</param>
+        /// <param name="city">City</param>
+        /// <param name="zipCode">ZipCode</param>
+        /// <param name="street">Street</param>
+        /// <param name="houseNumber">HouseNumber</param>
+        /// <param name="adressExtraLine">AdressExtraLine</param>
+        public Address(string country, string city, int zipCode, string street, string houseNumber,
+            string adressExtraLine)
+        {
+            if (zipCode < 01001 || zipCode > 99999)
+                throw new ArgumentNullException(nameof(zipCode) + " has an invalid value");
+
+            Country = country ??
+                      throw new ArgumentNullException(
+                          nameof(country) + " is a required property for Address and cannot be null");
+            City = city ?? throw new ArgumentNullException(
+                       nameof(city) + " is a required property for Address and cannot be null");
+            ZipCode = zipCode;
+            Street = street ?? throw new ArgumentNullException(
+                         nameof(street) + " is a required property for Address and cannot be null");
+            HouseNumber = houseNumber ?? throw new ArgumentNullException(
+                              nameof(houseNumber) + " is a required property for Address and cannot be null");
+            AdressExtraLine = adressExtraLine ?? throw new ArgumentNullException(
+                                  nameof(adressExtraLine) + " is a required property for Address and cannot be null");
+        }
+
+
+        public string Country { get; }
+        public string City { get; }
+        public int ZipCode { get; }
+        public string Street { get; }
+        public string HouseNumber { get; }
+        public string AdressExtraLine { get; }
+
+        /// <summary>
+        /// Returns the string presentation of the object
+        /// </summary>
+        /// <returns>String presentation of the object</returns>
+        public override string ToString()
+        {
+            var sb = new StringBuilder();
+            sb.Append("class Address {\n");
+            sb.Append("  Country: ").Append(Country).Append("\n");
+            sb.Append("  City: ").Append(City).Append("\n");
+            sb.Append("  ZipCode: ").Append(ZipCode).Append("\n");
+            sb.Append("  Street: ").Append(Street).Append("\n");
+            sb.Append("  HouseNumber: ").Append(HouseNumber).Append("\n");
+            sb.Append("  AdressExtraLine: ").Append(AdressExtraLine).Append("\n");
+            sb.Append("}\n");
+            return sb.ToString();
+        }
+
+        /// <summary>
+        /// Returns the JSON string presentation of the object
+        /// </summary>
+        /// <returns>JSON string presentation of the object</returns>
+        public string ToJson()
+        {
+            return JsonConvert.SerializeObject(this, Formatting.Indented);
+        }
+
+        /// <summary>
+        /// Returns true if objects are equal
+        /// </summary>
+        /// <param name="obj">Object to be compared</param>
+        /// <returns>Boolean</returns>
+        public override bool Equals(object obj)
+        {
+            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            if (obj.GetType() != GetType()) return false;
+            return Equals((Address)obj);
+        }
+
+        /// <summary>
+        /// Returns true if Address instances are equal
+        /// </summary>
+        /// <param name="other">Instance of Address to be compared</param>
+        /// <returns>Boolean</returns>
+        public bool Equals(Address other)
+        {
+            if (ReferenceEquals(null, other)) return false;
+            if (ReferenceEquals(this, other)) return true;
+
+            return
+                (Country == other.Country || Country.Equals(other.Country)) &&
+                (City == other.City || City.Equals(other.City)) &&
+                (ZipCode == other.ZipCode || ZipCode.Equals(other.ZipCode)) &&
+                (Street == other.Street || Street.Equals(other.Street)) &&
+                (HouseNumber == other.HouseNumber || HouseNumber.Equals(other.HouseNumber)) &&
+                (AdressExtraLine == other.AdressExtraLine || AdressExtraLine.Equals(other.AdressExtraLine));
+        }
+
+        /// <summary>
+        /// Gets the hash code
+        /// </summary>
+        /// <returns>Hash code</returns>
+        public override int GetHashCode()
+        {
+            unchecked
+            {
+                int hash = 41;
+
+                hash = hash * 59 + Country.GetHashCode();
+                hash = hash * 59 + City.GetHashCode();
+                hash = hash * 59 + ZipCode.GetHashCode();
+                hash = hash * 59 + Street.GetHashCode();
+                hash = hash * 59 + HouseNumber.GetHashCode();
+                hash = hash * 59 + AdressExtraLine.GetHashCode();
+
+                return hash;
+            }
+        }
+
+        #region Operators
+
+        public static bool operator ==(Address left, Address right)
+        {
+            return Equals(left, right);
+        }
+
+        public static bool operator !=(Address left, Address right)
+        {
+            return !Equals(left, right);
+        }
+
+        #endregion Operators
+    }
 }
