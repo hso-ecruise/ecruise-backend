@@ -1,0 +1,914 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+  <!-- EF Runtime content -->
+  <edmx:Runtime>
+    <!-- SSDL content -->
+    <edmx:StorageModels>
+    <Schema Namespace="ecruise.Database.Model.Store" Provider="MySql.Data.MySqlClient" ProviderManifestToken="5.7" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+        <EntityType Name="booking">
+          <Key>
+            <PropertyRef Name="BookingId" />
+          </Key>
+          <Property Name="BookingId" Type="uint" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="CustomerId" Type="uint" Nullable="false" />
+          <Property Name="TripId" Type="uint" />
+          <Property Name="InvoiceId" Type="uint" Nullable="false" />
+          <Property Name="BookedPositionLatitude" Type="double" Nullable="false" />
+          <Property Name="BookedPositionLongitude" Type="double" Nullable="false" />
+          <Property Name="BookingDate" Type="datetime" Precision="0" Nullable="false" />
+          <Property Name="PlannedDate" Type="datetime" Precision="0" />
+        </EntityType>
+        <EntityType Name="car">
+          <Key>
+            <PropertyRef Name="CarId" />
+          </Key>
+          <Property Name="CarId" Type="uint" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="LicensePlate" Type="varchar" MaxLength="16" Nullable="false" />
+          <Property Name="ChargingState" Type="enum" Nullable="false" />
+          <Property Name="BookingState" Type="enum" Nullable="false" />
+          <Property Name="Milage" Type="uint" Nullable="false" />
+          <Property Name="MileageTotal" Type="uint" Nullable="false" />
+          <Property Name="ChargeLevel" Type="double" Nullable="false" />
+          <Property Name="Kilowatts" Type="uint" Nullable="false" />
+          <Property Name="Manufacturer" Type="varchar" MaxLength="64" Nullable="false" />
+          <Property Name="Model" Type="varchar" MaxLength="32" Nullable="false" />
+          <Property Name="YearOfConstruction" Type="year" Nullable="false" />
+          <Property Name="LastKnownPositionLatitude" Type="double" />
+          <Property Name="LastKnownPositionLongitude" Type="double" />
+          <Property Name="LastKnownPositionDate" Type="datetime" Precision="0" />
+        </EntityType>
+        <EntityType Name="car_charging_station">
+          <Key>
+            <PropertyRef Name="CarChargingStationId" />
+          </Key>
+          <Property Name="CarChargingStationId" Type="uint" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="CarId" Type="uint" Nullable="false" />
+          <Property Name="ChargingStationId" Type="uint" Nullable="false" />
+          <Property Name="ChargeStart" Type="datetime" Precision="0" Nullable="false" />
+          <Property Name="ChargeEnd" Type="datetime" Precision="0" />
+        </EntityType>
+        <EntityType Name="car_maintenance">
+          <Key>
+            <PropertyRef Name="CarMaintenanceId" />
+          </Key>
+          <Property Name="CarMaintenanceId" Type="uint" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="CarId" Type="uint" Nullable="false" />
+          <Property Name="MaintenanceId" Type="uint" Nullable="false" />
+          <Property Name="InvoiceItemId" Type="uint" Nullable="false" />
+          <Property Name="PlannedDate" Type="datetime" Precision="0" />
+          <Property Name="CompletedDate" Type="datetime" Precision="0" />
+        </EntityType>
+        <EntityType Name="charging_station">
+          <Key>
+            <PropertyRef Name="ChargingStationId" />
+          </Key>
+          <Property Name="ChargingStationId" Type="uint" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Slots" Type="uint" Nullable="false" />
+          <Property Name="SlotsOccupied" Type="uint" Nullable="false" />
+          <Property Name="Latitude" Type="double" Nullable="false" />
+          <Property Name="Longitude" Type="double" Nullable="false" />
+        </EntityType>
+        <EntityType Name="configuration">
+          <Key>
+            <PropertyRef Name="ConfigurationId" />
+          </Key>
+          <Property Name="ConfigurationId" Type="uint" Nullable="false" />
+          <Property Name="AllowNewBookings" Type="bit" Nullable="false" />
+        </EntityType>
+        <EntityType Name="customer">
+          <Key>
+            <PropertyRef Name="CustomerId" />
+          </Key>
+          <Property Name="CustomerId" Type="uint" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="PasswordHash" Type="varchar" MaxLength="64" Nullable="false" />
+          <Property Name="PasswordSalt" Type="varchar" MaxLength="16" Nullable="false" />
+          <Property Name="Email" Type="varchar" MaxLength="64" Nullable="false" />
+          <Property Name="PhoneNumber" Type="varchar" MaxLength="32" Nullable="false" />
+          <Property Name="ChipCardUid" Type="varchar" MaxLength="16" Nullable="false" />
+          <Property Name="FirstName" Type="varchar" MaxLength="48" Nullable="false" />
+          <Property Name="LastName" Type="varchar" MaxLength="48" Nullable="false" />
+          <Property Name="Country" Type="varchar" MaxLength="2" Nullable="false" />
+          <Property Name="City" Type="varchar" MaxLength="64" Nullable="false" />
+          <Property Name="ZipCode" Type="uint" Nullable="false" />
+          <Property Name="Street" Type="varchar" MaxLength="128" Nullable="false" />
+          <Property Name="HouseNumber" Type="varchar" MaxLength="8" Nullable="false" />
+          <Property Name="AddressExtraLine" Type="varchar" MaxLength="64" Nullable="false" />
+          <Property Name="Activated" Type="bit" Nullable="false" />
+          <Property Name="Verified" Type="bit" Nullable="false" />
+        </EntityType>
+        <EntityType Name="customer_token">
+          <Key>
+            <PropertyRef Name="TokenId" />
+          </Key>
+          <Property Name="TokenId" Type="uint" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="CustomerId" Type="uint" Nullable="false" />
+          <Property Name="Type" Type="enum" Nullable="false" />
+          <Property Name="Token" Type="varchar" MaxLength="128" Nullable="false" />
+          <Property Name="CreationDate" Type="datetime" Precision="0" Nullable="false" />
+          <Property Name="ExpireDate" Type="datetime" Precision="0" />
+        </EntityType>
+        <EntityType Name="invoice">
+          <Key>
+            <PropertyRef Name="InvoiceId" />
+          </Key>
+          <Property Name="InvoiceId" Type="uint" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="TotalAmount" Type="double" Nullable="false" />
+          <Property Name="Payed" Type="bit" Nullable="false" />
+        </EntityType>
+        <EntityType Name="invoice_item">
+          <Key>
+            <PropertyRef Name="InvoiceItemId" />
+          </Key>
+          <Property Name="InvoiceItemId" Type="uint" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="InvoiceId" Type="uint" />
+          <Property Name="Reason" Type="varchar" MaxLength="255" Nullable="false" />
+          <Property Name="Type" Type="enum" Nullable="false" />
+          <Property Name="Amount" Type="double" Nullable="false" />
+        </EntityType>
+        <EntityType Name="maintenance">
+          <Key>
+            <PropertyRef Name="MaintenanceId" />
+          </Key>
+          <Property Name="MaintenanceId" Type="uint" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Spontaneously" Type="bit" />
+          <Property Name="AtMileage" Type="uint" />
+          <Property Name="AtDate" Type="datetime" Precision="0" />
+        </EntityType>
+        <EntityType Name="statistic">
+          <Key>
+            <PropertyRef Name="Date" />
+          </Key>
+          <Property Name="Date" Type="datetime" Precision="0" Nullable="false" />
+          <Property Name="Bookings" Type="int" Nullable="false" />
+          <Property Name="AverageChargeLevel" Type="double" Nullable="false" />
+        </EntityType>
+        <EntityType Name="trip">
+          <Key>
+            <PropertyRef Name="TripId" />
+          </Key>
+          <Property Name="TripId" Type="uint" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="CarId" Type="uint" />
+          <Property Name="CustomerId" Type="uint" Nullable="false" />
+          <Property Name="StartDate" Type="datetime" Precision="0" />
+          <Property Name="EndDate" Type="datetime" Precision="0" />
+          <Property Name="StartPositionLatitude" Type="double" Nullable="false" />
+          <Property Name="StartPositionLongitude" Type="double" Nullable="false" />
+          <Property Name="EndPositionLatitude" Type="double" />
+          <Property Name="EndPositionLongitude" Type="double" />
+          <Property Name="DistanceTravelled" Type="double" Nullable="false" />
+        </EntityType>
+        <Association Name="booking_ibfk_1">
+          <End Role="customer" Type="Self.customer" Multiplicity="1" />
+          <End Role="booking" Type="Self.booking" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="customer">
+              <PropertyRef Name="CustomerId" />
+            </Principal>
+            <Dependent Role="booking">
+              <PropertyRef Name="CustomerId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="booking_ibfk_2">
+          <End Role="trip" Type="Self.trip" Multiplicity="0..1" />
+          <End Role="booking" Type="Self.booking" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="trip">
+              <PropertyRef Name="TripId" />
+            </Principal>
+            <Dependent Role="booking">
+              <PropertyRef Name="TripId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="booking_ibfk_3">
+          <End Role="invoice" Type="Self.invoice" Multiplicity="1" />
+          <End Role="booking" Type="Self.booking" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="invoice">
+              <PropertyRef Name="InvoiceId" />
+            </Principal>
+            <Dependent Role="booking">
+              <PropertyRef Name="InvoiceId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="car_charging_station_ibfk_1">
+          <End Role="car" Type="Self.car" Multiplicity="1" />
+          <End Role="car_charging_station" Type="Self.car_charging_station" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="car">
+              <PropertyRef Name="CarId" />
+            </Principal>
+            <Dependent Role="car_charging_station">
+              <PropertyRef Name="CarId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="car_charging_station_ibfk_2">
+          <End Role="charging_station" Type="Self.charging_station" Multiplicity="1" />
+          <End Role="car_charging_station" Type="Self.car_charging_station" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="charging_station">
+              <PropertyRef Name="ChargingStationId" />
+            </Principal>
+            <Dependent Role="car_charging_station">
+              <PropertyRef Name="ChargingStationId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="car_maintenance_ibfk_1">
+          <End Role="car" Type="Self.car" Multiplicity="1" />
+          <End Role="car_maintenance" Type="Self.car_maintenance" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="car">
+              <PropertyRef Name="CarId" />
+            </Principal>
+            <Dependent Role="car_maintenance">
+              <PropertyRef Name="CarId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="car_maintenance_ibfk_2">
+          <End Role="maintenance" Type="Self.maintenance" Multiplicity="1" />
+          <End Role="car_maintenance" Type="Self.car_maintenance" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="maintenance">
+              <PropertyRef Name="MaintenanceId" />
+            </Principal>
+            <Dependent Role="car_maintenance">
+              <PropertyRef Name="MaintenanceId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="car_maintenance_ibfk_3">
+          <End Role="invoice_item" Type="Self.invoice_item" Multiplicity="1" />
+          <End Role="car_maintenance" Type="Self.car_maintenance" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="invoice_item">
+              <PropertyRef Name="InvoiceItemId" />
+            </Principal>
+            <Dependent Role="car_maintenance">
+              <PropertyRef Name="InvoiceItemId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="customer_token_ibfk_1">
+          <End Role="customer" Type="Self.customer" Multiplicity="1" />
+          <End Role="customer_token" Type="Self.customer_token" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="customer">
+              <PropertyRef Name="CustomerId" />
+            </Principal>
+            <Dependent Role="customer_token">
+              <PropertyRef Name="CustomerId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="invoice_item_ibfk_1">
+          <End Role="invoice" Type="Self.invoice" Multiplicity="0..1" />
+          <End Role="invoice_item" Type="Self.invoice_item" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="invoice">
+              <PropertyRef Name="InvoiceId" />
+            </Principal>
+            <Dependent Role="invoice_item">
+              <PropertyRef Name="InvoiceId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="trip_ibfk_1">
+          <End Role="car" Type="Self.car" Multiplicity="0..1" />
+          <End Role="trip" Type="Self.trip" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="car">
+              <PropertyRef Name="CarId" />
+            </Principal>
+            <Dependent Role="trip">
+              <PropertyRef Name="CarId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityContainer Name="ecruiseDatabaseModelStoreContainer">
+          <EntitySet Name="booking" EntityType="Self.booking" Schema="ecruise" store:Type="Tables" />
+          <EntitySet Name="car" EntityType="Self.car" Schema="ecruise" store:Type="Tables" />
+          <EntitySet Name="car_charging_station" EntityType="Self.car_charging_station" Schema="ecruise" store:Type="Tables" />
+          <EntitySet Name="car_maintenance" EntityType="Self.car_maintenance" Schema="ecruise" store:Type="Tables" />
+          <EntitySet Name="charging_station" EntityType="Self.charging_station" Schema="ecruise" store:Type="Tables" />
+          <EntitySet Name="configuration" EntityType="Self.configuration" Schema="ecruise" store:Type="Tables" />
+          <EntitySet Name="customer" EntityType="Self.customer" Schema="ecruise" store:Type="Tables" />
+          <EntitySet Name="customer_token" EntityType="Self.customer_token" Schema="ecruise" store:Type="Tables" />
+          <EntitySet Name="invoice" EntityType="Self.invoice" Schema="ecruise" store:Type="Tables" />
+          <EntitySet Name="invoice_item" EntityType="Self.invoice_item" Schema="ecruise" store:Type="Tables" />
+          <EntitySet Name="maintenance" EntityType="Self.maintenance" Schema="ecruise" store:Type="Tables" />
+          <EntitySet Name="statistic" EntityType="Self.statistic" Schema="ecruise" store:Type="Tables" />
+          <EntitySet Name="trip" EntityType="Self.trip" Schema="ecruise" store:Type="Tables" />
+          <AssociationSet Name="booking_ibfk_1" Association="Self.booking_ibfk_1">
+            <End Role="customer" EntitySet="customer" />
+            <End Role="booking" EntitySet="booking" />
+          </AssociationSet>
+          <AssociationSet Name="booking_ibfk_2" Association="Self.booking_ibfk_2">
+            <End Role="trip" EntitySet="trip" />
+            <End Role="booking" EntitySet="booking" />
+          </AssociationSet>
+          <AssociationSet Name="booking_ibfk_3" Association="Self.booking_ibfk_3">
+            <End Role="invoice" EntitySet="invoice" />
+            <End Role="booking" EntitySet="booking" />
+          </AssociationSet>
+          <AssociationSet Name="car_charging_station_ibfk_1" Association="Self.car_charging_station_ibfk_1">
+            <End Role="car" EntitySet="car" />
+            <End Role="car_charging_station" EntitySet="car_charging_station" />
+          </AssociationSet>
+          <AssociationSet Name="car_charging_station_ibfk_2" Association="Self.car_charging_station_ibfk_2">
+            <End Role="charging_station" EntitySet="charging_station" />
+            <End Role="car_charging_station" EntitySet="car_charging_station" />
+          </AssociationSet>
+          <AssociationSet Name="car_maintenance_ibfk_1" Association="Self.car_maintenance_ibfk_1">
+            <End Role="car" EntitySet="car" />
+            <End Role="car_maintenance" EntitySet="car_maintenance" />
+          </AssociationSet>
+          <AssociationSet Name="car_maintenance_ibfk_2" Association="Self.car_maintenance_ibfk_2">
+            <End Role="maintenance" EntitySet="maintenance" />
+            <End Role="car_maintenance" EntitySet="car_maintenance" />
+          </AssociationSet>
+          <AssociationSet Name="car_maintenance_ibfk_3" Association="Self.car_maintenance_ibfk_3">
+            <End Role="invoice_item" EntitySet="invoice_item" />
+            <End Role="car_maintenance" EntitySet="car_maintenance" />
+          </AssociationSet>
+          <AssociationSet Name="customer_token_ibfk_1" Association="Self.customer_token_ibfk_1">
+            <End Role="customer" EntitySet="customer" />
+            <End Role="customer_token" EntitySet="customer_token" />
+          </AssociationSet>
+          <AssociationSet Name="invoice_item_ibfk_1" Association="Self.invoice_item_ibfk_1">
+            <End Role="invoice" EntitySet="invoice" />
+            <End Role="invoice_item" EntitySet="invoice_item" />
+          </AssociationSet>
+          <AssociationSet Name="trip_ibfk_1" Association="Self.trip_ibfk_1">
+            <End Role="car" EntitySet="car" />
+            <End Role="trip" EntitySet="trip" />
+          </AssociationSet>
+        </EntityContainer>
+      </Schema></edmx:StorageModels>
+    <!-- CSDL content -->
+    <edmx:ConceptualModels>
+      <Schema Namespace="ecruise.Database.Model" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
+        <EntityType Name="Booking">
+          <Key>
+            <PropertyRef Name="BookingId" />
+          </Key>
+          <Property Name="BookingId" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="CustomerId" Type="Int64" Nullable="false" />
+          <Property Name="TripId" Type="Int64" />
+          <Property Name="InvoiceId" Type="Int64" Nullable="false" />
+          <Property Name="BookedPositionLatitude" Type="Double" Nullable="false" />
+          <Property Name="BookedPositionLongitude" Type="Double" Nullable="false" />
+          <Property Name="BookingDate" Type="DateTime" Nullable="false" />
+          <Property Name="PlannedDate" Type="DateTime" />
+          <NavigationProperty Name="customer" Relationship="Self.booking_ibfk_1" FromRole="booking" ToRole="customer" />
+          <NavigationProperty Name="trip" Relationship="Self.booking_ibfk_2" FromRole="booking" ToRole="trip" />
+          <NavigationProperty Name="invoice" Relationship="Self.booking_ibfk_3" FromRole="booking" ToRole="invoice" />
+        </EntityType>
+        <EntityType Name="Car">
+          <Key>
+            <PropertyRef Name="CarId" />
+          </Key>
+          <Property Name="CarId" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="LicensePlate" Type="String" MaxLength="16" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="ChargingState" Type="String" MaxLength="65532" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="BookingState" Type="String" MaxLength="65532" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="Milage" Type="Int64" Nullable="false" />
+          <Property Name="MileageTotal" Type="Int64" Nullable="false" />
+          <Property Name="Kilowatts" Type="Int64" Nullable="false" />
+          <Property Name="Manufacturer" Type="String" MaxLength="64" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="Model" Type="String" MaxLength="32" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="YearOfConstruction" Type="Int16" Nullable="false" />
+          <Property Name="LastKnownPositionLatitude" Type="Double" />
+          <Property Name="LastKnownPositionLongitude" Type="Double" />
+          <Property Name="LastKnownPositionDate" Type="DateTime" />
+          <NavigationProperty Name="car_charging_station" Relationship="Self.car_charging_station_ibfk_1" FromRole="car" ToRole="car_charging_station" />
+          <NavigationProperty Name="car_maintenance" Relationship="Self.car_maintenance_ibfk_1" FromRole="car" ToRole="car_maintenance" />
+          <NavigationProperty Name="trip" Relationship="Self.trip_ibfk_1" FromRole="car" ToRole="trip" />
+          <Property Name="ChargeLevel" Type="Double" Nullable="false" />
+        </EntityType>
+        <EntityType Name="CarChargingStation">
+          <Key>
+            <PropertyRef Name="CarChargingStationId" />
+          </Key>
+          <Property Name="CarChargingStationId" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="CarId" Type="Int64" Nullable="false" />
+          <Property Name="ChargingStationId" Type="Int64" Nullable="false" />
+          <Property Name="ChargeStart" Type="DateTime" Nullable="false" />
+          <Property Name="ChargeEnd" Type="DateTime" />
+          <NavigationProperty Name="car" Relationship="Self.car_charging_station_ibfk_1" FromRole="car_charging_station" ToRole="car" />
+          <NavigationProperty Name="charging_station" Relationship="Self.car_charging_station_ibfk_2" FromRole="car_charging_station" ToRole="charging_station" />
+        </EntityType>
+        <EntityType Name="CarMaintenance">
+          <Key>
+            <PropertyRef Name="CarMaintenanceId" />
+          </Key>
+          <Property Name="CarMaintenanceId" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="CarId" Type="Int64" Nullable="false" />
+          <Property Name="MaintenanceId" Type="Int64" Nullable="false" />
+          <Property Name="InvoiceItemId" Type="Int64" Nullable="false" />
+          <Property Name="PlannedDate" Type="DateTime" />
+          <Property Name="CompletedDate" Type="DateTime" />
+          <NavigationProperty Name="car" Relationship="Self.car_maintenance_ibfk_1" FromRole="car_maintenance" ToRole="car" />
+          <NavigationProperty Name="maintenance" Relationship="Self.car_maintenance_ibfk_2" FromRole="car_maintenance" ToRole="maintenance" />
+          <NavigationProperty Name="invoice_item" Relationship="Self.car_maintenance_ibfk_3" FromRole="car_maintenance" ToRole="invoice_item" />
+        </EntityType>
+        <EntityType Name="ChargingStation">
+          <Key>
+            <PropertyRef Name="ChargingStationId" />
+          </Key>
+          <Property Name="ChargingStationId" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Slots" Type="Int64" Nullable="false" />
+          <Property Name="SlotsOccupied" Type="Int64" Nullable="false" />
+          <Property Name="Latitude" Type="Double" Nullable="false" />
+          <Property Name="Longitude" Type="Double" Nullable="false" />
+          <NavigationProperty Name="car_charging_station" Relationship="Self.car_charging_station_ibfk_2" FromRole="charging_station" ToRole="car_charging_station" />
+        </EntityType>
+        <EntityType Name="Configuration">
+          <Key>
+            <PropertyRef Name="ConfigurationId" />
+          </Key>
+          <Property Name="ConfigurationId" Type="Int64" Nullable="false" />
+          <Property Name="AllowNewBookings" Type="Boolean" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Customer">
+          <Key>
+            <PropertyRef Name="CustomerId" />
+          </Key>
+          <Property Name="CustomerId" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="PasswordHash" Type="String" MaxLength="64" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="PasswordSalt" Type="String" MaxLength="16" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="Email" Type="String" MaxLength="64" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="PhoneNumber" Type="String" MaxLength="32" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="ChipCardUid" Type="String" MaxLength="16" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="FirstName" Type="String" MaxLength="48" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="LastName" Type="String" MaxLength="48" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="Country" Type="String" MaxLength="2" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="City" Type="String" MaxLength="64" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="ZipCode" Type="Int64" Nullable="false" />
+          <Property Name="Street" Type="String" MaxLength="128" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="HouseNumber" Type="String" MaxLength="8" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="AddressExtraLine" Type="String" MaxLength="64" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="Activated" Type="Boolean" Nullable="false" />
+          <Property Name="Verified" Type="Boolean" Nullable="false" />
+          <NavigationProperty Name="booking" Relationship="Self.booking_ibfk_1" FromRole="customer" ToRole="booking" />
+          <NavigationProperty Name="customer_token" Relationship="Self.customer_token_ibfk_1" FromRole="customer" ToRole="customer_token" />
+        </EntityType>
+        <EntityType Name="CustomerToken">
+          <Key>
+            <PropertyRef Name="TokenId" />
+          </Key>
+          <Property Name="TokenId" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="CustomerId" Type="Int64" Nullable="false" />
+          <Property Name="Type" Type="String" MaxLength="65532" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="Token" Type="String" MaxLength="128" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="CreationDate" Type="DateTime" Nullable="false" />
+          <Property Name="ExpireDate" Type="DateTime" />
+          <NavigationProperty Name="customer" Relationship="Self.customer_token_ibfk_1" FromRole="customer_token" ToRole="customer" />
+        </EntityType>
+        <EntityType Name="Invoice">
+          <Key>
+            <PropertyRef Name="InvoiceId" />
+          </Key>
+          <Property Name="InvoiceId" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="TotalAmount" Type="Double" Nullable="false" />
+          <Property Name="Payed" Type="Boolean" Nullable="false" />
+          <NavigationProperty Name="booking" Relationship="Self.booking_ibfk_3" FromRole="invoice" ToRole="booking" />
+          <NavigationProperty Name="invoice_item" Relationship="Self.invoice_item_ibfk_1" FromRole="invoice" ToRole="invoice_item" />
+        </EntityType>
+        <EntityType Name="InvoiceItem">
+          <Key>
+            <PropertyRef Name="InvoiceItemId" />
+          </Key>
+          <Property Name="InvoiceItemId" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="InvoiceId" Type="Int64" />
+          <Property Name="Reason" Type="String" MaxLength="255" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="Type" Type="String" MaxLength="65532" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="Amount" Type="Double" Nullable="false" />
+          <NavigationProperty Name="car_maintenance" Relationship="Self.car_maintenance_ibfk_3" FromRole="invoice_item" ToRole="car_maintenance" />
+          <NavigationProperty Name="invoice" Relationship="Self.invoice_item_ibfk_1" FromRole="invoice_item" ToRole="invoice" />
+        </EntityType>
+        <EntityType Name="Maintenance">
+          <Key>
+            <PropertyRef Name="MaintenanceId" />
+          </Key>
+          <Property Name="MaintenanceId" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Spontaneously" Type="Boolean" />
+          <Property Name="AtMileage" Type="Int64" />
+          <Property Name="AtDate" Type="DateTime" />
+          <NavigationProperty Name="car_maintenance" Relationship="Self.car_maintenance_ibfk_2" FromRole="maintenance" ToRole="car_maintenance" />
+        </EntityType>
+        <EntityType Name="Statistic">
+          <Key>
+            <PropertyRef Name="Date" />
+          </Key>
+          <Property Name="Date" Type="DateTime" Nullable="false" />
+          <Property Name="Bookings" Type="Int32" Nullable="false" />
+          <Property Name="AverageChargeLevel" Type="Double" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Trip">
+          <Key>
+            <PropertyRef Name="TripId" />
+          </Key>
+          <Property Name="TripId" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="CarId" Type="Int64" />
+          <Property Name="CustomerId" Type="Int64" Nullable="false" />
+          <Property Name="StartDate" Type="DateTime" />
+          <Property Name="EndDate" Type="DateTime" />
+          <Property Name="StartPositionLatitude" Type="Double" Nullable="false" />
+          <Property Name="StartPositionLongitude" Type="Double" Nullable="false" />
+          <Property Name="EndPositionLatitude" Type="Double" />
+          <Property Name="EndPositionLongitude" Type="Double" />
+          <NavigationProperty Name="booking" Relationship="Self.booking_ibfk_2" FromRole="trip" ToRole="booking" />
+          <NavigationProperty Name="car" Relationship="Self.trip_ibfk_1" FromRole="trip" ToRole="car" />
+          <Property Name="DistanceTravelled" Type="Double" Nullable="false" />
+        </EntityType>
+        <Association Name="booking_ibfk_1">
+          <End Role="customer" Type="ecruise.Database.Model.Customer" Multiplicity="1" />
+          <End Role="booking" Type="ecruise.Database.Model.Booking" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="customer">
+              <PropertyRef Name="CustomerId" />
+            </Principal>
+            <Dependent Role="booking">
+              <PropertyRef Name="CustomerId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="booking_ibfk_2">
+          <End Role="trip" Type="ecruise.Database.Model.Trip" Multiplicity="0..1" />
+          <End Role="booking" Type="ecruise.Database.Model.Booking" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="trip">
+              <PropertyRef Name="TripId" />
+            </Principal>
+            <Dependent Role="booking">
+              <PropertyRef Name="TripId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="booking_ibfk_3">
+          <End Role="invoice" Type="ecruise.Database.Model.Invoice" Multiplicity="1" />
+          <End Role="booking" Type="ecruise.Database.Model.Booking" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="invoice">
+              <PropertyRef Name="InvoiceId" />
+            </Principal>
+            <Dependent Role="booking">
+              <PropertyRef Name="InvoiceId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="car_charging_station_ibfk_1">
+          <End Role="car" Type="ecruise.Database.Model.Car" Multiplicity="1" />
+          <End Role="car_charging_station" Type="ecruise.Database.Model.CarChargingStation" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="car">
+              <PropertyRef Name="CarId" />
+            </Principal>
+            <Dependent Role="car_charging_station">
+              <PropertyRef Name="CarId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="car_maintenance_ibfk_1">
+          <End Role="car" Type="ecruise.Database.Model.Car" Multiplicity="1" />
+          <End Role="car_maintenance" Type="ecruise.Database.Model.CarMaintenance" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="car">
+              <PropertyRef Name="CarId" />
+            </Principal>
+            <Dependent Role="car_maintenance">
+              <PropertyRef Name="CarId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="trip_ibfk_1">
+          <End Role="car" Type="ecruise.Database.Model.Car" Multiplicity="0..1" />
+          <End Role="trip" Type="ecruise.Database.Model.Trip" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="car">
+              <PropertyRef Name="CarId" />
+            </Principal>
+            <Dependent Role="trip">
+              <PropertyRef Name="CarId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="car_charging_station_ibfk_2">
+          <End Role="charging_station" Type="ecruise.Database.Model.ChargingStation" Multiplicity="1" />
+          <End Role="car_charging_station" Type="ecruise.Database.Model.CarChargingStation" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="charging_station">
+              <PropertyRef Name="ChargingStationId" />
+            </Principal>
+            <Dependent Role="car_charging_station">
+              <PropertyRef Name="ChargingStationId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="car_maintenance_ibfk_2">
+          <End Role="maintenance" Type="ecruise.Database.Model.Maintenance" Multiplicity="1" />
+          <End Role="car_maintenance" Type="ecruise.Database.Model.CarMaintenance" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="maintenance">
+              <PropertyRef Name="MaintenanceId" />
+            </Principal>
+            <Dependent Role="car_maintenance">
+              <PropertyRef Name="MaintenanceId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="car_maintenance_ibfk_3">
+          <End Role="invoice_item" Type="ecruise.Database.Model.InvoiceItem" Multiplicity="1" />
+          <End Role="car_maintenance" Type="ecruise.Database.Model.CarMaintenance" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="invoice_item">
+              <PropertyRef Name="InvoiceItemId" />
+            </Principal>
+            <Dependent Role="car_maintenance">
+              <PropertyRef Name="InvoiceItemId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="customer_token_ibfk_1">
+          <End Role="customer" Type="ecruise.Database.Model.Customer" Multiplicity="1" />
+          <End Role="customer_token" Type="ecruise.Database.Model.CustomerToken" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="customer">
+              <PropertyRef Name="CustomerId" />
+            </Principal>
+            <Dependent Role="customer_token">
+              <PropertyRef Name="CustomerId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="invoice_item_ibfk_1">
+          <End Role="invoice" Type="ecruise.Database.Model.Invoice" Multiplicity="0..1" />
+          <End Role="invoice_item" Type="ecruise.Database.Model.InvoiceItem" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="invoice">
+              <PropertyRef Name="InvoiceId" />
+            </Principal>
+            <Dependent Role="invoice_item">
+              <PropertyRef Name="InvoiceId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityContainer Name="ecruiseEntities1" annotation:LazyLoadingEnabled="true">
+          <EntitySet Name="booking" EntityType="ecruise.Database.Model.Booking" />
+          <EntitySet Name="car" EntityType="ecruise.Database.Model.Car" />
+          <EntitySet Name="car_charging_station" EntityType="ecruise.Database.Model.CarChargingStation" />
+          <EntitySet Name="car_maintenance" EntityType="ecruise.Database.Model.CarMaintenance" />
+          <EntitySet Name="charging_station" EntityType="ecruise.Database.Model.ChargingStation" />
+          <EntitySet Name="configuration" EntityType="ecruise.Database.Model.Configuration" />
+          <EntitySet Name="customer" EntityType="ecruise.Database.Model.Customer" />
+          <EntitySet Name="customer_token" EntityType="ecruise.Database.Model.CustomerToken" />
+          <EntitySet Name="invoice" EntityType="ecruise.Database.Model.Invoice" />
+          <EntitySet Name="invoice_item" EntityType="ecruise.Database.Model.InvoiceItem" />
+          <EntitySet Name="maintenance" EntityType="ecruise.Database.Model.Maintenance" />
+          <EntitySet Name="statistic" EntityType="ecruise.Database.Model.Statistic" />
+          <EntitySet Name="trip" EntityType="ecruise.Database.Model.Trip" />
+          <AssociationSet Name="booking_ibfk_1" Association="Self.booking_ibfk_1">
+            <End Role="customer" EntitySet="customer" />
+            <End Role="booking" EntitySet="booking" />
+          </AssociationSet>
+          <AssociationSet Name="booking_ibfk_2" Association="Self.booking_ibfk_2">
+            <End Role="trip" EntitySet="trip" />
+            <End Role="booking" EntitySet="booking" />
+          </AssociationSet>
+          <AssociationSet Name="booking_ibfk_3" Association="Self.booking_ibfk_3">
+            <End Role="invoice" EntitySet="invoice" />
+            <End Role="booking" EntitySet="booking" />
+          </AssociationSet>
+          <AssociationSet Name="car_charging_station_ibfk_1" Association="Self.car_charging_station_ibfk_1">
+            <End Role="car" EntitySet="car" />
+            <End Role="car_charging_station" EntitySet="car_charging_station" />
+          </AssociationSet>
+          <AssociationSet Name="car_maintenance_ibfk_1" Association="Self.car_maintenance_ibfk_1">
+            <End Role="car" EntitySet="car" />
+            <End Role="car_maintenance" EntitySet="car_maintenance" />
+          </AssociationSet>
+          <AssociationSet Name="trip_ibfk_1" Association="Self.trip_ibfk_1">
+            <End Role="car" EntitySet="car" />
+            <End Role="trip" EntitySet="trip" />
+          </AssociationSet>
+          <AssociationSet Name="car_charging_station_ibfk_2" Association="Self.car_charging_station_ibfk_2">
+            <End Role="charging_station" EntitySet="charging_station" />
+            <End Role="car_charging_station" EntitySet="car_charging_station" />
+          </AssociationSet>
+          <AssociationSet Name="car_maintenance_ibfk_2" Association="Self.car_maintenance_ibfk_2">
+            <End Role="maintenance" EntitySet="maintenance" />
+            <End Role="car_maintenance" EntitySet="car_maintenance" />
+          </AssociationSet>
+          <AssociationSet Name="car_maintenance_ibfk_3" Association="Self.car_maintenance_ibfk_3">
+            <End Role="invoice_item" EntitySet="invoice_item" />
+            <End Role="car_maintenance" EntitySet="car_maintenance" />
+          </AssociationSet>
+          <AssociationSet Name="customer_token_ibfk_1" Association="Self.customer_token_ibfk_1">
+            <End Role="customer" EntitySet="customer" />
+            <End Role="customer_token" EntitySet="customer_token" />
+          </AssociationSet>
+          <AssociationSet Name="invoice_item_ibfk_1" Association="Self.invoice_item_ibfk_1">
+            <End Role="invoice" EntitySet="invoice" />
+            <End Role="invoice_item" EntitySet="invoice_item" />
+          </AssociationSet>
+        </EntityContainer>
+      </Schema>
+    </edmx:ConceptualModels>
+    <!-- C-S mapping content -->
+    <edmx:Mappings>
+      <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
+        <EntityContainerMapping StorageEntityContainer="ecruiseDatabaseModelStoreContainer" CdmEntityContainer="ecruiseEntities1">
+          <EntitySetMapping Name="booking">
+            <EntityTypeMapping TypeName="ecruise.Database.Model.Booking">
+              <MappingFragment StoreEntitySet="booking">
+                <ScalarProperty Name="BookingId" ColumnName="BookingId" />
+                <ScalarProperty Name="CustomerId" ColumnName="CustomerId" />
+                <ScalarProperty Name="TripId" ColumnName="TripId" />
+                <ScalarProperty Name="InvoiceId" ColumnName="InvoiceId" />
+                <ScalarProperty Name="BookedPositionLatitude" ColumnName="BookedPositionLatitude" />
+                <ScalarProperty Name="BookedPositionLongitude" ColumnName="BookedPositionLongitude" />
+                <ScalarProperty Name="BookingDate" ColumnName="BookingDate" />
+                <ScalarProperty Name="PlannedDate" ColumnName="PlannedDate" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="car">
+            <EntityTypeMapping TypeName="ecruise.Database.Model.Car">
+              <MappingFragment StoreEntitySet="car">
+                <ScalarProperty Name="ChargeLevel" ColumnName="ChargeLevel" />
+                <ScalarProperty Name="CarId" ColumnName="CarId" />
+                <ScalarProperty Name="LicensePlate" ColumnName="LicensePlate" />
+                <ScalarProperty Name="ChargingState" ColumnName="ChargingState" />
+                <ScalarProperty Name="BookingState" ColumnName="BookingState" />
+                <ScalarProperty Name="Milage" ColumnName="Milage" />
+                <ScalarProperty Name="MileageTotal" ColumnName="MileageTotal" />
+                <ScalarProperty Name="Kilowatts" ColumnName="Kilowatts" />
+                <ScalarProperty Name="Manufacturer" ColumnName="Manufacturer" />
+                <ScalarProperty Name="Model" ColumnName="Model" />
+                <ScalarProperty Name="YearOfConstruction" ColumnName="YearOfConstruction" />
+                <ScalarProperty Name="LastKnownPositionLatitude" ColumnName="LastKnownPositionLatitude" />
+                <ScalarProperty Name="LastKnownPositionLongitude" ColumnName="LastKnownPositionLongitude" />
+                <ScalarProperty Name="LastKnownPositionDate" ColumnName="LastKnownPositionDate" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="car_charging_station">
+            <EntityTypeMapping TypeName="ecruise.Database.Model.CarChargingStation">
+              <MappingFragment StoreEntitySet="car_charging_station">
+                <ScalarProperty Name="CarChargingStationId" ColumnName="CarChargingStationId" />
+                <ScalarProperty Name="CarId" ColumnName="CarId" />
+                <ScalarProperty Name="ChargingStationId" ColumnName="ChargingStationId" />
+                <ScalarProperty Name="ChargeStart" ColumnName="ChargeStart" />
+                <ScalarProperty Name="ChargeEnd" ColumnName="ChargeEnd" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="car_maintenance">
+            <EntityTypeMapping TypeName="ecruise.Database.Model.CarMaintenance">
+              <MappingFragment StoreEntitySet="car_maintenance">
+                <ScalarProperty Name="CarMaintenanceId" ColumnName="CarMaintenanceId" />
+                <ScalarProperty Name="CarId" ColumnName="CarId" />
+                <ScalarProperty Name="MaintenanceId" ColumnName="MaintenanceId" />
+                <ScalarProperty Name="InvoiceItemId" ColumnName="InvoiceItemId" />
+                <ScalarProperty Name="PlannedDate" ColumnName="PlannedDate" />
+                <ScalarProperty Name="CompletedDate" ColumnName="CompletedDate" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="charging_station">
+            <EntityTypeMapping TypeName="ecruise.Database.Model.ChargingStation">
+              <MappingFragment StoreEntitySet="charging_station">
+                <ScalarProperty Name="ChargingStationId" ColumnName="ChargingStationId" />
+                <ScalarProperty Name="Slots" ColumnName="Slots" />
+                <ScalarProperty Name="SlotsOccupied" ColumnName="SlotsOccupied" />
+                <ScalarProperty Name="Latitude" ColumnName="Latitude" />
+                <ScalarProperty Name="Longitude" ColumnName="Longitude" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="configuration">
+            <EntityTypeMapping TypeName="ecruise.Database.Model.Configuration">
+              <MappingFragment StoreEntitySet="configuration">
+                <ScalarProperty Name="ConfigurationId" ColumnName="ConfigurationId" />
+                <ScalarProperty Name="AllowNewBookings" ColumnName="AllowNewBookings" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="customer">
+            <EntityTypeMapping TypeName="ecruise.Database.Model.Customer">
+              <MappingFragment StoreEntitySet="customer">
+                <ScalarProperty Name="CustomerId" ColumnName="CustomerId" />
+                <ScalarProperty Name="PasswordHash" ColumnName="PasswordHash" />
+                <ScalarProperty Name="PasswordSalt" ColumnName="PasswordSalt" />
+                <ScalarProperty Name="Email" ColumnName="Email" />
+                <ScalarProperty Name="PhoneNumber" ColumnName="PhoneNumber" />
+                <ScalarProperty Name="ChipCardUid" ColumnName="ChipCardUid" />
+                <ScalarProperty Name="FirstName" ColumnName="FirstName" />
+                <ScalarProperty Name="LastName" ColumnName="LastName" />
+                <ScalarProperty Name="Country" ColumnName="Country" />
+                <ScalarProperty Name="City" ColumnName="City" />
+                <ScalarProperty Name="ZipCode" ColumnName="ZipCode" />
+                <ScalarProperty Name="Street" ColumnName="Street" />
+                <ScalarProperty Name="HouseNumber" ColumnName="HouseNumber" />
+                <ScalarProperty Name="AddressExtraLine" ColumnName="AddressExtraLine" />
+                <ScalarProperty Name="Activated" ColumnName="Activated" />
+                <ScalarProperty Name="Verified" ColumnName="Verified" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="customer_token">
+            <EntityTypeMapping TypeName="ecruise.Database.Model.CustomerToken">
+              <MappingFragment StoreEntitySet="customer_token">
+                <ScalarProperty Name="TokenId" ColumnName="TokenId" />
+                <ScalarProperty Name="CustomerId" ColumnName="CustomerId" />
+                <ScalarProperty Name="Type" ColumnName="Type" />
+                <ScalarProperty Name="Token" ColumnName="Token" />
+                <ScalarProperty Name="CreationDate" ColumnName="CreationDate" />
+                <ScalarProperty Name="ExpireDate" ColumnName="ExpireDate" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="invoice">
+            <EntityTypeMapping TypeName="ecruise.Database.Model.Invoice">
+              <MappingFragment StoreEntitySet="invoice">
+                <ScalarProperty Name="InvoiceId" ColumnName="InvoiceId" />
+                <ScalarProperty Name="TotalAmount" ColumnName="TotalAmount" />
+                <ScalarProperty Name="Payed" ColumnName="Payed" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="invoice_item">
+            <EntityTypeMapping TypeName="ecruise.Database.Model.InvoiceItem">
+              <MappingFragment StoreEntitySet="invoice_item">
+                <ScalarProperty Name="InvoiceItemId" ColumnName="InvoiceItemId" />
+                <ScalarProperty Name="InvoiceId" ColumnName="InvoiceId" />
+                <ScalarProperty Name="Reason" ColumnName="Reason" />
+                <ScalarProperty Name="Type" ColumnName="Type" />
+                <ScalarProperty Name="Amount" ColumnName="Amount" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="maintenance">
+            <EntityTypeMapping TypeName="ecruise.Database.Model.Maintenance">
+              <MappingFragment StoreEntitySet="maintenance">
+                <ScalarProperty Name="MaintenanceId" ColumnName="MaintenanceId" />
+                <ScalarProperty Name="Spontaneously" ColumnName="Spontaneously" />
+                <ScalarProperty Name="AtMileage" ColumnName="AtMileage" />
+                <ScalarProperty Name="AtDate" ColumnName="AtDate" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="statistic">
+            <EntityTypeMapping TypeName="ecruise.Database.Model.Statistic">
+              <MappingFragment StoreEntitySet="statistic">
+                <ScalarProperty Name="Date" ColumnName="Date" />
+                <ScalarProperty Name="Bookings" ColumnName="Bookings" />
+                <ScalarProperty Name="AverageChargeLevel" ColumnName="AverageChargeLevel" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="trip">
+            <EntityTypeMapping TypeName="ecruise.Database.Model.Trip">
+              <MappingFragment StoreEntitySet="trip">
+                <ScalarProperty Name="DistanceTravelled" ColumnName="DistanceTravelled" />
+                <ScalarProperty Name="TripId" ColumnName="TripId" />
+                <ScalarProperty Name="CarId" ColumnName="CarId" />
+                <ScalarProperty Name="CustomerId" ColumnName="CustomerId" />
+                <ScalarProperty Name="StartDate" ColumnName="StartDate" />
+                <ScalarProperty Name="EndDate" ColumnName="EndDate" />
+                <ScalarProperty Name="StartPositionLatitude" ColumnName="StartPositionLatitude" />
+                <ScalarProperty Name="StartPositionLongitude" ColumnName="StartPositionLongitude" />
+                <ScalarProperty Name="EndPositionLatitude" ColumnName="EndPositionLatitude" />
+                <ScalarProperty Name="EndPositionLongitude" ColumnName="EndPositionLongitude" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+        </EntityContainerMapping>
+      </Mapping>
+    </edmx:Mappings>
+  </edmx:Runtime>
+  <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <Connection>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="MetadataArtifactProcessing" Value="EmbedInOutputAssembly" />
+      </DesignerInfoPropertySet>
+    </Connection>
+    <Options>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="ValidateOnBuild" Value="true" />
+        <DesignerProperty Name="EnablePluralization" Value="false" />
+        <DesignerProperty Name="IncludeForeignKeysInModel" Value="true" />
+        <DesignerProperty Name="UseLegacyProvider" Value="false" />
+        <DesignerProperty Name="CodeGenerationStrategy" Value="None" />
+      </DesignerInfoPropertySet>
+    </Options>
+    <!-- Diagram content (shape and connector positions) -->
+    <Diagrams></Diagrams>
+  </Designer>
+</edmx:Edmx>
