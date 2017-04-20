@@ -12,21 +12,21 @@ namespace ecruise.Models
         /// </summary>
         /// <param name="id">The ressource's unique identifier (required)</param>
         /// <param name="url">URL to the ressource (required)</param>
-        public PostReference(int id, string url)
+        public PostReference(uint id, string url)
         {
             if (id == 0)
                 throw new ArgumentNullException(
                     nameof(id) + " is a required property for PostReference and cannot be zero");
             Id = id;
             Url = url ?? throw new ArgumentNullException(
-                      nameof(url) + " is a required property for Maintenance and cannot be null");
+                      nameof(url) + " is a required property for PostReference and cannot be null");
         }
 
         /// <summary>
         /// The ressource's unique identifier 
         /// </summary>
         /// <value>The ressource's unique identifier</value>
-        public int Id { get; }
+        public uint Id { get; }
 
         /// <summary>
         /// URL to the ressource 

@@ -27,22 +27,22 @@ namespace ecruise.Models
         }
 
         /// <summary>
-        /// Gets or Sets Email
+        /// Gets Email
         /// </summary>
         public string Email { get; }
 
         /// <summary>
-        /// Gets or Sets Password
+        /// Gets Password
         /// </summary>
         public string Password { get; }
 
         /// <summary>
-        /// Gets or Sets FirstName
+        /// Gets FirstName
         /// </summary>
         public string FirstName { get; }
 
         /// <summary>
-        /// Gets or Sets LastName
+        /// Gets LastName
         /// </summary>
         public string LastName { get; }
 

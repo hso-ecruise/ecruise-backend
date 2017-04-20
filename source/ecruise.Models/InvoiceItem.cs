@@ -8,7 +8,7 @@ namespace ecruise.Models
         : IEquatable<InvoiceItem>
     {
         /// <summary>
-        /// Gets or Sets Type
+        /// Defines Type Enums
         /// </summary>
         public enum TypeEnum
         {
@@ -24,7 +24,7 @@ namespace ecruise.Models
         /// <param name="reason">Text which will appear on the invoice. Can contain the name of the service or some other reason. (required)</param>
         /// <param name="type">Type (required)</param>
         /// <param name="amount">Amount (required)</param>
-        public InvoiceItem(int invoiceItemId, int invoiceId, string reason, TypeEnum type, double amount)
+        public InvoiceItem(uint invoiceItemId, uint invoiceId, string reason, TypeEnum type, double amount)
         {
             if (invoiceItemId == 0)
                 throw new ArgumentNullException(nameof(invoiceItemId) +
@@ -48,13 +48,13 @@ namespace ecruise.Models
         /// <summary>
         /// Gets or Sets InvoiceItemId
         /// </summary>
-        public int InvoiceItemId { get; }
+        public uint InvoiceItemId { get; }
 
         /// <summary>
         /// See #/definitions/Invoice
         /// </summary>
         /// <value>See #/definitions/Invoice</value>
-        public int InvoiceId { get; }
+        public uint InvoiceId { get; }
 
         /// <summary>
         /// Text which will appear on the invoice. Can contain the name of the service or some other reason. 

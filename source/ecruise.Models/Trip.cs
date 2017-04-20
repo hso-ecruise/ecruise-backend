@@ -11,24 +11,19 @@ namespace ecruise.Models
         /// Initializes a new instance of the <see cref="Trip" /> class.
         /// </summary>
         /// <param name="tripId">TripId (required)</param>
-        /// <param name="carId">See #/definitions/Car (required)</param>
+        /// <param name="carId">See #/definitions/Car</param>
         /// <param name="customerId">See #/definitions/Customer (required)</param>
         /// <param name="startDate">Date and time when the trip started (required)</param>
         /// <param name="endDate">Date and time when the trip ended</param>
-        /// <param name="startPositionLatitude">StartPositionLatitude (required)</param>
-        /// <param name="startPositionLongitude">StartPositionLongitude (required)</param>
-        /// <param name="endPositionLatitude">EndPositionLatitude</param>
-        /// <param name="endPositionLongitude">EndPositionLongitude</param>
-        public Trip(int tripId, int carId, int customerId, DateTime startDate, DateTime? endDate,
-            double startPositionLatitude, double startPositionLongitude, double? endPositionLatitude,
-            double? endPositionLongitude)
+        /// <param name="startChargingStationId">StartChargingStationId</param>
+        /// <param name="endChargingStationId">EndChargingStationId</param>
+        /// <param name="distanceTravelled">DistanceTravelled</param>
+        public Trip(uint tripId, uint? carId, uint customerId, DateTime? startDate, DateTime? endDate,
+            uint? startChargingStationId, uint? endChargingStationId, double? distanceTravelled)
         {
             if (tripId == 0)
                 throw new ArgumentNullException(
                     nameof(tripId) + " is a required property for Trip and cannot be zero");
-            if (carId == 0)
-                throw new ArgumentNullException(
-                    nameof(carId) + " is a required property for Trip and cannot be zero");
             if (customerId == 0)
                 throw new ArgumentNullException(
                     nameof(customerId) + " is a required property for Trip and cannot be zero");
@@ -38,34 +33,33 @@ namespace ecruise.Models
             CustomerId = customerId;
             StartDate = startDate;
             EndDate = endDate;
-            StartPositionLatitude = startPositionLatitude;
-            StartPositionLongitude = startPositionLongitude;
-            EndPositionLatitude = endPositionLatitude;
-            EndPositionLongitude = endPositionLongitude;
+            StartChargingStationId = startChargingStationId;
+            EndChargingStationId = endChargingStationId;
+            DistanceTravelled = distanceTravelled;
         }
 
         /// <summary>
-        /// Gets or Sets TripId
+        /// Gets TripId
         /// </summary>
-        public int TripId { get; }
+        public uint TripId { get; }
 
         /// <summary>
         /// See #/definitions/Car
         /// </summary>
         /// <value>See '#/definitions/Car'</value>
-        public int CarId { get; }
+        public uint? CarId { get; set; }
 
         /// <summary>
         /// See '#/definitions/Customer'
         /// </summary>
         /// <value>See '#/definitions/Customer'</value>
-        public int CustomerId { get; }
+        public uint CustomerId { get; }
 
         /// <summary>
         /// Date and time when the trip started
         /// </summary>
         /// <value>Date and time when the trip started</value>
-        public DateTime StartDate { get; }
+        public DateTime? StartDate { get; }
 
         /// <summary>
         /// Date and time when the trip ended
@@ -74,24 +68,19 @@ namespace ecruise.Models
         public DateTime? EndDate { get; set; }
 
         /// <summary>
-        /// Gets or Sets StartPositionLatitude
+        /// Gets StartPositionLatitude
         /// </summary>
-        public double StartPositionLatitude { get; }
+        public uint? StartChargingStationId { get; set; }
 
         /// <summary>
-        /// Gets or Sets StartPositionLongitude
+        /// Gets StartPositionLongitude
         /// </summary>
-        public double StartPositionLongitude { get; }
+        public uint? EndChargingStationId { get; set; }
 
         /// <summary>
-        /// Gets or Sets EndPositionLatitude
+        /// Gets DistanceTravelled
         /// </summary>
-        public double? EndPositionLatitude { get; set; }
-
-        /// <summary>
-        /// Gets or Sets EndPositionLongitude
-        /// </summary>
-        public double? EndPositionLongitude { get; set; }
+        public double? DistanceTravelled { get; set; }
 
         /// <summary>
         /// Returns the string presentation of the object
@@ -106,10 +95,9 @@ namespace ecruise.Models
             sb.Append("  CustomerId: ").Append(CustomerId).Append("\n");
             sb.Append("  StartDate: ").Append(StartDate).Append("\n");
             sb.Append("  EndDate: ").Append(EndDate).Append("\n");
-            sb.Append("  StartPositionLatitude: ").Append(StartPositionLatitude).Append("\n");
-            sb.Append("  StartPositionLongitude: ").Append(StartPositionLongitude).Append("\n");
-            sb.Append("  EndPositionLatitude: ").Append(EndPositionLatitude).Append("\n");
-            sb.Append("  EndPositionLongitude: ").Append(EndPositionLongitude).Append("\n");
+            sb.Append("  StartChargingStationId: ").Append(StartChargingStationId).Append("\n");
+            sb.Append("  EndChargingStationId: ").Append(EndChargingStationId).Append("\n");
+            sb.Append("  DistanceTravelled: ").Append(DistanceTravelled).Append("\n");
             sb.Append("}\n");
             return sb.ToString();
         }
@@ -152,25 +140,15 @@ namespace ecruise.Models
                 (CustomerId == other.CustomerId || CustomerId.Equals(other.CustomerId)) &&
                 (StartDate == other.StartDate || StartDate.Equals(other.StartDate)) &&
                 (EndDate == other.EndDate || EndDate != null && EndDate.Equals(other.EndDate)) &&
-                (
-                    Math.Abs(StartPositionLatitude - other.StartPositionLatitude) < 0.0001 ||
-                    StartPositionLatitude.Equals(other.StartPositionLatitude)
+                (StartChargingStationId == other.StartChargingStationId ||
+                 StartChargingStationId.Equals(other.StartChargingStationId)
                 ) &&
-                (
-                    Math.Abs(StartPositionLongitude - other.StartPositionLongitude) < 0.0001 ||
-                    StartPositionLongitude.Equals(other.StartPositionLongitude)
+                (EndChargingStationId == other.EndChargingStationId ||
+                 EndChargingStationId.Equals(other.EndChargingStationId)
                 ) &&
-                (
-                    EndPositionLatitude.HasValue && other.EndPositionLatitude.HasValue &&
-                    Math.Abs(EndPositionLatitude.Value - other.EndPositionLatitude.Value) < 0.0001 ||
-                    EndPositionLatitude != null &&
-                    EndPositionLatitude.Equals(other.EndPositionLatitude)
-                ) &&
-                (
-                    EndPositionLongitude.HasValue && other.EndPositionLongitude.HasValue &&
-                    Math.Abs(EndPositionLongitude.Value - other.EndPositionLongitude.Value) < 0.0001 ||
-                    EndPositionLongitude != null &&
-                    EndPositionLongitude.Equals(other.EndPositionLongitude)
+                ((DistanceTravelled.HasValue && other.DistanceTravelled.HasValue) &&
+                 (Math.Abs(DistanceTravelled.Value - other.DistanceTravelled.Value) < 0.001) ||
+                 DistanceTravelled.Equals(other.DistanceTravelled)
                 );
         }
 
@@ -185,11 +163,8 @@ namespace ecruise.Models
                 int hash = 41;
 
                 hash = hash * 59 + TripId.GetHashCode();
-                hash = hash * 59 + CarId.GetHashCode();
                 hash = hash * 59 + CustomerId.GetHashCode();
                 hash = hash * 59 + StartDate.GetHashCode();
-                hash = hash * 59 + StartPositionLatitude.GetHashCode();
-                hash = hash * 59 + StartPositionLongitude.GetHashCode();
 
                 return hash;
             }

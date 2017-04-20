@@ -12,14 +12,14 @@ namespace ecruise.Models
         /// </summary>
         /// <param name="bookingId">BookingId (required)</param>
         /// <param name="customerId">CustomerId (required)</param>
-        /// <param name="tripId">TripId (required)</param>
+        /// <param name="tripId">TripId</param>
         /// <param name="invoiceId">InvoiceId (required)</param>
         /// <param name="bookingPositionLatitude">BookingPositionLatitude (required)</param>
         /// <param name="bookingPositionLongitude">BookingPositionLongitude (required)</param>
-        /// <param name="bookingDate">BookingDate (requred)</param>
-        /// <param name="plannedDate">PlannedDate (requred)</param>
-        public Booking(int bookingId, int customerId, int tripId, int invoiceId, double bookingPositionLatitude,
-            double bookingPositionLongitude, DateTime bookingDate, DateTime plannedDate)
+        /// <param name="bookingDate">BookingDate (required)</param>
+        /// <param name="plannedDate">PlannedDate</param>
+        public Booking(uint bookingId, uint customerId, uint? tripId, uint invoiceId, double bookingPositionLatitude,
+            double bookingPositionLongitude, DateTime bookingDate, DateTime? plannedDate)
         {
             if (bookingId == 0)
                 throw new ArgumentNullException(
@@ -27,18 +27,12 @@ namespace ecruise.Models
             if (customerId == 0)
                 throw new ArgumentNullException(
                     nameof(customerId) + " is a required property for Booking and cannot be zero");
-            if (tripId == 0)
-                throw new ArgumentNullException(
-                    nameof(tripId) + " is a required property for Booking and cannot be zero");
             if (invoiceId == 0)
                 throw new ArgumentNullException(
                     nameof(invoiceId) + " is a required property for Booking and cannot be zero");
             if (Math.Abs(bookingPositionLatitude) < 0.00001)
                 throw new ArgumentNullException(
                     nameof(bookingPositionLatitude) + " is a required property for Booking and cannot be zero");
-            if (Math.Abs(bookingPositionLongitude) < 0.00001)
-                throw new ArgumentNullException(
-                    nameof(bookingPositionLongitude) + " is a required property for Booking and cannot be zero");
 
             BookingId = bookingId;
             CustomerId = customerId;
@@ -50,14 +44,14 @@ namespace ecruise.Models
             PlannedDate = plannedDate;
         }
 
-        public int BookingId { get; }
-        public int CustomerId { get; }
-        public int TripId { get; }
-        public int InvoiceId { get; }
+        public uint BookingId { get; }
+        public uint CustomerId { get; }
+        public uint? TripId { get; set; }
+        public uint InvoiceId { get; }
         public double BookingPositionLatitude { get; }
         public double BookingPositionLongitude { get; }
         public DateTime BookingDate { get; }
-        public DateTime PlannedDate { get; }
+        public DateTime? PlannedDate { get; }
 
         public override string ToString()
         {
@@ -110,7 +104,7 @@ namespace ecruise.Models
             return
                 (BookingId == other.BookingId || BookingId.Equals(other.BookingId)) &&
                 (CustomerId == other.CustomerId || CustomerId.Equals(other.CustomerId)) &&
-                (TripId == other.TripId || TripId.Equals(other.TripId)) &&
+                (TripId == other.TripId || (TripId.HasValue && TripId.Equals(other.TripId))) &&
                 (InvoiceId == other.InvoiceId || InvoiceId.Equals(other.InvoiceId)) &&
                 (
                     Math.Abs(BookingPositionLatitude - other.BookingPositionLatitude) < 0.00001 ||
@@ -121,7 +115,7 @@ namespace ecruise.Models
                     BookingPositionLongitude.Equals(other.BookingPositionLongitude)
                 ) &&
                 (BookingDate == other.BookingDate || BookingDate.Equals(other.BookingDate)) &&
-                (PlannedDate == other.PlannedDate || PlannedDate.Equals(other.PlannedDate));
+                (PlannedDate == other.PlannedDate || (PlannedDate.HasValue && PlannedDate.Equals(other.PlannedDate)));
         }
 
         /// <summary>
@@ -136,12 +130,12 @@ namespace ecruise.Models
 
                 hash = hash * 59 + BookingId.GetHashCode();
                 hash = hash * 59 + CustomerId.GetHashCode();
-                hash = hash * 59 + TripId.GetHashCode();
                 hash = hash * 59 + InvoiceId.GetHashCode();
                 hash = hash * 59 + BookingPositionLongitude.GetHashCode();
                 hash = hash * 59 + BookingPositionLatitude.GetHashCode();
                 hash = hash * 59 + BookingDate.GetHashCode();
-                hash = hash * 59 + PlannedDate.GetHashCode();
+                if (PlannedDate.HasValue)
+                    hash = hash * 59 + PlannedDate.GetHashCode();
 
                 return hash;
             }

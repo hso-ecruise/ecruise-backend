@@ -12,6 +12,7 @@ namespace ecruise.Models
         /// </summary>
         /// <param name="customerId">CustomerId (required)</param>
         /// <param name="email">Email (required)</param>
+        /// <param name="chipCardUid">ChipCardUid</param>
         /// <param name="phoneNumber">PhoneNumber (required)</param>
         /// <param name="firstName">FirstName (required)</param>
         /// <param name="lastName">LastName (required)</param>
@@ -23,13 +24,16 @@ namespace ecruise.Models
         /// <param name="addressExtraLine">Extra line for the user's address. Can contain various detail information about the user's address. (required)</param>
         /// <param name="activated">True if the user has activated his account by clicking on the link in the activation email. (required)</param>
         /// <param name="verified">True if the user has verified his account at our head-quarter by bringing us his driver's license. (required)</param>
-        public Customer(int customerId, string email, string phoneNumber, string firstName, string lastName,
-            string country, string city, int zipCode, string street, string houseNumber, string addressExtraLine,
-            bool activated, bool verified)
+        public Customer(uint customerId, string email, string phoneNumber, string chipCardUid, string firstName,
+            string lastName, string country, string city, uint zipCode, string street, string houseNumber,
+            string addressExtraLine, bool activated, bool verified)
         {
             if (customerId == 0)
                 throw new ArgumentNullException(
                     nameof(customerId) + " is a required property for Customer and cannot be zero");
+            if (zipCode == 0)
+                throw new ArgumentNullException(
+                    nameof(zipCode) + " is a required property for Customer and cannot be zero");
 
             CustomerId = customerId;
             Email =
@@ -38,6 +42,7 @@ namespace ecruise.Models
             PhoneNumber = phoneNumber ??
                           throw new ArgumentNullException(nameof(phoneNumber) +
                                                           " is a required property for Customer and cannot be null");
+            ChipCardUid = chipCardUid;
             FirstName = firstName ?? throw new ArgumentNullException(
                             nameof(firstName) + " is a required property for Customer and cannot be null");
             LastName = lastName ?? throw new ArgumentNullException(
@@ -51,9 +56,7 @@ namespace ecruise.Models
                          nameof(street) + " is a required property for Customer and cannot be null");
             HouseNumber = houseNumber ?? throw new ArgumentNullException(
                               nameof(houseNumber) + " is a required property for Customer and cannot be null");
-            AddressExtraLine = addressExtraLine ?? throw new ArgumentNullException(
-                                   nameof(addressExtraLine) +
-                                   " is a required property for Customer and cannot be null");
+            AddressExtraLine = addressExtraLine;
             Activated = activated;
             Verified = verified;
         }
@@ -62,12 +65,17 @@ namespace ecruise.Models
         /// <summary>
         /// Gets or Sets a CustomerId
         /// </summary>
-        public int CustomerId { get; }
+        public uint CustomerId { get; }
 
         /// <summary>
         /// Gets or Sets Email
         /// </summary>
         public string Email { get; set; }
+
+        /// <summary>
+        /// Gets or Sets PhoneNumber
+        /// </summary>
+        public string ChipCardUid { get; set; }
 
         /// <summary>
         /// Gets or Sets PhoneNumber
@@ -97,7 +105,7 @@ namespace ecruise.Models
         /// <summary>
         /// Gets or Sets ZipCode
         /// </summary>
-        public int ZipCode { get; set; }
+        public uint ZipCode { get; set; }
 
         /// <summary>
         /// Gets or Sets Street
@@ -138,6 +146,7 @@ namespace ecruise.Models
             sb.Append("  CustomerId: ").Append(CustomerId).Append("\n");
             sb.Append("  Email: ").Append(Email).Append("\n");
             sb.Append("  PhoneNumber: ").Append(PhoneNumber).Append("\n");
+            sb.Append("  ChipCardUid: ").Append(ChipCardUid).Append("\n");
             sb.Append("  FirstName: ").Append(FirstName).Append("\n");
             sb.Append("  LastName: ").Append(LastName).Append("\n");
             sb.Append("  Country: ").Append(Country).Append("\n");
@@ -188,6 +197,7 @@ namespace ecruise.Models
                 (CustomerId == other.CustomerId || CustomerId.Equals(other.CustomerId)) &&
                 (Email == other.Email || Email.Equals(other.Email)) &&
                 (PhoneNumber == other.PhoneNumber || PhoneNumber.Equals(other.PhoneNumber)) &&
+                (ChipCardUid == other.ChipCardUid || ChipCardUid.Equals(other.ChipCardUid)) &&
                 (FirstName == other.FirstName || FirstName.Equals(other.FirstName)) &&
                 (LastName == other.LastName || LastName.Equals(other.LastName)) &&
                 (Country == other.Country || Country.Equals(other.Country)) &&
@@ -236,13 +246,13 @@ namespace ecruise.Models
         /// <summary>
         /// Initializes a new instance of the <see cref="Address" /> class.
         /// </summary>
-        /// <param name="country">Country</param>
-        /// <param name="city">City</param>
-        /// <param name="zipCode">ZipCode</param>
-        /// <param name="street">Street</param>
-        /// <param name="houseNumber">HouseNumber</param>
+        /// <param name="country">Country (required)</param>
+        /// <param name="city">City (required)</param>
+        /// <param name="zipCode">ZipCode (required)</param>
+        /// <param name="street">Street (required)</param>
+        /// <param name="houseNumber">HouseNumber (required)</param>
         /// <param name="adressExtraLine">AdressExtraLine</param>
-        public Address(string country, string city, int zipCode, string street, string houseNumber,
+        public Address(string country, string city, uint zipCode, string street, string houseNumber,
             string adressExtraLine)
         {
             if (zipCode < 01001 || zipCode > 99999)
@@ -258,14 +268,13 @@ namespace ecruise.Models
                          nameof(street) + " is a required property for Address and cannot be null");
             HouseNumber = houseNumber ?? throw new ArgumentNullException(
                               nameof(houseNumber) + " is a required property for Address and cannot be null");
-            AdressExtraLine = adressExtraLine ?? throw new ArgumentNullException(
-                                  nameof(adressExtraLine) + " is a required property for Address and cannot be null");
+            AdressExtraLine = adressExtraLine;
         }
 
 
         public string Country { get; }
         public string City { get; }
-        public int ZipCode { get; }
+        public uint ZipCode { get; }
         public string Street { get; }
         public string HouseNumber { get; }
         public string AdressExtraLine { get; }

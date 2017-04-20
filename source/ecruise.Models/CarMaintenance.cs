@@ -16,7 +16,7 @@ namespace ecruise.Models
         /// <param name="invoiceItemId">See #/definitions/InvoiceItem (required)</param>
         /// <param name="plannedDate">PlannedDate</param>
         /// <param name="completedDate">CompletedDate</param>
-        public CarMaintenance(int carMaintenanceId, int carId, int maintenanceId, int invoiceItemId,
+        public CarMaintenance(uint carMaintenanceId, uint carId, uint maintenanceId, uint? invoiceItemId,
             DateTime? plannedDate, DateTime? completedDate)
         {
             if (carMaintenanceId == 0)
@@ -28,9 +28,6 @@ namespace ecruise.Models
             if (maintenanceId == 0)
                 throw new ArgumentNullException(
                     nameof(maintenanceId) + " is a required property for CarMaintenance and cannot be zero");
-            if (invoiceItemId == 0)
-                throw new ArgumentNullException(
-                    nameof(invoiceItemId) + " is a required property for CarMaintenance and cannot be zero");
 
             CarMaintenanceId = carMaintenanceId;
             CarId = carId;
@@ -43,25 +40,25 @@ namespace ecruise.Models
         /// <summary>
         /// Gets or Sets CarMaintenanceId
         /// </summary>
-        public int CarMaintenanceId { get; }
+        public uint CarMaintenanceId { get; }
 
         /// <summary>
         /// See #/definitions/Car
         /// </summary>
         /// <value>See #/definitions/Car</value>
-        public int CarId { get; }
+        public uint CarId { get; }
 
         /// <summary>
         /// See #/definitions/Maintenance
         /// </summary>
         /// <value>See #/definitions/Maintenance</value>
-        public int MaintenanceId { get; }
+        public uint MaintenanceId { get; }
 
         /// <summary>
         /// See #/definitions/InvoiceItem
         /// </summary>
         /// <value>See #/definitions/InvoiceItem</value>
-        public int InvoiceItemId { get; }
+        public uint? InvoiceItemId { get; set; }
 
         /// <summary>
         /// Gets or Sets PlannedDate
@@ -148,7 +145,6 @@ namespace ecruise.Models
                 hash = hash * 59 + CarMaintenanceId.GetHashCode();
                 hash = hash * 59 + CarId.GetHashCode();
                 hash = hash * 59 + MaintenanceId.GetHashCode();
-                hash = hash * 59 + InvoiceItemId.GetHashCode();
                 if (PlannedDate != null)
                     hash = hash * 59 + PlannedDate.GetHashCode();
 

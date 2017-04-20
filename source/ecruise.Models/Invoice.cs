@@ -13,7 +13,7 @@ namespace ecruise.Models
         /// <param name="invoiceId">InvoiceId (required)</param>
         /// <param name="totalAmount">TotalAmount (required)</param>
         /// <param name="paid">Paid (required)</param>
-        public Invoice(int invoiceId, double totalAmount, bool paid)
+        public Invoice(uint invoiceId, double totalAmount, bool paid)
         {
             if (invoiceId == 0)
                 throw new ArgumentNullException(
@@ -25,9 +25,9 @@ namespace ecruise.Models
         }
 
         /// <summary>
-        /// Gets or Sets InvoiceId
+        /// Gets InvoiceId
         /// </summary>
-        public int InvoiceId { get; }
+        public uint InvoiceId { get; }
 
         /// <summary>
         /// Gets or Sets TotalAmount

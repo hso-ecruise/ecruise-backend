@@ -44,9 +44,9 @@ namespace ecruise.Models
         /// <param name="lastKnownPositionLongitude">LastKnownPositionLongitude</param>
         /// <param name="lastKnownPositionDate">LastKnownPositionDate</param>
         /// <exception cref="ArgumentNullException">The described argument has an invalid value.</exception>
-        public Car(int carId, string licensePlate, ChargingStateEnum chargingState, BookingStateEnum bookingState,
-            int mileage, double chargeLevel, int kilowatts, string manufacturer, string model,
-            int yearOfConstruction, double? lastKnownPositionLatitude, double? lastKnownPositionLongitude,
+        public Car(uint carId, string licensePlate, ChargingStateEnum chargingState, BookingStateEnum bookingState,
+            uint mileage, double chargeLevel, uint kilowatts, string manufacturer, string model,
+            uint yearOfConstruction, double? lastKnownPositionLatitude, double? lastKnownPositionLongitude,
             DateTime? lastKnownPositionDate)
         {
             if (carId == 0)
@@ -83,7 +83,7 @@ namespace ecruise.Models
         /// <summary>
         /// Gets or Sets CarId
         /// </summary>
-        public int CarId { get; }
+        public uint CarId { get; }
 
         /// <summary>
         /// Gets or Sets LicensePlate
@@ -103,7 +103,7 @@ namespace ecruise.Models
         /// <summary>
         /// Gets or Sets Mileage
         /// </summary>
-        public int Mileage { get; set; }
+        public uint Mileage { get; set; }
 
         /// <summary>
         /// Current charging level of the car. From 0. to 100.
@@ -114,7 +114,7 @@ namespace ecruise.Models
         /// <summary>
         /// Gets or Sets Kilowatts
         /// </summary>
-        public int Kilowatts { get; }
+        public uint Kilowatts { get; }
 
         /// <summary>
         /// Gets or Sets Manufacturer
@@ -129,7 +129,7 @@ namespace ecruise.Models
         /// <summary>
         /// Gets or Sets YearOfConstruction
         /// </summary>
-        public int YearOfConstruction { get; }
+        public uint YearOfConstruction { get; }
 
         /// <summary>
         /// Gets or Sets LastKnownPositionLatitude
@@ -213,8 +213,10 @@ namespace ecruise.Models
                 (Kilowatts == other.Kilowatts || Kilowatts.Equals(other.Kilowatts)) &&
                 (Manufacturer == other.Manufacturer || Manufacturer.Equals(other.Manufacturer)) &&
                 (Model == other.Model || Model.Equals(other.Model)) &&
-                (YearOfConstruction == other.YearOfConstruction ||
-                 YearOfConstruction.Equals(other.YearOfConstruction)) &&
+                (
+                    YearOfConstruction == other.YearOfConstruction ||
+                    YearOfConstruction.Equals(other.YearOfConstruction)
+                ) &&
                 (
                     LastKnownPositionLatitude.HasValue && other.LastKnownPositionLatitude.HasValue &&
                     Math.Abs(LastKnownPositionLatitude.Value - other.LastKnownPositionLatitude.Value) < 0.0001 ||

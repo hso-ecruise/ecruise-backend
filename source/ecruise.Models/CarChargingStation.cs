@@ -15,7 +15,7 @@ namespace ecruise.Models
         /// <param name="chargingStationId">ChargingStationId (required)</param>
         /// <param name="chargeStart">ChargeStart (required)</param>
         /// <param name="chargeEnd">ChargeEnd</param>
-        public CarChargingStation(int carChargingStationId, int carId, int chargingStationId,
+        public CarChargingStation(uint carChargingStationId, uint carId, uint chargingStationId,
             DateTime chargeStart, DateTime? chargeEnd)
         {
             if (carChargingStationId == 0)
@@ -38,17 +38,17 @@ namespace ecruise.Models
         /// <summary>
         /// Gets or Sets CarChargingStationId
         /// </summary>
-        public int CarChargingStationId { get; }
+        public uint CarChargingStationId { get; }
 
         /// <summary>
         /// Gets or Sets CarId
         /// </summary>
-        public int CarId { get; }
+        public uint CarId { get; }
 
         /// <summary>
         /// Gets or Sets ChargingStationId
         /// </summary>
-        public int ChargingStationId { get; }
+        public uint ChargingStationId { get; }
 
         /// <summary>
         /// Gets or Sets ChargeStart

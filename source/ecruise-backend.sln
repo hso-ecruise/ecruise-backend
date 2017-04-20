@@ -10,10 +10,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ecruise.Api", "ecruise.Api\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ecruise.Models", "ecruise.Models\ecruise.Models.csproj", "{CCCEC92B-BEDF-4E1F-8625-460587D5C93F}"
 	ProjectSection(ProjectDependencies) = postProject
-		{6A07B356-ED28-4094-B491-FCED6FC885F2} = {6A07B356-ED28-4094-B491-FCED6FC885F2}
+		{9FC73391-AF29-4ABB-BECF-9EE3F721A6B8} = {9FC73391-AF29-4ABB-BECF-9EE3F721A6B8}
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ecruise.Database", "ecruise.Database\ecruise.Database.csproj", "{6A07B356-ED28-4094-B491-FCED6FC885F2}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ecruise.Database", "ecruise.Database\ecruise.Database.csproj", "{9FC73391-AF29-4ABB-BECF-9EE3F721A6B8}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -29,10 +29,10 @@ Global
 		{CCCEC92B-BEDF-4E1F-8625-460587D5C93F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CCCEC92B-BEDF-4E1F-8625-460587D5C93F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{CCCEC92B-BEDF-4E1F-8625-460587D5C93F}.Release|Any CPU.Build.0 = Release|Any CPU
-		{6A07B356-ED28-4094-B491-FCED6FC885F2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{6A07B356-ED28-4094-B491-FCED6FC885F2}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{6A07B356-ED28-4094-B491-FCED6FC885F2}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{6A07B356-ED28-4094-B491-FCED6FC885F2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9FC73391-AF29-4ABB-BECF-9EE3F721A6B8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9FC73391-AF29-4ABB-BECF-9EE3F721A6B8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9FC73391-AF29-4ABB-BECF-9EE3F721A6B8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9FC73391-AF29-4ABB-BECF-9EE3F721A6B8}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

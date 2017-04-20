@@ -14,7 +14,7 @@ namespace ecruise.Models
         /// <param name="spontaneously">Spontaneously (required)</param>
         /// <param name="atMileage">AtMileage</param>
         /// <param name="atDate">AtDate</param>
-        public Maintenance(int maintenenaceId, bool spontaneously, int? atMileage, DateTime? atDate)
+        public Maintenance(uint maintenenaceId, bool spontaneously, uint? atMileage, DateTime? atDate)
         {
             if (maintenenaceId == 0)
                 throw new ArgumentNullException(
@@ -33,22 +33,22 @@ namespace ecruise.Models
         }
 
         /// <summary>
-        /// Gets or Sets MaintenenaceId
+        /// Gets MaintenenaceId
         /// </summary>
-        public int MaintenenaceId { get; }
+        public uint MaintenenaceId { get; }
 
         /// <summary>
-        /// Gets or Sets Spontaneously
+        /// Gets Spontaneously
         /// </summary>
         public bool Spontaneously { get; }
 
         /// <summary>
-        /// Gets or Sets AtMileage
+        /// Gets AtMileage
         /// </summary>
-        public int? AtMileage { get; }
+        public uint? AtMileage { get; }
 
         /// <summary>
-        /// Gets or Sets AtDate
+        /// Gets AtDate
         /// </summary>
         public DateTime? AtDate { get; }
 
