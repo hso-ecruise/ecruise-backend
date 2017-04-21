@@ -1,13 +1,10 @@
-﻿using System.Configuration;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 
 namespace ecruise.Database.Models
 {
     public partial class ecruiseContext : DbContext
     {
-        public static string ConnectionString { get; set; }
-
         public virtual DbSet<Booking> Booking { get; set; }
         public virtual DbSet<Car> Car { get; set; }
         public virtual DbSet<CarChargingStation> CarChargingStation { get; set; }
@@ -22,21 +19,9 @@ namespace ecruise.Database.Models
         public virtual DbSet<Statistic> Statistic { get; set; }
         public virtual DbSet<Trip> Trip { get; set; }
 
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        public ecruiseContext(DbContextOptions options)
+            : base(options)
         {
-            optionsBuilder.UseMySql(ConnectionString);
-        }
-
-        public static class ecruiseContextFactory
-        {
-            public static ecruiseContext Create()
-            {
-                //Ensure database creation
-                var context = new ecruiseContext();
-                context.Database.EnsureCreated();
-
-                return context;
-            }
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
