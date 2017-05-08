@@ -184,4 +184,114 @@ namespace ecruise.Models
 
         #endregion Operators
     }
+
+    public class TripUpdate
+        : IEquatable<TripUpdate>
+    {
+        /// <param name="endChargingStationId">EndChargingStationId</param>
+        /// <param name="distanceTravelled">DistanceTravelled</param>
+        public TripUpdate(uint endChargingStationId, double distanceTravelled)
+        {
+            EndChargingStationId = endChargingStationId;
+            DistanceTravelled = distanceTravelled;
+        }
+
+        /// <summary>
+        /// Gets StartPositionLongitude
+        /// </summary>
+        public uint EndChargingStationId { get; }
+
+        /// <summary>
+        /// Gets DistanceTravelled
+        /// </summary>
+        public double DistanceTravelled { get; }
+
+        /// <summary>
+        /// Returns the string presentation of the object
+        /// </summary>
+        /// <returns>String presentation of the object</returns>
+        public override string ToString()
+        {
+            var sb = new StringBuilder();
+            sb.Append("class TripUpdate {\n");
+            sb.Append("  EndChargingStationId: ").Append(EndChargingStationId).Append("\n");
+            sb.Append("  DistanceTravelled: ").Append(DistanceTravelled).Append("\n");
+            sb.Append("}\n");
+            return sb.ToString();
+        }
+
+        /// <summary>
+        /// Returns the JSON string presentation of the object
+        /// </summary>
+        /// <returns>JSON string presentation of the object</returns>
+        public string ToJson()
+        {
+            return JsonConvert.SerializeObject(this, Formatting.Indented);
+        }
+
+        /// <summary>
+        /// Returns true if objects are equal
+        /// </summary>
+        /// <param name="obj">Object to be compared</param>
+        /// <returns>Boolean</returns>
+        public override bool Equals(object obj)
+        {
+            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            if (obj.GetType() != GetType()) return false;
+            return Equals((Trip)obj);
+        }
+
+        /// <summary>
+        /// Returns true if Trip instances are equal
+        /// </summary>
+        /// <param name="other">Instance of Trip to be compared</param>
+        /// <returns>Boolean</returns>
+        public bool Equals(TripUpdate other)
+        {
+            if (ReferenceEquals(null, other)) return false;
+            if (ReferenceEquals(this, other)) return true;
+
+            return
+                (
+                    EndChargingStationId == other.EndChargingStationId ||
+                    EndChargingStationId.Equals(other.EndChargingStationId)
+                ) &&
+                (
+                    Math.Abs(DistanceTravelled - other.DistanceTravelled) < 0.001 ||
+                    DistanceTravelled.Equals(other.DistanceTravelled)
+                );
+        }
+
+        /// <summary>
+        /// Gets the hash code
+        /// </summary>
+        /// <returns>Hash code</returns>
+        public override int GetHashCode()
+        {
+            unchecked
+            {
+                int hash = 41;
+
+                hash = hash * 59 + EndChargingStationId.GetHashCode();
+                hash = hash * 59 + DistanceTravelled.GetHashCode();
+
+                return hash;
+            }
+        }
+
+        #region Operators
+
+        public static bool operator ==(TripUpdate left, TripUpdate right)
+        {
+            return Equals(left, right);
+        }
+
+        public static bool operator !=(TripUpdate left, TripUpdate right)
+        {
+            return !Equals(left, right);
+        }
+
+        #endregion Operators
+    }
 }
