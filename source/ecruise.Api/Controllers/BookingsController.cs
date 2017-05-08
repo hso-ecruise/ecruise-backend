@@ -41,7 +41,7 @@ namespace ecruise.Api.Controllers
         public IActionResult Post([FromBody]Booking booking)
         {
             if (ModelState.IsValid)
-                return Created($"api/Bookings/1",
+                return Created($"{BasePath}/Bookings/1",
                     new PostReference(booking.BookingId, "api/Bookings/"));
             else
                 return BadRequest(new Error(1, ModelState.ToString(),
@@ -88,9 +88,7 @@ namespace ecruise.Api.Controllers
                 Booking booking2 = new Booking(1, customerid, 1, 1, 49.488342, 8.466788, date1,
                     date2);
 
-                List<Booking> list = new List<Booking>();
-                list.Add(booking);
-                list.Add(booking2);
+                List<Booking> list = new List<Booking> {booking, booking2};
 
                 return Ok(list);
             }
@@ -120,10 +118,7 @@ namespace ecruise.Api.Controllers
                 Booking booking2 = new Booking(2, 1, 1, 1, 49.488342, 8.466788, date1,
                     requestedDateTime);
 
-                List<Booking> list = new List<Booking>();
-                list.Add(booking1);
-                list.Add(booking2);
-
+                List<Booking> list = new List<Booking> {booking1, booking2};
                 return Ok(list);
             }
             else
