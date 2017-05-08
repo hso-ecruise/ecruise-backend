@@ -10,7 +10,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace ecruise.Api.Controllers
 {
     [Produces("application/json")]
-    [Route("api/Bookings")]
+    [Route("v1/Bookings")]
     public class BookingsController : Controller
     {
         // GET: api/Bookings/5
@@ -19,8 +19,12 @@ namespace ecruise.Api.Controllers
         {
             if (ModelState.IsValid && id < 3)
             {
-                Booking booking = new Booking(id, 1, 1, 1, 49.488342, 8.466788, new DateTime(2017, 5, 8, 13, 37, 0),
-                new DateTime(2017, 5, 10, 13, 37, 0));
+                DateTime date1 = new DateTime(2017, 5, 8, 13, 37, 0, DateTimeKind.Utc);
+                DateTime date2 = new DateTime(2017, 5, 10, 13, 37, 0, DateTimeKind.Utc);
+
+                Booking booking = new Booking(id, 1, 1, 1, 49.488342, 8.466788, date1,
+                date2);
+
                 return Ok(booking);
             }
             else if (ModelState.IsValid && (id >= 3 || id == 0))
@@ -42,7 +46,7 @@ namespace ecruise.Api.Controllers
                 return Created($"api/Bookings/1",
                     new PostReference(booking.BookingId, "api/Bookings/"));
             else
-                return BadRequest(new Error(1, ModelState.ToString(),   //TODO ModelState.ToString ok for information?
+                return BadRequest(new Error(1, ModelState.ToString(),
                     "An error occured. Please check the message for further information."));
         }
         
@@ -51,13 +55,17 @@ namespace ecruise.Api.Controllers
         [HttpGet("{tripid}", Name = "GetBookingByTrip")]
         public IActionResult GetByTripId(uint tripid)
         {
-            if (ModelState.IsValid && tripid < 3)
+            if (ModelState.IsValid && tripid < 3 && tripid > 0)
             {
-                Booking booking = new Booking(1, 1, tripid, 1, 49.488342, 8.466788, new DateTime(2017, 5, 8, 13, 37, 0),
-                    new DateTime(2017, 5, 10, 13, 37, 0));
+                DateTime date1 = new DateTime(2017, 5, 8, 13, 37, 0, DateTimeKind.Utc);
+                DateTime date2 = new DateTime(2017, 5, 10, 13, 37, 0, DateTimeKind.Utc);
+
+                Booking booking = new Booking(1, 1, tripid, 1, 49.488342, 8.466788, date1,
+                    date2);
+
                 return Ok(booking);
             }
-            else if (ModelState.IsValid && (tripid >= 3 || tripid == 0))
+            else if (ModelState.IsValid && tripid >= 3)
             {
                 return NotFound("Booking with requested trip id does not exist.");
             }
@@ -75,8 +83,12 @@ namespace ecruise.Api.Controllers
         {
             if (ModelState.IsValid && customerid < 3 && customerid > 0)
             {
-                Booking booking = new Booking(1, customerid, 1, 1, 49.488342, 8.466788, new DateTime(2017, 5, 8, 13, 37, 0),
-                    new DateTime(2017, 5, 10, 13, 37, 0));
+                DateTime date1 = new DateTime(2017, 5, 8, 13, 37, 0, DateTimeKind.Utc);
+                DateTime date2 = new DateTime(2017, 5, 10, 13, 37, 0, DateTimeKind.Utc);
+
+                Booking booking = new Booking(1, customerid, 1, 1, 49.488342, 8.466788, date1,
+                    date2);
+
                 return Ok(booking);
             }
             else if (ModelState.IsValid && customerid >= 3)
@@ -96,11 +108,13 @@ namespace ecruise.Api.Controllers
         {
             // Transform string to date
             DateTime requestedDateTime;
-            if (DateTime.TryParseExact(date, "o", CultureInfo.InvariantCulture, DateTimeStyles.None, out requestedDateTime))
+            if (DateTime.TryParseExact(date, "o", CultureInfo.InvariantCulture, DateTimeStyles.AdjustToUniversal, out requestedDateTime))
             {
-                Booking booking1 = new Booking(1, 1, 1, 1, 49.488342, 8.466788, new DateTime(2017, 5, 8, 13, 37, 0),
+                DateTime date1 = new DateTime(2017, 5, 8, 13, 37, 0, DateTimeKind.Utc);
+
+                Booking booking1 = new Booking(1, 1, 1, 1, 49.488342, 8.466788, date1,
                     requestedDateTime);
-                Booking booking2 = new Booking(2, 1, 1, 1, 49.488342, 8.466788, new DateTime(2017, 5, 8, 13, 37, 0),
+                Booking booking2 = new Booking(2, 1, 1, 1, 49.488342, 8.466788, date1,
                     requestedDateTime);
 
                 List<Booking> list = new List<Booking>();

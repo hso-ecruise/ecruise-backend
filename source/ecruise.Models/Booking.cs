@@ -63,8 +63,8 @@ namespace ecruise.Models
             sb.Append("  InvoiceId: ").Append(InvoiceId).Append("\n");
             sb.Append("  BookingPositionLatutude: ").Append(BookingPositionLatitude).Append("\n");
             sb.Append("  BookingPositionLongitude: ").Append(BookingPositionLongitude).Append("\n");
-            sb.Append("  BookingDate: ").Append(BookingDate).Append("\n");
-            sb.Append("  PlannedDate: ").Append(PlannedDate).Append("\n");
+            sb.Append("  BookingDate: ").Append(BookingDate.ToString("o")).Append("\n");
+            sb.Append("  PlannedDate: ").Append(PlannedDate?.ToString("o")).Append("\n");
             sb.Append("}\n");
             return sb.ToString();
         }
