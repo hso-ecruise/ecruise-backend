@@ -11,7 +11,7 @@ namespace ecruise.Api.Controllers
 {
     public class BookingsController : BaseController
     {
-        // GET: api/Bookings/5
+        // GET: /Bookings/5
         [HttpGet("{id}", Name = "GetBooking")]
         public IActionResult Get(uint id)
         {
@@ -36,7 +36,7 @@ namespace ecruise.Api.Controllers
             }
         }
 
-        // POST: api/Bookings
+        // POST: /Bookings
         [HttpPost(Name = "PostBooking")]
         public IActionResult Post([FromBody]Booking booking)
         {
@@ -48,7 +48,7 @@ namespace ecruise.Api.Controllers
                     "An error occured. Please check the message for further information."));
         }
         
-        // GET: api/Bookings/by-trip/5
+        // GET: /Bookings/by-trip/5
         [HttpGet("by-trip/{tripid}", Name = "GetBookingsByTrip")]
         public IActionResult GetByTripId(uint tripid)
         {
@@ -73,7 +73,7 @@ namespace ecruise.Api.Controllers
             }
         }
 
-        // GET: api/Bookings/by-customer/5
+        // GET: /Bookings/by-customer/5
         [HttpGet("by-customer/{customerid}", Name = "GetBookingsByCustomer")]
         public IActionResult GetByCustomerId(uint customerid)
         {
@@ -103,7 +103,7 @@ namespace ecruise.Api.Controllers
             }
         }
 
-        // GET: api/Bookings/by-date/<date>
+        // GET: /Bookings/by-date/<date>
         [HttpGet("by-date/{date}", Name = "GetBookingsByDate")]
         public IActionResult GetByDate(string date)
         {
