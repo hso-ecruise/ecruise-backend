@@ -31,7 +31,7 @@ namespace ecruise.Api.Controllers
             }
             else
             {
-                return BadRequest(new Error(1, "The id given was not formatted correctly. Id must be unsinged int",
+                return BadRequest(new Error(1, "The id given was not formatted correctly. Id must be unsigned int",
                     "An error occured. Please check the message for further information."));
             }
         }
@@ -68,7 +68,7 @@ namespace ecruise.Api.Controllers
             }
             else
             {
-                return BadRequest(new Error(1, "The id given was not formatted correctly. TripId must be unsinged int",
+                return BadRequest(new Error(1, "The id given was not formatted correctly. TripId must be unsigned int",
                     "An error occured. Please check the message for further information."));
             }
         }
@@ -98,7 +98,7 @@ namespace ecruise.Api.Controllers
             }
             else
             {
-                return BadRequest(new Error(1, "The id given was not formatted correctly. CustomerId must be unsinged int greater than zero",
+                return BadRequest(new Error(1, "The id given was not formatted correctly. CustomerId must be unsigned int greater than zero",
                     "An error occured. Please check the message for further information."));
             }
         }
