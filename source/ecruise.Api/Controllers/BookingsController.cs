@@ -9,9 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace ecruise.Api.Controllers
 {
-    [Produces("application/json")]
-    [Route("v1/Bookings")]
-    public class BookingsController : Controller
+    public class BookingsController : BaseController
     {
         // GET: api/Bookings/5
         [HttpGet("{id}", Name = "GetBooking")]
@@ -29,7 +27,7 @@ namespace ecruise.Api.Controllers
             }
             else if (ModelState.IsValid && (id >= 3 || id == 0))
             {
-                return NotFound("Booking with requested booking id does not exist.");
+                return NotFound(new Error(1, "Booking with requested booking id does not exist.", "An error occured. Please check the message for further information."));
             }
             else
             {
@@ -37,7 +35,7 @@ namespace ecruise.Api.Controllers
                     "An error occured. Please check the message for further information."));
             }
         }
-        
+
         // POST: api/Bookings
         [HttpPost(Name = "PostBooking")]
         public IActionResult Post([FromBody]Booking booking)
@@ -51,8 +49,7 @@ namespace ecruise.Api.Controllers
         }
         
         // GET: api/Bookings/by-trip/5
-        [Route("/by-trip")]
-        [HttpGet("{tripid}", Name = "GetBookingByTrip")]
+        [HttpGet("by-trip/{tripid}", Name = "GetBookingsByTrip")]
         public IActionResult GetByTripId(uint tripid)
         {
             if (ModelState.IsValid && tripid < 3 && tripid > 0)
@@ -77,8 +74,7 @@ namespace ecruise.Api.Controllers
         }
 
         // GET: api/Bookings/by-customer/5
-        [Route("/by-customer")]
-        [HttpGet("{customerid}", Name = "GetBookingByCustomer")]
+        [HttpGet("by-customer/{customerid}", Name = "GetBookingsByCustomer")]
         public IActionResult GetByCustomerId(uint customerid)
         {
             if (ModelState.IsValid && customerid < 3 && customerid > 0)
@@ -89,7 +85,14 @@ namespace ecruise.Api.Controllers
                 Booking booking = new Booking(1, customerid, 1, 1, 49.488342, 8.466788, date1,
                     date2);
 
-                return Ok(booking);
+                Booking booking2 = new Booking(1, customerid, 1, 1, 49.488342, 8.466788, date1,
+                    date2);
+
+                List<Booking> list = new List<Booking>();
+                list.Add(booking);
+                list.Add(booking2);
+
+                return Ok(list);
             }
             else if (ModelState.IsValid && customerid >= 3)
             {
@@ -102,8 +105,8 @@ namespace ecruise.Api.Controllers
             }
         }
 
-        // GET: api/Bookings/by-trip/5
-        [HttpGet("{date}", Name = "GetBookingsByDate")]
+        // GET: api/Bookings/by-date/<date>
+        [HttpGet("by-date/{date}", Name = "GetBookingsByDate")]
         public IActionResult GetByDate(string date)
         {
             // Transform string to date
