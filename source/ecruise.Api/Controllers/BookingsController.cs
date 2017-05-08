@@ -21,7 +21,7 @@ namespace ecruise.Api.Controllers
             {
                 Booking booking = new Booking(id, 1, 1, 1, 49.488342, 8.466788, new DateTime(2017, 5, 8, 13, 37, 0),
                 new DateTime(2017, 5, 10, 13, 37, 0));
-                return Ok(booking.ToJson());
+                return Ok(booking);
             }
             else if (ModelState.IsValid && (id >= 3 || id == 0))
             {
@@ -39,7 +39,7 @@ namespace ecruise.Api.Controllers
         public IActionResult Post([FromBody]Booking booking)
         {
             if (ModelState.IsValid)
-                return Created($"api/Bookings/{booking.BookingId}",
+                return Created($"api/Bookings/1",
                     new PostReference(booking.BookingId, "api/Bookings/"));
             else
                 return BadRequest(new Error(1, ModelState.ToString(),   //TODO ModelState.ToString ok for information?
@@ -55,7 +55,7 @@ namespace ecruise.Api.Controllers
             {
                 Booking booking = new Booking(1, 1, tripid, 1, 49.488342, 8.466788, new DateTime(2017, 5, 8, 13, 37, 0),
                     new DateTime(2017, 5, 10, 13, 37, 0));
-                return Ok(booking.ToJson());
+                return Ok(booking);
             }
             else if (ModelState.IsValid && (tripid >= 3 || tripid == 0))
             {
@@ -73,19 +73,19 @@ namespace ecruise.Api.Controllers
         [HttpGet("{customerid}", Name = "GetBookingByCustomer")]
         public IActionResult GetByCustomerId(uint customerid)
         {
-            if (ModelState.IsValid && customerid < 3)
+            if (ModelState.IsValid && customerid < 3 && customerid > 0)
             {
                 Booking booking = new Booking(1, customerid, 1, 1, 49.488342, 8.466788, new DateTime(2017, 5, 8, 13, 37, 0),
                     new DateTime(2017, 5, 10, 13, 37, 0));
-                return Ok(booking.ToJson());
+                return Ok(booking);
             }
-            else if (ModelState.IsValid && (customerid >= 3 || customerid == 0))
+            else if (ModelState.IsValid && customerid >= 3)
             {
                 return NotFound("Booking with requested customer id does not exist.");
             }
             else
             {
-                return BadRequest(new Error(1, "The id given was not formatted correctly. CustomerId must be unsinged int",
+                return BadRequest(new Error(1, "The id given was not formatted correctly. CustomerId must be unsinged int greater than zero",
                     "An error occured. Please check the message for further information."));
             }
         }
@@ -107,7 +107,7 @@ namespace ecruise.Api.Controllers
                 list.Add(booking1);
                 list.Add(booking2);
 
-                return Json(list);
+                return Ok(list);
             }
             else
             {
