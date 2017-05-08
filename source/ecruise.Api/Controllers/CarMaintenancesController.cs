@@ -78,7 +78,7 @@ namespace ecruise.Api.Controllers
                 {
                     CarMaintenance cm = new CarMaintenance(2, 1, 2, null, plannedDate, null);
 
-                    return Ok(cm);
+                    return Ok(new PostReference(cm.CarMaintenanceId, $"{BasePath}/CarMaintenances"));
                 }
                 else
                 {
