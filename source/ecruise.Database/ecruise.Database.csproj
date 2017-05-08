@@ -4,7 +4,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{6A07B356-ED28-4094-B491-FCED6FC885F2}</ProjectGuid>
+    <ProjectGuid>{9FC73391-AF29-4ABB-BECF-9EE3F721A6B8}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>ecruise.Database</RootNamespace>
