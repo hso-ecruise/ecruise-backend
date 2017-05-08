@@ -5,19 +5,19 @@ namespace ecruise.Database.Models
 {
     public partial class ecruiseContext : DbContext
     {
-        public virtual DbSet<Booking> Booking { get; set; }
-        public virtual DbSet<Car> Car { get; set; }
-        public virtual DbSet<CarChargingStation> CarChargingStation { get; set; }
-        public virtual DbSet<CarMaintenance> CarMaintenance { get; set; }
-        public virtual DbSet<ChargingStation> ChargingStation { get; set; }
-        public virtual DbSet<Configuration> Configuration { get; set; }
-        public virtual DbSet<Customer> Customer { get; set; }
-        public virtual DbSet<CustomerToken> CustomerToken { get; set; }
-        public virtual DbSet<Invoice> Invoice { get; set; }
-        public virtual DbSet<InvoiceItem> InvoiceItem { get; set; }
-        public virtual DbSet<Maintenance> Maintenance { get; set; }
-        public virtual DbSet<Statistic> Statistic { get; set; }
-        public virtual DbSet<Trip> Trip { get; set; }
+        public virtual DbSet<Booking> Bookings { get; set; }
+        public virtual DbSet<Car> Cars { get; set; }
+        public virtual DbSet<CarChargingStation> CarChargingStations { get; set; }
+        public virtual DbSet<CarMaintenance> CarMaintenances { get; set; }
+        public virtual DbSet<ChargingStation> ChargingStations { get; set; }
+        public virtual DbSet<Configuration> Configurations { get; set; }
+        public virtual DbSet<Customer> Customers { get; set; }
+        public virtual DbSet<CustomerToken> CustomerTokens { get; set; }
+        public virtual DbSet<Invoice> Invoices { get; set; }
+        public virtual DbSet<InvoiceItem> InvoiceItems { get; set; }
+        public virtual DbSet<Maintenance> Maintenances { get; set; }
+        public virtual DbSet<Statistic> Statistics { get; set; }
+        public virtual DbSet<Trip> Trips { get; set; }
 
         public ecruiseContext(DbContextOptions options)
             : base(options)
@@ -41,15 +41,19 @@ namespace ecruise.Database.Models
 
                 entity.Property(e => e.BookingId).HasColumnType("int(10) unsigned");
 
-                entity.Property(e => e.BookingDate).HasColumnType("datetime");
-
                 entity.Property(e => e.CustomerId).HasColumnType("int(10) unsigned");
+
+                entity.Property(e => e.TripId).HasColumnType("int(10) unsigned");
 
                 entity.Property(e => e.InvoiceId).HasColumnType("int(10) unsigned");
 
-                entity.Property(e => e.PlannedDate).HasColumnType("datetime");
+                entity.Property(e => e.BookedPositionLatitude).HasColumnType("double");
 
-                entity.Property(e => e.TripId).HasColumnType("int(10) unsigned");
+                entity.Property(e => e.BookedPositionLongitude).HasColumnType("double");
+
+                entity.Property(e => e.BookingDate).HasColumnType("datetime");
+
+                entity.Property(e => e.PlannedDate).HasColumnType("datetime");
 
                 entity.HasOne(d => d.Customer)
                     .WithMany(p => p.Booking)
