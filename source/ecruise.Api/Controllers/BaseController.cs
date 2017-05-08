@@ -11,5 +11,6 @@ namespace ecruise.Api.Controllers
     [Route("v1/[controller]")]
     public class BaseController : Controller
     {
+        public readonly string BasePath = "v1/";
     }
 }
