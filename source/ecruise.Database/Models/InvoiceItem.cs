@@ -11,11 +11,18 @@ namespace ecruise.Database.Models
         }
 
         public int InvoiceItemId { get; set; }
-        public double Amount { get; set; }
         public int? InvoiceId { get; set; }
         public string Reason { get; set; }
+        public InvoiceItemType Type { get; set; }
+        public double Amount { get; set; }
 
         public virtual ICollection<CarMaintenance> CarMaintenance { get; set; }
         public virtual Invoice Invoice { get; set; }
+    }
+
+    public enum InvoiceItemType
+    {
+        Debit = 0,
+        Credit = 1
     }
 }
