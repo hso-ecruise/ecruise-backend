@@ -14,7 +14,7 @@ namespace ecruise.Api.Controllers
     public class CarMaintenancesController : BaseController
     {
         // GET: CarMaintenances
-        [HttpGet]
+        [HttpGet(Name = "GetCarMaintenances")]
         public IActionResult Get()
         {
             CarMaintenance cm1 = new CarMaintenance(1, 1, 1, null, null, null);
@@ -35,7 +35,7 @@ namespace ecruise.Api.Controllers
         {
             if (ModelState.IsValid)
             {
-                return Created($"{BasePath}CarMaintenances", new PostReference(1, "/CarMaintenances"));
+                return Created($"{BasePath}/CarMaintenances", new PostReference(1, "/CarMaintenances"));
             }
             else
             {
@@ -44,8 +44,8 @@ namespace ecruise.Api.Controllers
             }
         }
 
-        // GET: api/CarMaintenances/5
-        [HttpGet("{id}", Name = "Get")]
+        // GET: /CarMaintenances/5
+        [HttpGet("{id}", Name = "GetCarMaintenance")]
         public IActionResult Get(uint id)
         {
             if (ModelState.IsValid && id < 3 && id > 0)
@@ -59,15 +59,15 @@ namespace ecruise.Api.Controllers
             }
             else
             {
-                return BadRequest(new Error(1, "The id given was not formatted correctly. Id must be unsinged int",
+                return BadRequest(new Error(1, "The id given was not formatted correctly. Id must be unsigned int",
                     "An error occured. Please check the message for further information."));
             }
         }
 
         
-        // PATCH: api/CarMaintenances/5
+        // PATCH: /CarMaintenances/5/completed-date/<date>
         [HttpPatch("{id}/completed-date/{date}")]
-        public IActionResult Patch(uint id, string date)
+        public IActionResult Patch(uint id, [FromBody] string date)
         {
             if (ModelState.IsValid && id < 3 && id > 0)
             {
@@ -94,10 +94,87 @@ namespace ecruise.Api.Controllers
             }
             else
             {
-                return BadRequest(new Error(1, "The id given was not formatted correctly. Id must be unsinged int",
+                return BadRequest(new Error(1, "The id given was not formatted correctly. Id must be unsigned int",
                     "An error occured. Please check the message for further information."));
             }
+        }
 
+        // GET: /CarMaintenances/by-car/5
+        [HttpGet("by-car/{id}", Name = "GetCarMaintenancesByCar")]
+        public IActionResult GetByCarId(uint carId)
+        {
+            if (ModelState.IsValid && carId < 3 && carId > 0)
+            {
+                CarMaintenance cm1 = new CarMaintenance(1, carId, 1, null, null, null);
+                CarMaintenance cm2 = new CarMaintenance(2, carId, 1, null, null, null);
+
+                return Ok(new List<CarMaintenance> { cm1, cm2 });
+            }
+            else if (ModelState.IsValid && carId >= 3 && carId < 6)
+            {
+                return NoContent();
+            }
+            else if (ModelState.IsValid && carId >= 6)
+            {
+                return NotFound(new Error(1, "CarMaintenance with requested id does not exist.",
+                    "An error occured. Please check the message for further information."));
+            }
+            else
+            {
+                return BadRequest(new Error(1, "The id given was not formatted correctly. Id must be unsigned int",
+                    "An error occured. Please check the message for further information."));
+            }
+        }
+
+        // GET: /CarMaintenances/by-maintenance/5
+        [HttpGet("by-maintenance/{id}", Name = "GetCarMaintenancesByMaintenance")]
+        public IActionResult GetByMaintenanceId(uint maintenanceId)
+        {
+            if (ModelState.IsValid && maintenanceId < 3 && maintenanceId > 0)
+            {
+                CarMaintenance cm1 = new CarMaintenance(1, 1, maintenanceId, null, null, null);
+                CarMaintenance cm2 = new CarMaintenance(2, 1, maintenanceId, null, null, null);
+
+                return Ok(new List<CarMaintenance> {cm1, cm2});
+            }
+            else if (ModelState.IsValid && maintenanceId >= 3 && maintenanceId < 6)
+            {
+                return NoContent();
+            }
+            else if (ModelState.IsValid && maintenanceId >= 6)
+            {
+                return NotFound(new Error(1, "Maintenance with requested id does not exist.",
+                    "An error occured. Please check the message for further information."));
+            }
+            else
+            {
+                return BadRequest(new Error(1, "The id given was not formatted correctly. Id must be unsigned int",
+                    "An error occured. Please check the message for further information."));
+            }
+        }
+
+        // GET: /CarMaintenances/by-invoice-item/5
+        [HttpGet("by-invoice-item/{invoiceitemid}", Name = "GetCarMaintenanceByInvoiceItem")]
+        public IActionResult GetByInvoiceItemId(uint invoiceItemId)
+        {
+            if (ModelState.IsValid && invoiceItemId < 3 && invoiceItemId > 0)
+            {
+                return Ok(new CarMaintenance(1, 1, 1, invoiceItemId, null, null));
+            }
+            else if (ModelState.IsValid && invoiceItemId >= 3 && invoiceItemId < 6)
+            {
+                return NoContent();
+            }
+            else if (ModelState.IsValid && invoiceItemId >= 6)
+            {
+                return NotFound(new Error(1, "InvoiceItem with requested id does not exist.",
+                    "An error occured. Please check the message for further information."));
+            }
+            else
+            {
+                return BadRequest(new Error(1, "The id given was not formatted correctly. Id must be unsigned int",
+                    "An error occured. Please check the message for further information."));
+            }
         }
     }
 }
