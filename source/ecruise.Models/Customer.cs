@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel.DataAnnotations;
 using System.Text;
 using Newtonsoft.Json;
 
@@ -28,34 +29,17 @@ namespace ecruise.Models
             string lastName, string country, string city, uint zipCode, string street, string houseNumber,
             string addressExtraLine, bool activated, bool verified)
         {
-            if (customerId == 0)
-                throw new ArgumentNullException(
-                    nameof(customerId) + " is a required property for Customer and cannot be zero");
-            if (zipCode == 0)
-                throw new ArgumentNullException(
-                    nameof(zipCode) + " is a required property for Customer and cannot be zero");
-
             CustomerId = customerId;
-            Email =
-                email ?? throw new ArgumentNullException(nameof(email) +
-                                                         " is a required property for Customer and cannot be null");
-            PhoneNumber = phoneNumber ??
-                          throw new ArgumentNullException(nameof(phoneNumber) +
-                                                          " is a required property for Customer and cannot be null");
+            Email = email;
+            PhoneNumber = phoneNumber;
             ChipCardUid = chipCardUid;
-            FirstName = firstName ?? throw new ArgumentNullException(
-                            nameof(firstName) + " is a required property for Customer and cannot be null");
-            LastName = lastName ?? throw new ArgumentNullException(
-                           nameof(lastName) + " is a required property for Customer and cannot be null");
-            Country = country ?? throw new ArgumentNullException(
-                          nameof(country) + " is a required property for Customer and cannot be null");
-            City = city ?? throw new ArgumentNullException(
-                       nameof(city) + " is a required property for Customer and cannot be null");
+            FirstName = firstName;
+            LastName = lastName;
+            Country = country;
+            City = city;
             ZipCode = zipCode;
-            Street = street ?? throw new ArgumentNullException(
-                         nameof(street) + " is a required property for Customer and cannot be null");
-            HouseNumber = houseNumber ?? throw new ArgumentNullException(
-                              nameof(houseNumber) + " is a required property for Customer and cannot be null");
+            Street = street;
+            HouseNumber = houseNumber;
             AddressExtraLine = addressExtraLine;
             Activated = activated;
             Verified = verified;
@@ -65,11 +49,13 @@ namespace ecruise.Models
         /// <summary>
         /// Gets or Sets a CustomerId
         /// </summary>
+        [Required, Range(1, uint.MaxValue)]
         public uint CustomerId { get; }
 
         /// <summary>
         /// Gets or Sets Email
         /// </summary>
+        [Required, StringLength(64), EmailAddress]
         public string Email { get; set; }
 
         /// <summary>
@@ -80,41 +66,49 @@ namespace ecruise.Models
         /// <summary>
         /// Gets or Sets PhoneNumber
         /// </summary>
+        [Required]
         public string PhoneNumber { get; set; }
 
         /// <summary>
         /// Gets or Sets FirstName
         /// </summary>
+        [Required, StringLength(48)]
         public string FirstName { get; set; }
 
         /// <summary>
         /// Gets or Sets LastName
         /// </summary>
+        [Required, StringLength(48)]
         public string LastName { get; set; }
 
         /// <summary>
         /// Gets or Sets Country
         /// </summary>
+        [Required, StringLength(2, MinimumLength = 2)]
         public string Country { get; set; }
 
         /// <summary>
         /// Gets or Sets City
         /// </summary>
+        [Required, StringLength(64)]
         public string City { get; set; }
 
         /// <summary>
         /// Gets or Sets ZipCode
         /// </summary>
+        [Required, Range(1001, 99999)]
         public uint ZipCode { get; set; }
 
         /// <summary>
         /// Gets or Sets Street
         /// </summary>
+        [Required, StringLength(128)]
         public string Street { get; set; }
 
         /// <summary>
         /// Gets or Sets HouseNumber
         /// </summary>
+        [Required, StringLength(8)]
         public string HouseNumber { get; set; }
 
         /// <summary>
@@ -255,28 +249,29 @@ namespace ecruise.Models
         public Address(string country, string city, uint zipCode, string street, string houseNumber,
             string adressExtraLine)
         {
-            if (zipCode < 01001 || zipCode > 99999)
-                throw new ArgumentNullException(nameof(zipCode) + " has an invalid value");
-
-            Country = country ??
-                      throw new ArgumentNullException(
-                          nameof(country) + " is a required property for Address and cannot be null");
-            City = city ?? throw new ArgumentNullException(
-                       nameof(city) + " is a required property for Address and cannot be null");
+            Country = country;
+            City = city;
             ZipCode = zipCode;
-            Street = street ?? throw new ArgumentNullException(
-                         nameof(street) + " is a required property for Address and cannot be null");
-            HouseNumber = houseNumber ?? throw new ArgumentNullException(
-                              nameof(houseNumber) + " is a required property for Address and cannot be null");
+            Street = street;
+            HouseNumber = houseNumber;
             AdressExtraLine = adressExtraLine;
         }
 
-
+        [Required, StringLength(2, MinimumLength = 2)]
         public string Country { get; }
+
+        [Required, StringLength(64)]
         public string City { get; }
+
+        [Required, Range(1001, 99999)]
         public uint ZipCode { get; }
+
+        [Required, StringLength(128)]
         public string Street { get; }
+
+        [Required, StringLength(8)]
         public string HouseNumber { get; }
+
         public string AdressExtraLine { get; }
 
         /// <summary>

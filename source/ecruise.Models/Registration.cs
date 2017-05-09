@@ -1,4 +1,5 @@
 using System;
+using System.ComponentModel.DataAnnotations;
 using System.Text;
 using Newtonsoft.Json;
 
@@ -16,34 +17,34 @@ namespace ecruise.Models
         /// <param name="lastName">LastName (required)</param>
         public Registration(string email, string password, string firstName, string lastName)
         {
-            Email = email ?? throw new ArgumentNullException(
-                        nameof(email) + " is a required property for Registration and cannot be null");
-            Password = password ?? throw new ArgumentNullException(
-                           nameof(password) + " is a required property for Registration and cannot be null");
-            FirstName = firstName ?? throw new ArgumentNullException(
-                            nameof(firstName) + " is a required property for Registration and cannot be null");
-            LastName = lastName ?? throw new ArgumentNullException(
-                           nameof(firstName) + " is a required property for Registration and cannot be null");
+            Email = email;
+            Password = password;
+            FirstName = firstName;
+            LastName = lastName;
         }
 
         /// <summary>
         /// Gets Email
         /// </summary>
+        [Required, StringLength(64), DataType(DataType.EmailAddress)]
         public string Email { get; }
 
         /// <summary>
         /// Gets Password
         /// </summary>
+        [Required, StringLength(int.MaxValue, MinimumLength = 8, ErrorMessage = "The field Password must be a string a minimum length of '8'.")]
         public string Password { get; }
 
         /// <summary>
         /// Gets FirstName
         /// </summary>
+        [Required, StringLength(48)]
         public string FirstName { get; }
 
         /// <summary>
         /// Gets LastName
         /// </summary>
+        [Required, StringLength(48)]
         public string LastName { get; }
 
         /// <summary>
