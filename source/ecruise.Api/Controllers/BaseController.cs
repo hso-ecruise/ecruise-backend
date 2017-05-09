@@ -1,8 +1,4 @@
-using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ecruise.Api.Controllers
@@ -11,6 +7,13 @@ namespace ecruise.Api.Controllers
     [Route("v1/[controller]")]
     public class BaseController : Controller
     {
-        public readonly string BasePath = "v1/";
+        public readonly string BasePath = "v1";
+
+        protected string GetModelStateErrorString()
+        {
+            return string.Join(" | ", ModelState.Values
+                .SelectMany(v => v.Errors)
+                .Select(e => e.ErrorMessage));
+        }
     }
 }
