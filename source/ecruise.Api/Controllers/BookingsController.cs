@@ -44,7 +44,7 @@ namespace ecruise.Api.Controllers
                 return Created($"{BasePath}/Bookings/1",
                     new PostReference(booking.BookingId, "api/Bookings/"));
             else
-                return BadRequest(new Error(1, ModelState.ToString(),
+                return BadRequest(new Error(1, GetModelStateErrorString(),
                     "An error occured. Please check the message for further information."));
         }
         

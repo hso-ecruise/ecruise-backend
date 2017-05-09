@@ -10,7 +10,7 @@ namespace ecruise.Api.Controllers
         public IActionResult Login([FromRoute] string email, [FromBody] string password)
         {
             if (!ModelState.IsValid)
-                return BadRequest(new Error(1, ModelState.ToString(),
+                return BadRequest(new Error(1, GetModelStateErrorString(),
                     "An error occured. Please check the message for further information."));
 
             if (email == "login@ecruise.me" && password == "test123")
@@ -24,7 +24,7 @@ namespace ecruise.Api.Controllers
         public IActionResult Activate([FromRoute] string email, [FromRoute] string token)
         {
             if (!ModelState.IsValid)
-                return BadRequest(new Error(1, ModelState.ToString(),
+                return BadRequest(new Error(1, GetModelStateErrorString(),
                     "An error occured. Please check the message for further information."));
             if (email == "login@ecruise.me" &&
                 token == "F3E64113EAC3432FFE968942674E98C6B01987F69EADEA90EEA1F8C809AB3DEE")
