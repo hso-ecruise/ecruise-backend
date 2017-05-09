@@ -30,7 +30,7 @@ namespace ecruise.Api.Controllers
         public IActionResult Post([FromBody]CarChargingStation carChargingStation)
         {
             if (ModelState.IsValid)
-            {
+            { 
                 return Created($"{BasePath}/CarChargingStations", new PostReference(carChargingStation.CarChargingStationId, $"{BasePath}/CarChargingStations"));
             }
             else
@@ -65,7 +65,7 @@ namespace ecruise.Api.Controllers
             }
             else
             {
-                return BadRequest(new Error(1, "The id given was not formatted correctly. Id must be unsigned int",
+                return BadRequest(new Error(1, GetModelStateErrorString(),
                     "An error occured. Please check the message for further information."));
             }
         }

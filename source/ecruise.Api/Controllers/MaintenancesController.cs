@@ -50,7 +50,7 @@ namespace ecruise.Api.Controllers
                 return Created($"{BasePath}/maintenances/1",
                     new PostReference(1, $"{BasePath}/maintenances/1"));
             else
-                return BadRequest(new Error(1, ModelState.ToString(),
+                return BadRequest(new Error(1, GetModelStateErrorString(),
                     "An error occured. Please check the message for further information."));
         }
     }

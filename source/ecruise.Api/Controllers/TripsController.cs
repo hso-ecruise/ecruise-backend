@@ -27,7 +27,7 @@ namespace ecruise.Api.Controllers
                 return Created($"{BasePath}/trips/1",
                     new PostReference(trip.TripId, $"{BasePath}/trips/1"));
             else
-                return BadRequest(new Error(1, ModelState.ToString(),
+                return BadRequest(new Error(1, GetModelStateErrorString(),
                     "An error occured. Please check the message for further information."));
         }
 
@@ -70,7 +70,7 @@ namespace ecruise.Api.Controllers
             }
             else
             {
-                return BadRequest(new Error(1, "The id given was not formatted correctly. Id has to be unsinged int",
+                return BadRequest(new Error(1, GetModelStateErrorString(),
                     "An error occured. Please check the message for further information."));
             }
         }

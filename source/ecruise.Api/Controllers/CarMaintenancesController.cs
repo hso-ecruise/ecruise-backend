@@ -39,7 +39,7 @@ namespace ecruise.Api.Controllers
             }
             else
             {
-                return BadRequest(new Error(1, ModelState.ToString(),
+                return BadRequest(new Error(1, GetModelStateErrorString(),
                     "An error occured. Please check the message for further information."));
             }
         }
