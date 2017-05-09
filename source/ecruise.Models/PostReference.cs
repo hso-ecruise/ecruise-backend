@@ -1,4 +1,5 @@
 using System;
+using System.ComponentModel.DataAnnotations;
 using System.Text;
 using Newtonsoft.Json;
 
@@ -14,24 +15,22 @@ namespace ecruise.Models
         /// <param name="url">URL to the ressource (required)</param>
         public PostReference(uint id, string url)
         {
-            if (id == 0)
-                throw new ArgumentNullException(
-                    nameof(id) + " is a required property for PostReference and cannot be zero");
             Id = id;
-            Url = url ?? throw new ArgumentNullException(
-                      nameof(url) + " is a required property for PostReference and cannot be null");
+            Url = url;
         }
 
         /// <summary>
         /// The ressource's unique identifier 
         /// </summary>
         /// <value>The ressource's unique identifier</value>
+        [Required, Range(1, uint.MaxValue)]
         public uint Id { get; }
 
         /// <summary>
         /// URL to the ressource 
         /// </summary>
         /// <value>URL to the ressource </value>
+        [Required]
         public string Url { get; }
 
         /// <summary>

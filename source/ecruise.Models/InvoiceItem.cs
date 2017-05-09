@@ -1,4 +1,5 @@
 using System;
+using System.ComponentModel.DataAnnotations;
 using System.Text;
 using Newtonsoft.Json;
 
@@ -26,21 +27,9 @@ namespace ecruise.Models
         /// <param name="amount">Amount (required)</param>
         public InvoiceItem(uint invoiceItemId, uint invoiceId, string reason, TypeEnum type, double amount)
         {
-            if (invoiceItemId == 0)
-                throw new ArgumentNullException(nameof(invoiceItemId) +
-                                                " is a required property for InvoiceItem and cannot be zero");
-            if (invoiceId == 0)
-                throw new ArgumentNullException(nameof(invoiceId) +
-                                                " is a required property for InvoiceItem and cannot be zero");
-            if (Math.Abs(amount) < 0.0001)
-                throw new ArgumentNullException(nameof(amount) +
-                                                " is a required property for InvoiceItem and cannot be zero");
-
             InvoiceItemId = invoiceItemId;
             InvoiceId = invoiceId;
-            Reason = reason ??
-                     throw new ArgumentNullException(nameof(reason) +
-                                                     " is a required property for InvoiceItem and cannot be null");
+            Reason = reason;
             Type = type;
             Amount = amount;
         }
@@ -48,28 +37,33 @@ namespace ecruise.Models
         /// <summary>
         /// Gets or Sets InvoiceItemId
         /// </summary>
+        [Required, Range(1, uint.MaxValue)]
         public uint InvoiceItemId { get; }
 
         /// <summary>
         /// See #/definitions/Invoice
         /// </summary>
         /// <value>See #/definitions/Invoice</value>
+        [Required, Range(1, uint.MaxValue)]
         public uint InvoiceId { get; }
 
         /// <summary>
         /// Text which will appear on the invoice. Can contain the name of the service or some other reason. 
         /// </summary>
         /// <value>Text which will appear on the invoice. Can contain the name of the service or some other reason. </value>
+        [Required, StringLength(255)]
         public string Reason { get; }
 
         /// <summary>
         /// Gets or Sets Type
         /// </summary>
+        [Required]
         public TypeEnum Type { get; }
 
         /// <summary>
         /// Gets or Sets Amount
         /// </summary>
+        [Required, Range(0, double.MaxValue)]
         public double Amount { get; }
 
         /// <summary>

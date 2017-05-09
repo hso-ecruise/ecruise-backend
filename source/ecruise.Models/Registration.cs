@@ -32,7 +32,9 @@ namespace ecruise.Models
         /// <summary>
         /// Gets Password
         /// </summary>
-        [Required, StringLength(int.MaxValue, MinimumLength = 8, ErrorMessage = "The field Password must be a string a minimum length of '8'.")]
+        [Required]
+        [StringLength(int.MaxValue, MinimumLength = 8,
+            ErrorMessage = "The field Password must be a string a minimum length of '8'.")]
         public string Password { get; }
 
         /// <summary>

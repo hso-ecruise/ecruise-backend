@@ -1,4 +1,5 @@
 using System;
+using System.ComponentModel.DataAnnotations;
 using System.Text;
 using Newtonsoft.Json;
 
@@ -21,19 +22,6 @@ namespace ecruise.Models
         public Booking(uint bookingId, uint customerId, uint? tripId, uint invoiceId, double bookingPositionLatitude,
             double bookingPositionLongitude, DateTime bookingDate, DateTime? plannedDate)
         {
-            if (bookingId == 0)
-                throw new ArgumentNullException(
-                    nameof(bookingId) + " is a required property for Booking and cannot be zero");
-            if (customerId == 0)
-                throw new ArgumentNullException(
-                    nameof(customerId) + " is a required property for Booking and cannot be zero");
-            if (invoiceId == 0)
-                throw new ArgumentNullException(
-                    nameof(invoiceId) + " is a required property for Booking and cannot be zero");
-            if (Math.Abs(bookingPositionLatitude) < 0.00001)
-                throw new ArgumentNullException(
-                    nameof(bookingPositionLatitude) + " is a required property for Booking and cannot be zero");
-
             BookingId = bookingId;
             CustomerId = customerId;
             TripId = tripId;
@@ -44,13 +32,28 @@ namespace ecruise.Models
             PlannedDate = plannedDate;
         }
 
+        [Required, Range(1, uint.MaxValue)]
         public uint BookingId { get; }
+
+        [Required, Range(1, uint.MaxValue)]
         public uint CustomerId { get; }
+
+        [Range(1, uint.MaxValue)]
         public uint? TripId { get; set; }
+
+        [Required, Range(1, uint.MaxValue)]
         public uint InvoiceId { get; }
+
+        [Required]
         public double BookingPositionLatitude { get; }
+
+        [Required]
         public double BookingPositionLongitude { get; }
+
+        [Required, DataType(DataType.DateTime)]
         public DateTime BookingDate { get; }
+
+        [DataType(DataType.DateTime)]
         public DateTime? PlannedDate { get; }
 
         public override string ToString()
