@@ -1,4 +1,5 @@
 using System;
+using System.ComponentModel.DataAnnotations;
 using System.Text;
 using Newtonsoft.Json;
 
@@ -15,7 +16,7 @@ namespace ecruise.Models
             EmailActivation,
             Login
         }
-        
+
         /// <summary>
         /// Initializes a new instance of the <see cref="CustomerToken" /> class.
         /// </summary>
@@ -28,18 +29,10 @@ namespace ecruise.Models
         public CustomerToken(uint customerTokenId, uint customerId, TokenTypeEnum type, string token,
             DateTime creationDate, DateTime? expireDate)
         {
-            if (customerTokenId == 0)
-                throw new ArgumentNullException(
-                    nameof(CustomerTokenId) + " is a required property for CustomerToken and cannot be zero");
-            if (customerId == 0)
-                throw new ArgumentNullException(
-                    nameof(customerId) + " is a required property for CustomerToken and cannot be zero");
-
             CustomerTokenId = customerTokenId;
             CustomerId = customerId;
             Type = type;
-            Token = token ?? throw new ArgumentNullException(
-                        nameof(token) + " is a required property for CustomerToken and cannot be null");
+            Token = token;
             CreationDate = creationDate;
             ExpireDate = expireDate;
         }
@@ -47,31 +40,37 @@ namespace ecruise.Models
         /// <summary>
         /// Gets CustomerTokenId
         /// </summary>
+        [Required, Range(1, uint.MaxValue)]
         public uint CustomerTokenId { get; }
 
         /// <summary>
         /// Gets CustomerId
         /// </summary>
+        [Required, Range(1, uint.MaxValue)]
         public uint CustomerId { get; }
 
         /// <summary>
         /// Gets Type
         /// </summary>
+        [Required]
         public TokenTypeEnum Type { get; }
 
         /// <summary>
         /// Gets Token
         /// </summary>
+        [Required, StringLength(128)]
         public string Token { get; }
 
         /// <summary>
         /// Gets CreationDate
         /// </summary>
+        [Required, DataType(DataType.DateTime)]
         public DateTime CreationDate { get; }
 
         /// <summary>
         /// Gets ExpireDate
         /// </summary>
+        [DataType(DataType.DateTime)]
         public DateTime? ExpireDate { get; }
 
         /// <summary>

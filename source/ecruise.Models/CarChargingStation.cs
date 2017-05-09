@@ -1,4 +1,5 @@
 using System;
+using System.ComponentModel.DataAnnotations;
 using System.Text;
 using Newtonsoft.Json;
 
@@ -18,16 +19,6 @@ namespace ecruise.Models
         public CarChargingStation(uint carChargingStationId, uint carId, uint chargingStationId,
             DateTime chargeStart, DateTime? chargeEnd)
         {
-            if (carChargingStationId == 0)
-                throw new ArgumentNullException(
-                    nameof(carChargingStationId) + " is a required property for CarChargingStation and cannot be zero");
-            if (carId == 0)
-                throw new ArgumentNullException(
-                    nameof(carId) + " is a required property for CarChargingStation and cannot be zero");
-            if (chargingStationId == 0)
-                throw new ArgumentNullException(
-                    nameof(chargingStationId) + " is a required property for CarChargingStation and cannot be zero");
-
             CarChargingStationId = carChargingStationId;
             CarId = carId;
             ChargingStationId = chargingStationId;
@@ -38,26 +29,31 @@ namespace ecruise.Models
         /// <summary>
         /// Gets or Sets CarChargingStationId
         /// </summary>
+        [Required, Range(1, uint.MaxValue)]
         public uint CarChargingStationId { get; }
 
         /// <summary>
         /// Gets or Sets CarId
         /// </summary>
+        [Required, Range(1, uint.MaxValue)]
         public uint CarId { get; }
 
         /// <summary>
         /// Gets or Sets ChargingStationId
         /// </summary>
+        [Required, Range(1, uint.MaxValue)]
         public uint ChargingStationId { get; }
 
         /// <summary>
         /// Gets or Sets ChargeStart
         /// </summary>
+        [Required, DataType(DataType.DateTime)]
         public DateTime ChargeStart { get; }
 
         /// <summary>
         /// Gets or Sets ChargeEnd
         /// </summary>
+        [DataType(DataType.DateTime)]
         public DateTime? ChargeEnd { get; set; }
 
         /// <summary>

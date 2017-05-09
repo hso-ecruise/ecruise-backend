@@ -1,4 +1,5 @@
 using System;
+using System.ComponentModel.DataAnnotations;
 using System.Text;
 using Newtonsoft.Json;
 
@@ -19,16 +20,6 @@ namespace ecruise.Models
         public CarMaintenance(uint carMaintenanceId, uint carId, uint maintenanceId, uint? invoiceItemId,
             DateTime? plannedDate, DateTime? completedDate)
         {
-            if (carMaintenanceId == 0)
-                throw new ArgumentNullException(
-                    nameof(carMaintenanceId) + " is a required property for CarMaintenance and cannot be zero");
-            if (carId == 0)
-                throw new ArgumentNullException(
-                    nameof(carId) + " is a required property for CarMaintenance and cannot be zero");
-            if (maintenanceId == 0)
-                throw new ArgumentNullException(
-                    nameof(maintenanceId) + " is a required property for CarMaintenance and cannot be zero");
-
             CarMaintenanceId = carMaintenanceId;
             CarId = carId;
             MaintenanceId = maintenanceId;
@@ -40,34 +31,40 @@ namespace ecruise.Models
         /// <summary>
         /// Gets or Sets CarMaintenanceId
         /// </summary>
+        [Required, Range(1, uint.MaxValue)]
         public uint CarMaintenanceId { get; }
 
         /// <summary>
         /// See #/definitions/Car
         /// </summary>
         /// <value>See #/definitions/Car</value>
+        [Required, Range(1, uint.MaxValue)]
         public uint CarId { get; }
 
         /// <summary>
         /// See #/definitions/Maintenance
         /// </summary>
         /// <value>See #/definitions/Maintenance</value>
+        [Required, Range(1, uint.MaxValue)]
         public uint MaintenanceId { get; }
 
         /// <summary>
         /// See #/definitions/InvoiceItem
         /// </summary>
         /// <value>See #/definitions/InvoiceItem</value>
+        [Range(1, uint.MaxValue)]
         public uint? InvoiceItemId { get; set; }
 
         /// <summary>
         /// Gets or Sets PlannedDate
         /// </summary>
+        [DataType(DataType.DateTime)]
         public DateTime? PlannedDate { get; }
 
         /// <summary>
         /// Gets or Sets CompletedDate
         /// </summary>
+        [DataType(DataType.DateTime)]
         public DateTime? CompletedDate { get; set; }
 
         /// <summary>

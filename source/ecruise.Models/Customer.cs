@@ -61,12 +61,13 @@ namespace ecruise.Models
         /// <summary>
         /// Gets or Sets PhoneNumber
         /// </summary>
+        [StringLength(16)]
         public string ChipCardUid { get; set; }
 
         /// <summary>
         /// Gets or Sets PhoneNumber
         /// </summary>
-        [Required]
+        [Required, StringLength(32)]
         public string PhoneNumber { get; set; }
 
         /// <summary>

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel.DataAnnotations;
 using System.Text;
 using Newtonsoft.Json;
 
@@ -49,31 +50,15 @@ namespace ecruise.Models
             uint yearOfConstruction, double? lastKnownPositionLatitude, double? lastKnownPositionLongitude,
             DateTime? lastKnownPositionDate)
         {
-            if (carId == 0)
-                throw new ArgumentNullException(
-                    nameof(carId) + " is a required property for Car and cannot be zero");
-            if (kilowatts == 0)
-                throw new ArgumentNullException(
-                    nameof(kilowatts) + " is a required property for Car and cannot be zero");
-            if (yearOfConstruction == 0)
-                throw new ArgumentNullException(
-                    nameof(yearOfConstruction) + " is a required property for Car and cannot be zero");
-
             CarId = carId;
-            LicensePlate = licensePlate ??
-                           throw new ArgumentNullException(
-                               nameof(licensePlate) + " is a required property for Car and cannot be null");
+            LicensePlate = licensePlate;
             ChargingState = chargingState;
             BookingState = bookingState;
             Mileage = mileage;
             ChargeLevel = chargeLevel;
             Kilowatts = kilowatts;
-            Manufacturer = manufacturer ??
-                           throw new ArgumentNullException(
-                               nameof(manufacturer) + " is a required property for Car and cannot be null");
-            Model = model ??
-                    throw new ArgumentNullException(
-                        nameof(model) + " is a required property for Car and cannot be null");
+            Manufacturer = manufacturer;
+            Model = model;
             YearOfConstruction = yearOfConstruction;
             LastKnownPositionLatitude = lastKnownPositionLatitude;
             LastKnownPositionLongitude = lastKnownPositionLongitude;
@@ -83,52 +68,62 @@ namespace ecruise.Models
         /// <summary>
         /// Gets or Sets CarId
         /// </summary>
+        [Required, Range(1, uint.MaxValue)]
         public uint CarId { get; }
 
         /// <summary>
         /// Gets or Sets LicensePlate
         /// </summary>
+        [Required, RegularExpression(@"^[A-Z]{1,3}-[A-Z]{1,2} [0-9]{1,4}$"), StringLength(16, MinimumLength = 16)]
         public string LicensePlate { get; }
 
         /// <summary>
         /// Gets or Sets ChargingState
         /// </summary>
+        [Required]
         public ChargingStateEnum ChargingState { get; set; }
 
         /// <summary>
         /// Gets or Sets BookingState
         /// </summary>
+        [Required]
         public BookingStateEnum BookingState { get; set; }
 
         /// <summary>
         /// Gets or Sets Mileage
         /// </summary>
+        [Required, Range(0, uint.MaxValue)]
         public uint Mileage { get; set; }
 
         /// <summary>
         /// Current charging level of the car. From 0. to 100.
         /// </summary>
         /// <value>Current charging level of the car. From 0. to 100.</value>
+        [Required, Range(0, 100)]
         public double ChargeLevel { get; set; }
 
         /// <summary>
         /// Gets or Sets Kilowatts
         /// </summary>
+        [Required, Range(0, 2000)]
         public uint Kilowatts { get; }
 
         /// <summary>
         /// Gets or Sets Manufacturer
         /// </summary>
+        [Required, StringLength(64)]
         public string Manufacturer { get; }
 
         /// <summary>
         /// Gets or Sets Model
         /// </summary>
+        [Required, StringLength(32)]
         public string Model { get; }
 
         /// <summary>
         /// Gets or Sets YearOfConstruction
         /// </summary>
+        [Required, Range(1950, 2100)]
         public uint YearOfConstruction { get; }
 
         /// <summary>
@@ -144,6 +139,7 @@ namespace ecruise.Models
         /// <summary>
         /// Gets or Sets LastKnownPositionDate
         /// </summary>
+        [DataType(DataType.DateTime)]
         public DateTime? LastKnownPositionDate { get; set; }
 
         /// <summary>

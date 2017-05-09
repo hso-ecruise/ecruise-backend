@@ -1,4 +1,5 @@
 using System;
+using System.ComponentModel.DataAnnotations;
 using System.Text;
 using Newtonsoft.Json;
 
@@ -16,15 +17,12 @@ namespace ecruise.Models
         /// <param name="atDate">AtDate</param>
         public Maintenance(uint maintenenaceId, bool spontaneously, uint? atMileage, DateTime? atDate)
         {
-            if (maintenenaceId == 0)
-                throw new ArgumentNullException(
-                    nameof(maintenenaceId) + " is a required property for Maintenance and cannot be zero");
             if (spontaneously && (atMileage.HasValue || atDate.HasValue))
-                throw new ArgumentNullException("Neither " + nameof(atMileage) + " nor " + nameof(atDate) +
-                                                " can have a value if the Maintenance is spontaneous.");
+                throw new ArgumentException("Neither " + nameof(atMileage) + " nor " + nameof(atDate) +
+                                            " can have a value if the Maintenance is spontaneous.");
             if (!spontaneously && (!atMileage.HasValue && !atDate.HasValue))
-                throw new ArgumentNullException("Either " + nameof(atMileage) + " or " + nameof(atDate) +
-                                                " is required to have a value if the Maintenance is planned");
+                throw new ArgumentException("Either " + nameof(atMileage) + " or " + nameof(atDate) +
+                                            " is required to have a value if the Maintenance is planned");
 
             MaintenenaceId = maintenenaceId;
             Spontaneously = spontaneously;
@@ -35,11 +33,13 @@ namespace ecruise.Models
         /// <summary>
         /// Gets MaintenenaceId
         /// </summary>
+        [Required, Range(1, uint.MaxValue)]
         public uint MaintenenaceId { get; }
 
         /// <summary>
         /// Gets Spontaneously
         /// </summary>
+        [Required]
         public bool Spontaneously { get; }
 
         /// <summary>

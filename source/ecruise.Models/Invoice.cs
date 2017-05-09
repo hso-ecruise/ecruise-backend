@@ -1,4 +1,5 @@
 using System;
+using System.ComponentModel.DataAnnotations;
 using System.Text;
 using Newtonsoft.Json;
 
@@ -13,12 +14,8 @@ namespace ecruise.Models
         /// <param name="invoiceId">InvoiceId (required)</param>
         /// <param name="totalAmount">TotalAmount (required)</param>
         /// <param name="paid">Paid (required)</param>
-        public Invoice(uint invoiceId, double totalAmount, bool paid)
+        public Invoice(uint invoiceId, double totalAmount, bool paid = false)
         {
-            if (invoiceId == 0)
-                throw new ArgumentNullException(
-                    nameof(invoiceId) + " is a required property for Invoice and cannot be zero");
-
             InvoiceId = invoiceId;
             TotalAmount = totalAmount;
             Paid = paid;
@@ -27,16 +24,19 @@ namespace ecruise.Models
         /// <summary>
         /// Gets InvoiceId
         /// </summary>
+        [Required, Range(1, uint.MaxValue)]
         public uint InvoiceId { get; }
 
         /// <summary>
         /// Gets or Sets TotalAmount
         /// </summary>
+        [Required]
         public double TotalAmount { get; set; }
 
         /// <summary>
         /// Gets or Sets Paid
         /// </summary>
+        [Required]
         public bool Paid { get; set; }
 
         /// <summary>

@@ -1,4 +1,5 @@
 using System;
+using System.ComponentModel.DataAnnotations;
 using System.Text;
 using Newtonsoft.Json;
 
@@ -41,45 +42,53 @@ namespace ecruise.Models
         /// <summary>
         /// Gets TripId
         /// </summary>
+        [Required, Range(1, uint.MaxValue)]
         public uint TripId { get; }
 
         /// <summary>
         /// See #/definitions/Car
         /// </summary>
         /// <value>See '#/definitions/Car'</value>
+        [Range(1, uint.MaxValue)]
         public uint? CarId { get; set; }
 
         /// <summary>
         /// See '#/definitions/Customer'
         /// </summary>
         /// <value>See '#/definitions/Customer'</value>
+        [Required, Range(1, uint.MaxValue)]
         public uint CustomerId { get; }
 
         /// <summary>
         /// Date and time when the trip started
         /// </summary>
         /// <value>Date and time when the trip started</value>
+        [DataType(DataType.DateTime)]
         public DateTime? StartDate { get; }
 
         /// <summary>
         /// Date and time when the trip ended
         /// </summary>
         /// <value>Date and time when the trip ended</value>
+        [DataType(DataType.DateTime)]
         public DateTime? EndDate { get; set; }
 
         /// <summary>
         /// Gets StartPositionLatitude
         /// </summary>
+        [Range(1, uint.MaxValue)]
         public uint? StartChargingStationId { get; set; }
 
         /// <summary>
         /// Gets StartPositionLongitude
         /// </summary>
+        [Range(1, uint.MaxValue)]
         public uint? EndChargingStationId { get; set; }
 
         /// <summary>
         /// Gets DistanceTravelled
         /// </summary>
+        [Range(0, double.MaxValue)]
         public double? DistanceTravelled { get; set; }
 
         /// <summary>
@@ -199,11 +208,13 @@ namespace ecruise.Models
         /// <summary>
         /// Gets StartPositionLongitude
         /// </summary>
+        [Required, Range(1, uint.MaxValue)]
         public uint EndChargingStationId { get; }
 
         /// <summary>
         /// Gets DistanceTravelled
         /// </summary>
+        [Required, Range(0, double.MaxValue)]
         public double DistanceTravelled { get; }
 
         /// <summary>

@@ -1,4 +1,5 @@
 using System;
+using System.ComponentModel.DataAnnotations;
 using System.Text;
 using Newtonsoft.Json;
 
@@ -15,32 +16,30 @@ namespace ecruise.Models
         /// <param name="description">Detailed error message (required)</param>
         public Error(int code, string message, string description)
         {
-            if (code == 0)
-                throw new ArgumentNullException(nameof(code) + " is a required property for Error and cannot be zero");
-
             Code = code;
-            Message = message ?? throw new ArgumentNullException(nameof(message) +
-                                                                 " is a required property for Error and cannot be null");
-            Description = description ?? throw new ArgumentNullException(nameof(description) +
-                                                                         " is a required property for Error and cannot be null");
+            Message = message;
+            Description = description;
         }
 
         /// <summary>
         /// Unique error code
         /// </summary>
         /// <value>Unique error code</value>
+        [Required, Range(int.MinValue, int.MaxValue)]
         public int Code { get; }
 
         /// <summary>
         /// Basic error message
         /// </summary>
         /// <value>Basic error message</value>
+        [Required]
         public string Message { get; }
 
         /// <summary>
         /// Detailed error message
         /// </summary>
         /// <value>Detailed error message</value>
+        [Required]
         public string Description { get; }
 
         /// <summary>
