@@ -1,7 +1,9 @@
 {
   "ExpandedNodes": [
     "",
-    "\\source"
+    "\\source",
+    "\\source\\ecruise.Api",
+    "\\source\\ecruise.Api\\Controllers"
   ],
   "SelectedNode": "\\source\\ecruise-backend.sln",
   "PreviewInSolutionExplorer": false
