@@ -25,7 +25,7 @@ namespace ecruise.Models
         /// <param name="type">Type (required)</param>
         /// <param name="token">Token (required)</param>
         /// <param name="creationDate">CreationDate (required)</param>
-        /// <param name="expireDate">ExireDate</param>
+        /// <param name="expireDate">ExpireDate</param>
         public CustomerToken(uint customerTokenId, uint customerId, TokenTypeEnum type, string token,
             DateTime creationDate, DateTime? expireDate)
         {
