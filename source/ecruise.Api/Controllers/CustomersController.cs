@@ -149,7 +149,7 @@ namespace ecruise.Api.Controllers
         }
 
         // GET: /Customers/by-lastname/5
-        [HttpDelete("by-lastname/{name}", Name = "GetCustomerByLastName")]
+        [HttpGet("by-lastname/{name}", Name = "GetCustomerByLastName")]
         public IActionResult GetCustomerByLastName(string name)
         {
             Customer c1 = new Customer(1, "peter@ecruise.me", "072210815", "", "Peter", "Mustermann", "DE", "Offenburg",
