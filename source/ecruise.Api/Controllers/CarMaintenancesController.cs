@@ -10,7 +10,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace ecruise.Api.Controllers
 {    
-    [Route("Car-Maintenances")]
+    [Route("v1/car-maintenances")]
     public class CarMaintenancesController : BaseController
     {
         // GET: CarMaintenances

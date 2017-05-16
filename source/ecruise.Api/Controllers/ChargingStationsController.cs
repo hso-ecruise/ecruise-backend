@@ -8,6 +8,7 @@ using ecruise.Models;
 
 namespace ecruise.Api.Controllers
 {
+    [Route("v1/charging-stations")]
     public class ChargingStationsController : BaseController
     {
         // GET: /ChargingStations

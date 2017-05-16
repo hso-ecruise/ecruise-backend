@@ -8,7 +8,6 @@ using ecruise.Models;
 
 namespace ecruise.Api.Controllers
 {
-    [Route("/invoices")]
     public class InvoicesController : BaseController
     {
         // GET: /Invoices
