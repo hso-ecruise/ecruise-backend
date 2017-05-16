@@ -1,4 +1,5 @@
-﻿using ecruise.Database.Models;
+﻿using System;
+using ecruise.Database.Models;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -23,7 +24,8 @@ namespace ecruise.Database
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            ecruiseContextFactory.ConnectionString = Configuration.GetConnectionString("ecruiseMySQL");
+            ecruiseContextFactory.ConnectionString = Environment.GetEnvironmentVariable("CONNECTION_STRING") ??
+                                                     Configuration.GetConnectionString("ecruiseMySQL");
         }
     }
 }
