@@ -1,8 +1,9 @@
-version: '2'
+version: '3'
 services:
   ecruise-backend:
+    image: ecruise-backend:latest
     build: .
     ports:
-    - "3000:5000"
+    - "127.0.0.1:5000:5000"
     environment:
     - ASPNETCORE_URLS=http://+:5000
