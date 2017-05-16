@@ -5,5 +5,10 @@ services:
     build: .
     ports:
     - "127.0.0.1:5000:5000"
+    volumes:
+      - /run/mysqld/mysqld.sock:/app/mysqld.sock
     environment:
     - ASPNETCORE_URLS=http://+:5000
+    - MYSQL_SOCK_FILE=/app/mysqld.sock
+    env_file:
+    - backend-variables.env
