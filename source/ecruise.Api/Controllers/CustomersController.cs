@@ -150,7 +150,7 @@ namespace ecruise.Api.Controllers
         [HttpGet("by-lastname/{name}", Name = "GetCustomerByLastName")]
         public IActionResult GetCustomerByLastName(string name)
         {
-            Customer c1 = new Customer(1, "peter@ecruise.me", "072210815", "", "Peter", "Mustermann", "DE", "Offenburg",
+            Customer c1 = new Customer(1, "max@ecruise.me", "072210815", "", ",ax", "Mustermann", "DE", "Offenburg",
                 77652, "Badstraﬂe", "24a", "", false, false);
             Customer c2 = new Customer(7, "andrea@ecruise.me", "072210815", "", "Andrea", "Mustermann", "DE", "Offenburg",
                 77652, "Badstraﬂe", "24a", "", false, false);
