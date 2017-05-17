@@ -4,7 +4,7 @@ COPY . /app
 
 WORKDIR /app/ecruise.Api
  
-RUN ["dotnet", "restore"]
-RUN ["dotnet", "build"]
+RUN dotnet restore
+RUN dotnet build -c Release
 
-ENTRYPOINT ["dotnet", "run"]
+ENTRYPOINT ["dotnet", "bin/Release/netcoreapp1.1/ecruise.Api.dll"]
