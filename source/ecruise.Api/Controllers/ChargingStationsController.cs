@@ -12,10 +12,11 @@ namespace ecruise.Api.Controllers
         [HttpGet(Name = "GetAllChargingStations")]
         public IActionResult GetAll()
         {
-            CarChargingStation station1 = new CarChargingStation(1, 1, 1, new DateTime(2017, 5, 8, 21, 5, 46), new DateTime(2017, 5, 8, 21, 57, 23));
-            CarChargingStation station2 = new CarChargingStation(1, 1, 1, new DateTime(2017, 5, 8, 15, 5, 46), new DateTime(2017, 5, 8, 16, 31, 52));
-
-            return Ok(new List<CarChargingStation> { station1, station2 });
+            ChargingStation s1 = new ChargingStation(1, 2, 0, 49.485636, 8.4680978);
+            ChargingStation s2 = new ChargingStation(2, 1, 1, 49.487877, 8.4704328);
+            ChargingStation s3 = new ChargingStation(3, 3, 2, 49.487825, 8.4705938);
+            
+            return Ok(new List<ChargingStation> { s1, s2, s3 });
         }
 
         // POST: /ChargingStations
