@@ -25,7 +25,7 @@ namespace ecruise.Models
         /// Unique error code
         /// </summary>
         /// <value>Unique error code</value>
-        [Required, Range(int.MinValue, int.MaxValue)]
+        [Range(int.MinValue, int.MaxValue)]
         public int Code { get; }
 
         /// <summary>

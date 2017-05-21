@@ -32,7 +32,7 @@ namespace ecruise.Models
             PlannedDate = plannedDate;
         }
 
-        [Required, Range(1, uint.MaxValue)]
+        [Range(1, uint.MaxValue)]
         public uint BookingId { get; }
 
         [Required, Range(1, uint.MaxValue)]

@@ -24,7 +24,7 @@ namespace ecruise.Models
         /// <summary>
         /// Gets InvoiceId
         /// </summary>
-        [Required, Range(1, uint.MaxValue)]
+        [Range(1, uint.MaxValue)]
         public uint InvoiceId { get; }
 
         /// <summary>

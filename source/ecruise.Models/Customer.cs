@@ -49,7 +49,7 @@ namespace ecruise.Models
         /// <summary>
         /// Gets or Sets a CustomerId
         /// </summary>
-        [Required, Range(1, uint.MaxValue)]
+        [Range(1, uint.MaxValue)]
         public uint CustomerId { get; }
 
         /// <summary>

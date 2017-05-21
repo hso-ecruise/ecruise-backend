@@ -33,7 +33,7 @@ namespace ecruise.Models
         /// <summary>
         /// Gets MaintenenaceId
         /// </summary>
-        [Required, Range(1, uint.MaxValue)]
+        [Range(1, uint.MaxValue)]
         public uint MaintenenaceId { get; }
 
         /// <summary>

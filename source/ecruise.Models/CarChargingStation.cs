@@ -29,7 +29,7 @@ namespace ecruise.Models
         /// <summary>
         /// Gets or Sets CarChargingStationId
         /// </summary>
-        [Required, Range(1, uint.MaxValue)]
+        [Range(1, uint.MaxValue)]
         public uint CarChargingStationId { get; }
 
         /// <summary>

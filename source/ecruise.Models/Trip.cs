@@ -22,13 +22,6 @@ namespace ecruise.Models
         public Trip(uint tripId, uint? carId, uint customerId, DateTime? startDate, DateTime? endDate,
             uint? startChargingStationId, uint? endChargingStationId, double? distanceTravelled)
         {
-            if (tripId == 0)
-                throw new ArgumentNullException(
-                    nameof(tripId) + " is a required property for Trip and cannot be zero");
-            if (customerId == 0)
-                throw new ArgumentNullException(
-                    nameof(customerId) + " is a required property for Trip and cannot be zero");
-
             TripId = tripId;
             CarId = carId;
             CustomerId = customerId;
@@ -42,7 +35,7 @@ namespace ecruise.Models
         /// <summary>
         /// Gets TripId
         /// </summary>
-        [Required, Range(1, uint.MaxValue)]
+        [Range(1, uint.MaxValue)]
         public uint TripId { get; }
 
         /// <summary>

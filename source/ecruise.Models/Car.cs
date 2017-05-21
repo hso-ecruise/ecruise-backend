@@ -68,7 +68,7 @@ namespace ecruise.Models
         /// <summary>
         /// Gets or Sets CarId
         /// </summary>
-        [Required, Range(1, uint.MaxValue)]
+        [Range(1, uint.MaxValue)]
         public uint CarId { get; }
 
         /// <summary>
