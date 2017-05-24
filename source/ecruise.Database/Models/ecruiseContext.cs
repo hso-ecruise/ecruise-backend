@@ -33,7 +33,7 @@ namespace ecruise.Database.Models
                 entity.HasIndex(e => e.CustomerId)
                     .HasName("booking_ibfk_1");
 
-                entity.HasIndex(e => e.InvoiceId)
+                entity.HasIndex(e => e.InvoiceItemId)
                     .HasName("booking_ibfk_3");
 
                 entity.HasIndex(e => e.TripId)
@@ -45,7 +45,7 @@ namespace ecruise.Database.Models
 
                 entity.Property(e => e.TripId).HasColumnType("int(10) unsigned");
 
-                entity.Property(e => e.InvoiceId).HasColumnType("int(10) unsigned");
+                entity.Property(e => e.InvoiceItemId).HasColumnType("int(10) unsigned");
 
                 entity.Property(e => e.BookedPositionLatitude).HasColumnType("double");
 
@@ -63,7 +63,7 @@ namespace ecruise.Database.Models
 
                 entity.HasOne(d => d.Invoice)
                     .WithMany(p => p.Booking)
-                    .HasForeignKey(d => d.InvoiceId)
+                    .HasForeignKey(d => d.InvoiceItemId)
                     .OnDelete(DeleteBehavior.Restrict)
                     .HasConstraintName("booking_ibfk_3");
 

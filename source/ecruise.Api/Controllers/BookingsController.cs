@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using ecruise.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.CodeAnalysis.CSharp;
 
 namespace ecruise.Api.Controllers
 {
@@ -12,6 +13,8 @@ namespace ecruise.Api.Controllers
         [HttpGet("{id}", Name = "GetBooking")]
         public IActionResult Get(uint id)
         {
+
+
             if (ModelState.IsValid && id < 3)
             {
                 DateTime date1 = new DateTime(2017, 5, 8, 13, 37, 0, DateTimeKind.Utc);
@@ -36,7 +39,7 @@ namespace ecruise.Api.Controllers
         // POST: /Bookings
         [HttpPost(Name = "PostBooking")]
         public IActionResult Post([FromBody]Booking booking)
-        {
+        { 
             if (ModelState.IsValid)
                 return Created($"{BasePath}/Bookings/1",
                     new PostReference(booking.BookingId, "api/Bookings/"));

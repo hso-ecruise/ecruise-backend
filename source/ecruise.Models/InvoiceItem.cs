@@ -75,7 +75,7 @@ namespace ecruise.Models
             var sb = new StringBuilder();
             sb.Append("class InvoiceItem {\n");
             sb.Append("  InvoiceItemId: ").Append(InvoiceItemId).Append("\n");
-            sb.Append("  InvoiceId: ").Append(InvoiceId).Append("\n");
+            sb.Append("  InvoiceItemId: ").Append(InvoiceId).Append("\n");
             sb.Append("  Reason: ").Append(Reason).Append("\n");
             sb.Append("  Type: ").Append(Type).Append("\n");
             sb.Append("  Amount: ").Append(Amount).Append("\n");
