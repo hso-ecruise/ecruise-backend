@@ -23,7 +23,7 @@ namespace ecruise.Database
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            ecruiseContextFactory.ConnectionString = Environment.GetEnvironmentVariable("CONNECTION_STRING") ??
+            EcruiseContextFactory.ConnectionString = Environment.GetEnvironmentVariable("CONNECTION_STRING") ??
                                                      Configuration.GetConnectionString("ecruiseMySQL");
         }
     }

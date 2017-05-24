@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 
 namespace ecruise.Database
 {
-    public class ecruiseContextFactory
+    public class EcruiseContextFactory
         : IDbContextFactory<EcruiseContext>
     {
         public static string ConnectionString { private get; set; }

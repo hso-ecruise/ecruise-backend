@@ -6,7 +6,7 @@ namespace ecruise.Database
     {
         void printCustomers()
         {
-            var factory = new ecruiseContextFactory();
+            var factory = new EcruiseContextFactory();
             var ctx = factory.Create(new DbContextFactoryOptions());
 
             foreach (var customer in ctx.Customers)
