@@ -1,4 +1,6 @@
 using System.Linq;
+using ecruise.Database;
+using ecruise.Database.Models;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ecruise.Api.Controllers
@@ -8,6 +10,8 @@ namespace ecruise.Api.Controllers
     public class BaseController : Controller
     {
         public readonly string BasePath = "v1";
+
+        private static readonly EcruiseContext _context = new EcruiseContextFactory().Create(options: null);
 
         protected string GetModelStateErrorString()
         {
