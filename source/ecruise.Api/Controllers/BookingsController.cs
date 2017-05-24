@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Globalization;
 using ecruise.Models;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.CodeAnalysis.CSharp;
 
 namespace ecruise.Api.Controllers
 {
@@ -13,33 +12,22 @@ namespace ecruise.Api.Controllers
         [HttpGet("{id}", Name = "GetBooking")]
         public IActionResult Get(uint id)
         {
-
-
-            if (ModelState.IsValid && id < 3)
-            {
-                DateTime date1 = new DateTime(2017, 5, 8, 13, 37, 0, DateTimeKind.Utc);
-                DateTime date2 = new DateTime(2017, 5, 10, 13, 37, 0, DateTimeKind.Utc);
-
-                Booking booking = new Booking(id, 1, 1, 1, 49.488342, 8.466788, date1,
-                date2);
-
-                return Ok(booking);
-            }
-            else if (ModelState.IsValid && (id >= 3 || id == 0))
-            {
-                return NotFound(new Error(1, "Booking with requested booking id does not exist.", "An error occured. Please check the message for further information."));
-            }
-            else
-            {
+            if (!ModelState.IsValid)
                 return BadRequest(new Error(1, "The id given was not formatted correctly. Id must be unsigned int",
                     "An error occured. Please check the message for further information."));
-            }
+
+            var bookingEntity = Context.Bookings.Find(id);
+
+            if (bookingEntity == null)
+                return NotFound(new Error(1, "Booking with requested booking id does not exist.", "An error occured. Please check the message for further information."));
+
+            return Ok(bookingEntity);
         }
 
         // POST: /Bookings
         [HttpPost(Name = "PostBooking")]
         public IActionResult Post([FromBody]Booking booking)
-        { 
+        {
             if (ModelState.IsValid)
                 return Created($"{BasePath}/Bookings/1",
                     new PostReference(booking.BookingId, "api/Bookings/"));
@@ -47,7 +35,7 @@ namespace ecruise.Api.Controllers
                 return BadRequest(new Error(1, GetModelStateErrorString(),
                     "An error occured. Please check the message for further information."));
         }
-        
+
         // GET: /Bookings/by-trip/5
         [HttpGet("by-trip/{tripid}", Name = "GetBookingsByTrip")]
         public IActionResult GetByTripId(uint tripid)
@@ -88,7 +76,7 @@ namespace ecruise.Api.Controllers
                 Booking booking2 = new Booking(1, customerid, 1, 1, 49.488342, 8.466788, date1,
                     date2);
 
-                List<Booking> list = new List<Booking> {booking, booking2};
+                List<Booking> list = new List<Booking> { booking, booking2 };
 
                 return Ok(list);
             }
@@ -118,7 +106,7 @@ namespace ecruise.Api.Controllers
                 Booking booking2 = new Booking(2, 1, 1, 1, 49.488342, 8.466788, date1,
                     requestedDateTime);
 
-                List<Booking> list = new List<Booking> {booking1, booking2};
+                List<Booking> list = new List<Booking> { booking1, booking2 };
                 return Ok(list);
             }
             else
