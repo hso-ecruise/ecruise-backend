@@ -2,6 +2,7 @@ using System.Linq;
 using ecruise.Database;
 using ecruise.Database.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Filters;
 
 namespace ecruise.Api.Controllers
 {
@@ -18,6 +19,16 @@ namespace ecruise.Api.Controllers
             return string.Join(" | ", ModelState.Values
                 .SelectMany(v => v.Errors)
                 .Select(e => e.ErrorMessage));
+        }
+
+        // Code to be executed after each action
+        public override void OnActionExecuted(ActionExecutedContext context)
+        {
+            // Check if changes were made
+            if (Context.ChangeTracker.HasChanges())
+                Context.SaveChanges();
+
+            base.OnActionExecuted(context);
         }
     }
 }
