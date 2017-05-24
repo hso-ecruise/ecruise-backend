@@ -11,7 +11,7 @@ namespace ecruise.Api.Controllers
     {
         public readonly string BasePath = "v1";
 
-        private static readonly EcruiseContext _context = new EcruiseContextFactory().Create(options: null);
+        protected static readonly EcruiseContext Context = new EcruiseContextFactory().Create(options: null);
 
         protected string GetModelStateErrorString()
         {
