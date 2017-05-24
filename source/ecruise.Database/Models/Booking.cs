@@ -8,7 +8,7 @@ namespace ecruise.Database.Models
         public uint BookingId { get; set; }
         public uint CustomerId { get; set; }
         public uint? TripId { get; set; }
-        public uint InvoiceItemId { get; set; }
+        public uint? InvoiceItemId { get; set; }
         public double BookedPositionLatitude { get; set; }
         public double BookedPositionLongitude { get; set; }
         public DateTime BookingDate { get; set; }
@@ -16,6 +16,6 @@ namespace ecruise.Database.Models
 
         public virtual Customer Customer { get; set; }
         public virtual Trip Trip { get; set; }
-        public virtual Invoice Invoice { get; set; }
+        public virtual InvoiceItem InvoiceItem { get; set; }
     }
 }
