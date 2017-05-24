@@ -1,16 +1,43 @@
+using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Net;
+using ecruise.Database.Models;
 using Microsoft.AspNetCore.Mvc;
 using ecruise.Models;
+using Customer = ecruise.Models.Customer;
 
 namespace ecruise.Api.Controllers
 {
     public class CustomersController : BaseController
     {
+        // The context to use when accessing the Ecruise Database
+        private readonly EcruiseContext _context;
+
+        public CustomersController(EcruiseContext context)
+        {
+            _context = context;
+        }
+
         // TODO: Requires to be admin
         // GET: /Customers
         [HttpGet(Name = "GetAllCustomers")]
         public IActionResult GetAll()
         {
+            try
+            {
+                var dbEntites = _context.Customers.ToList();
+
+                if (dbEntites.Count > 0)
+                    return Ok(dbEntites);
+                else
+                    return NotFound();
+            }
+            catch (Exception e)
+            {
+                // Add Error return
+            }
+
             Customer c1 = new Customer(1, "admin@ecruise.me", "078108151", "", "Peter", "Admin", "DE", "Offenburg",
                 77652, "Badstraﬂe", "24a", "", false, false);
             Customer c2 = new Customer(2, "tschwendemann@ecruise.me", "078108152", "", "Tobias", "Schwendemann", "DE",
