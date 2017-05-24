@@ -5,17 +5,17 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 namespace ecruise.Database
 {
     public class ecruiseContextFactory
-        : IDbContextFactory<ecruiseContext>
+        : IDbContextFactory<EcruiseContext>
     {
         public static string ConnectionString { private get; set; }
 
-        public ecruiseContext Create(DbContextFactoryOptions options)
+        public EcruiseContext Create(DbContextFactoryOptions options)
         {
-            var optionsBuilder = new DbContextOptionsBuilder<ecruiseContext>();
+            var optionsBuilder = new DbContextOptionsBuilder<EcruiseContext>();
             optionsBuilder.UseMySql(ConnectionString);
 
             //Ensure database creation
-            ecruiseContext ctx = new ecruiseContext(optionsBuilder.Options);
+            EcruiseContext ctx = new EcruiseContext(optionsBuilder.Options);
             ctx.Database.EnsureCreated();
 
             return ctx;

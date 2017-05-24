@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Metadata;
 
 namespace ecruise.Database.Models
 {
-    public partial class ecruiseContext : DbContext
+    public partial class EcruiseContext : DbContext
     {
         public virtual DbSet<Booking> Bookings { get; set; }
         public virtual DbSet<Car> Cars { get; set; }
@@ -19,7 +19,7 @@ namespace ecruise.Database.Models
         public virtual DbSet<Statistic> Statistics { get; set; }
         public virtual DbSet<Trip> Trips { get; set; }
 
-        public ecruiseContext(DbContextOptions options)
+        public EcruiseContext(DbContextOptions options)
             : base(options)
         {
         }
