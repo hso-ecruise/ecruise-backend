@@ -61,7 +61,7 @@ namespace ecruise.Database.Models
                     .OnDelete(DeleteBehavior.Restrict)
                     .HasConstraintName("booking_ibfk_1");
 
-                entity.HasOne(d => d.Invoice)
+                entity.HasOne(d => d.InvoiceItem)
                     .WithMany(p => p.Booking)
                     .HasForeignKey(d => d.InvoiceItemId)
                     .OnDelete(DeleteBehavior.Restrict)
