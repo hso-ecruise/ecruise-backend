@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 namespace ecruise.Database.Models
 {
@@ -17,9 +16,10 @@ namespace ecruise.Database.Models
         public InvoiceItemType Type { get; set; }
         public double Amount { get; set; }
 
+        public virtual Invoice Invoice { set; get; }
+
         public virtual ICollection<CarMaintenance> CarMaintenance { get; set; }
         public virtual ICollection<Booking> Booking { get; set; }
-        public virtual Invoice Invoice { get; set; }
     }
 
     public enum InvoiceItemType

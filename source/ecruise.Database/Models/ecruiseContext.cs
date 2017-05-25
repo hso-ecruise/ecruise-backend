@@ -508,7 +508,7 @@ namespace ecruise.Database.Models
 
                 entity.Property(e => e.Bookings)
                     .IsRequired()
-                    .HasColumnType("int(11)");
+                    .HasColumnType("int(11) unsigned");
 
                 entity.Property(e => e.AverageChargeLevel)
                     .IsRequired()
@@ -557,6 +557,9 @@ namespace ecruise.Database.Models
 
                 entity.Property(e => e.EndChargingStationId)
                     .HasColumnType("int(10) unsigned");
+
+                entity.Property(e => e.DistanceTravelled)
+                    .HasColumnType("double");
 
 
                 entity.HasOne(d => d.Car)

@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 
 namespace ecruise.Database.Models
 {
@@ -7,9 +6,9 @@ namespace ecruise.Database.Models
     {
         public uint CarChargingStationId { get; set; }
         public uint CarId { get; set; }
-        public DateTime? ChargeEnd { get; set; }
-        public DateTime ChargeStart { get; set; }
         public uint ChargingStationId { get; set; }
+        public DateTime ChargeStart { get; set; }
+        public DateTime? ChargeEnd { get; set; }
 
         public virtual Car Car { get; set; }
         public virtual ChargingStation ChargingStation { get; set; }
