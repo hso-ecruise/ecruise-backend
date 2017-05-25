@@ -49,7 +49,7 @@ namespace ecruise.Models
         /// <summary>
         /// Gets or Sets a CustomerId
         /// </summary>
-        [Range(1, uint.MaxValue)]
+        [Required, Range(0, uint.MaxValue)]
         public uint CustomerId { get; }
 
         /// <summary>
@@ -116,18 +116,21 @@ namespace ecruise.Models
         /// Extra line for the user's address. Can contain various detail information about the user's address. 
         /// </summary>
         /// <value>Extra line for the user's address. Can contain various detail information about the user's address. </value>
+        [StringLength(64)]
         public string AddressExtraLine { get; set; }
 
         /// <summary>
         /// True if the user has activated his account by clicking on the link in the activation email. 
         /// </summary>
         /// <value>True if the user has activated his account by clicking on the link in the activation email. </value>
+        [Required]
         public bool Activated { get; set; }
 
         /// <summary>
         /// True if the user has verified his account at our head-quarter by bringing us his driver's license. 
         /// </summary>
         /// <value>True if the user has verified his account at our head-quarter by bringing us his driver's license.</value>
+        [Required]
         public bool Verified { get; set; }
 
         /// <summary>

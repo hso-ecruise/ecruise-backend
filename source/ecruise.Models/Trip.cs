@@ -35,7 +35,7 @@ namespace ecruise.Models
         /// <summary>
         /// Gets TripId
         /// </summary>
-        [Range(1, uint.MaxValue)]
+        [Required, Range(0, uint.MaxValue)]
         public uint TripId { get; }
 
         /// <summary>

@@ -33,7 +33,7 @@ namespace ecruise.Models
         /// <summary>
         /// Gets MaintenenaceId
         /// </summary>
-        [Range(1, uint.MaxValue)]
+        [Required, Range(0, uint.MaxValue)]
         public uint MaintenenaceId { get; }
 
         /// <summary>
@@ -45,11 +45,13 @@ namespace ecruise.Models
         /// <summary>
         /// Gets AtMileage
         /// </summary>
+        [Range(0, uint.MaxValue)]
         public uint? AtMileage { get; }
 
         /// <summary>
         /// Gets AtDate
         /// </summary>
+        [DataType(DataType.DateTime)]
         public DateTime? AtDate { get; }
 
         /// <summary>

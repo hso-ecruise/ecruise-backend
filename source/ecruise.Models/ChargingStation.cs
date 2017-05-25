@@ -28,7 +28,7 @@ namespace ecruise.Models
         /// <summary>
         /// Gets or Sets a CustomerId
         /// </summary>
-        [Range(1, uint.MaxValue)]
+        [Required, Range(0, uint.MaxValue)]
         public uint ChargingStationId { get; }
 
         [Required, Range(1, uint.MaxValue)]

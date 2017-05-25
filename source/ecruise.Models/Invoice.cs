@@ -12,11 +12,13 @@ namespace ecruise.Models
         /// Initializes a new instance of the <see cref="Invoice" /> class.
         /// </summary>
         /// <param name="invoiceId">InvoiceItemId (required)</param>
+        /// <param name="customerId">CustomerId (required)</param>
         /// <param name="totalAmount">TotalAmount (required)</param>
         /// <param name="paid">Paid (required)</param>
-        public Invoice(uint invoiceId, double totalAmount, bool paid = false)
+        public Invoice(uint invoiceId, uint customerId, double totalAmount, bool paid = false)
         {
             InvoiceId = invoiceId;
+            CustomerId = customerId;
             TotalAmount = totalAmount;
             Paid = paid;
         }
@@ -24,8 +26,14 @@ namespace ecruise.Models
         /// <summary>
         /// Gets InvoiceItemId
         /// </summary>
-        [Range(1, uint.MaxValue)]
+        [Required, Range(0, uint.MaxValue)]
         public uint InvoiceId { get; }
+
+        /// <summary>
+        /// Gets CustomerId
+        /// </summary>
+        [Required, Range(1, uint.MaxValue)]
+        public uint CustomerId { get; }
 
         /// <summary>
         /// Gets or Sets TotalAmount
@@ -48,6 +56,7 @@ namespace ecruise.Models
             var sb = new StringBuilder();
             sb.Append("class Invoice {\n");
             sb.Append("  InvoiceItemId: ").Append(InvoiceId).Append("\n");
+            sb.Append("  CustomerId: ").Append(CustomerId).Append("\n");
             sb.Append("  TotalAmount: ").Append(TotalAmount).Append("\n");
             sb.Append("  Paid: ").Append(Paid).Append("\n");
             sb.Append("}\n");
@@ -88,6 +97,7 @@ namespace ecruise.Models
 
             return
                 (InvoiceId == other.InvoiceId || InvoiceId.Equals(other.InvoiceId)) &&
+                (CustomerId == other.CustomerId || CustomerId.Equals(other.CustomerId)) &&
                 (Math.Abs(TotalAmount - other.TotalAmount) < 0.0001 || TotalAmount.Equals(other.TotalAmount)) &&
                 (Paid == other.Paid || Paid.Equals(other.Paid));
         }
@@ -103,6 +113,7 @@ namespace ecruise.Models
                 int hash = 41;
 
                 hash = hash * 59 + InvoiceId.GetHashCode();
+                hash = hash * 59 + CustomerId.GetHashCode();
 
                 return hash;
             }

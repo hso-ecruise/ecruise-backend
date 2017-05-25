@@ -21,11 +21,11 @@ namespace ecruise.Models
         /// Initializes a new instance of the <see cref="InvoiceItem" /> class.
         /// </summary>
         /// <param name="invoiceItemId">InvoiceItemId (required)</param>
-        /// <param name="invoiceId">See #/definitions/Invoice (required)</param>
+        /// <param name="invoiceId">See #/definitions/Invoice</param>
         /// <param name="reason">Text which will appear on the invoice. Can contain the name of the service or some other reason. (required)</param>
         /// <param name="type">Type (required)</param>
         /// <param name="amount">Amount (required)</param>
-        public InvoiceItem(uint invoiceItemId, uint invoiceId, string reason, TypeEnum type, double amount)
+        public InvoiceItem(uint invoiceItemId, uint? invoiceId, string reason, TypeEnum type, double amount)
         {
             InvoiceItemId = invoiceItemId;
             InvoiceId = invoiceId;
@@ -37,15 +37,15 @@ namespace ecruise.Models
         /// <summary>
         /// Gets or Sets InvoiceItemId
         /// </summary>
-        [Range(1, uint.MaxValue)]
+        [Required, Range(0, uint.MaxValue)]
         public uint InvoiceItemId { get; }
 
         /// <summary>
         /// See #/definitions/Invoice
         /// </summary>
         /// <value>See #/definitions/Invoice</value>
-        [Required, Range(1, uint.MaxValue)]
-        public uint InvoiceId { get; }
+        [Range(1, uint.MaxValue)]
+        public uint? InvoiceId { get; set;  }
 
         /// <summary>
         /// Text which will appear on the invoice. Can contain the name of the service or some other reason. 
@@ -63,7 +63,7 @@ namespace ecruise.Models
         /// <summary>
         /// Gets or Sets Amount
         /// </summary>
-        [Required, Range(0, double.MaxValue)]
+        [Required, Range(0.0, double.MaxValue)]
         public double Amount { get; }
 
         /// <summary>
@@ -134,7 +134,6 @@ namespace ecruise.Models
                 int hash = 41;
 
                 hash = hash * 59 + InvoiceItemId.GetHashCode();
-                hash = hash * 59 + InvoiceId.GetHashCode();
                 hash = hash * 59 + Reason.GetHashCode();
                 hash = hash * 59 + Type.GetHashCode();
                 hash = hash * 59 + Amount.GetHashCode();

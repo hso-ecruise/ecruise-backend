@@ -19,20 +19,20 @@ namespace ecruise.Models
         /// <param name="bookingPositionLongitude">BookingPositionLongitude (required)</param>
         /// <param name="bookingDate">BookingDate (required)</param>
         /// <param name="plannedDate">PlannedDate</param>
-        public Booking(uint bookingId, uint customerId, uint? tripId, uint invoiceItemId, double bookingPositionLatitude,
+        public Booking(uint bookingId, uint customerId, uint? tripId, uint? invoiceItemId, double bookingPositionLatitude,
             double bookingPositionLongitude, DateTime bookingDate, DateTime? plannedDate)
         {
             BookingId = bookingId;
             CustomerId = customerId;
             TripId = tripId;
             InvoiceItemId = invoiceItemId;
-            BookingPositionLatitude = bookingPositionLongitude;
+            BookingPositionLatitude = bookingPositionLatitude;
             BookingPositionLongitude = bookingPositionLongitude;
             BookingDate = bookingDate;
             PlannedDate = plannedDate;
         }
 
-        [Range(1, uint.MaxValue)]
+        [Required, Range(0, uint.MaxValue)]
         public uint BookingId { get; }
 
         [Required, Range(1, uint.MaxValue)]
@@ -41,8 +41,8 @@ namespace ecruise.Models
         [Range(1, uint.MaxValue)]
         public uint? TripId { get; set; }
 
-        [Required, Range(1, uint.MaxValue)]
-        public uint InvoiceItemId { get; }
+        [Range(1, uint.MaxValue)]
+        public uint? InvoiceItemId { get; set; }
 
         [Required]
         public double BookingPositionLatitude { get; }
@@ -133,7 +133,6 @@ namespace ecruise.Models
 
                 hash = hash * 59 + BookingId.GetHashCode();
                 hash = hash * 59 + CustomerId.GetHashCode();
-                hash = hash * 59 + InvoiceItemId.GetHashCode();
                 hash = hash * 59 + BookingPositionLongitude.GetHashCode();
                 hash = hash * 59 + BookingPositionLatitude.GetHashCode();
                 hash = hash * 59 + BookingDate.GetHashCode();
