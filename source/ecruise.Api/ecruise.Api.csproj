@@ -23,6 +23,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ecruise.Models\ecruise.Models.csproj" />
+    <ProjectReference Include="..\ecruise.Database\ecruise.Database.csproj" />
   </ItemGroup>
 
 </Project>
