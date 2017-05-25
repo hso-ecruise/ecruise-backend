@@ -53,15 +53,15 @@ namespace ecruise.Api.Controllers
         }
 
         // GET: /ChargingStations/closest-to/58/8
-        [HttpGet("closest-to/{Latitude}/{Longitude}", Name = "GetClosestCarChargingStation")]
-        public IActionResult GetClosestCarChargingStation(uint Latitude, uint Longitude)
+        [HttpGet("closest-to/{latitude}/{longitude}", Name = "GetClosestCarChargingStation")]
+        public IActionResult GetClosestCarChargingStation(uint latitude, uint longitude)
         {
-            if (ModelState.IsValid && Latitude <= 90 && Longitude <= 90)
+            if (ModelState.IsValid && latitude <= 90 && longitude <= 90)
             {
                 CarChargingStation station1 = new CarChargingStation(1, 1, 1, new DateTime(2017, 5, 8, 21, 5, 46), new DateTime(2017, 5, 8, 21, 57, 23));
                 return Ok(station1);
             }
-            else if (ModelState.IsValid && (Latitude > 90 || Latitude > 90))
+            else if (ModelState.IsValid && (latitude > 90 || latitude > 90))
             {
                 return NotFound(new Error(1, "Position does not exist on earth.",
                     "An error occured. Please check the message for further information."));

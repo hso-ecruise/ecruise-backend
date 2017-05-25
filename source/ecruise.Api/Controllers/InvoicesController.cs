@@ -18,11 +18,11 @@ namespace ecruise.Api.Controllers
         
         // POST: /Invoices
         [HttpPost(Name = "CreateNewInvoice")]
-        public IActionResult Post([FromBody] Invoice invoice1)
+        public IActionResult Post([FromBody] Invoice invoice)
         {
             if (ModelState.IsValid)
                 return Created($"{BasePath}/invoices/1",
-                    new PostReference(invoice1.InvoiceId, $"{BasePath}/invoices/1"));
+                    new PostReference(invoice.InvoiceId, $"{BasePath}/invoices/1"));
             else
                 return BadRequest(new Error(1, ModelState.ToString(),
                     "An error occured. Please check the message for further information."));
@@ -51,12 +51,11 @@ namespace ecruise.Api.Controllers
 
         // PATCH: /invoices/1/paid
         [HttpPatch("{id}/paid")]
-        public IActionResult Patch(uint id, [FromBody] string date)
+        public IActionResult Patch(uint id, [FromBody] bool paid)
         {
             if (ModelState.IsValid && id < 3 && id > 0)
             {
-                return Created($"{BasePath}/invoices/{id}",
-                    new PostReference(id, $"{BasePath}/invoices/{id}"));
+                return Ok(new PostReference(id, $"{BasePath}/invoices/{id}"));
             }
             else if (ModelState.IsValid && id >= 3)
             {
