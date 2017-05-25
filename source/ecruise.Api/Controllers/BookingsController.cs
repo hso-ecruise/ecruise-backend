@@ -122,7 +122,8 @@ namespace ecruise.Api.Controllers
         {
             // Transform string to date
             DateTime requestedDateTime;
-            if (DateTime.TryParseExact(date, "o", CultureInfo.InvariantCulture, DateTimeStyles.AdjustToUniversal, out requestedDateTime))
+            if (DateTime.TryParseExact(date, @"yyyy-MM-dd\THH:mm:ss.fff\Z", CultureInfo.InvariantCulture,
+                DateTimeStyles.AssumeUniversal, out requestedDateTime))
             {
                 DateTime date1 = new DateTime(2017, 5, 8, 13, 37, 0, DateTimeKind.Utc);
 

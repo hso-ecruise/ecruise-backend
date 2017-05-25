@@ -20,7 +20,7 @@ namespace ecruise.Api.Controllers
         }
 
         // GET: /Activate/login@ecruise.me/F3E64113EAC3432FFE968942674E98C6B01987F69EADEA90EEA1F8C809AB3DEE
-        [HttpGet("/Activate/{email}/{token}", Name = "ActivateAccount")]
+        [HttpGet("Activate/{email}/{token}", Name = "ActivateAccount")]
         public IActionResult Activate([FromRoute] string email, [FromRoute] string token)
         {
             if (!ModelState.IsValid)

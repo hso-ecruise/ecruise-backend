@@ -60,8 +60,7 @@ namespace ecruise.Api.Controllers
         {
             if (ModelState.IsValid && id < 3 && id > 0)
             {
-                return Created($"{BasePath}/trips/{id}",
-                    new PostReference(id, $"{BasePath}/trips/{id}"));
+                return Ok(new PostReference(id, $"{BasePath}/trips/{id}"));
             }
             else if (ModelState.IsValid && id >= 3)
             {

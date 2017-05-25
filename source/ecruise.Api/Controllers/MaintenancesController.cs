@@ -12,12 +12,11 @@ namespace ecruise.Api.Controllers
         [HttpGet(Name="GetAllMaintenances")]
         public IActionResult Get()
         {
-            CarMaintenance cm1 = new CarMaintenance(1, 3, 1, null, null, null);
-            CarMaintenance cm2 = new CarMaintenance(2, 3, 1, null, new DateTime(2017, 5, 8, 13, 37, 0, DateTimeKind.Utc), null);
-            CarMaintenance cm3 = new CarMaintenance(3, 3, 1, 6, null, new DateTime(2017, 5, 8, 13, 50, 0, DateTimeKind.Utc));
-            CarMaintenance cm4 = new CarMaintenance(4, 3, 1, 6, new DateTime(2017, 5, 8, 13, 37, 0, DateTimeKind.Utc), new DateTime(2017, 5, 8, 13, 50, 0, DateTimeKind.Utc));
+            Maintenance m1 = new Maintenance(1, false, 3000, null);
+            Maintenance m2 = new Maintenance(2, false, null, new DateTime(2017, 5, 8, 13, 37, 0, DateTimeKind.Utc));
+            Maintenance m3 = new Maintenance(3, true, 3000, new DateTime(2017, 5, 8, 13, 50, 0, DateTimeKind.Utc));
 
-            return Ok(new List<CarMaintenance> {cm1, cm2, cm3, cm4});
+            return Ok(new List<Maintenance> {m1, m2, m3});
         }
 
         // GET: /Maintenances/5
@@ -26,9 +25,9 @@ namespace ecruise.Api.Controllers
         {
             if (ModelState.IsValid && id > 0 && id < 3)
             {
-                CarMaintenance cm = new CarMaintenance(id, 3, 1, 6, new DateTime(2017, 5, 8, 13, 37, 0, DateTimeKind.Utc), new DateTime(2017, 5, 8, 13, 50, 0, DateTimeKind.Utc));
+                Maintenance m = new Maintenance(1, false, 3000, null);
 
-                return Ok(cm);
+                return Ok(m);
             }
             else if (ModelState.IsValid && (id >= 3 || id == 0))
             {
@@ -44,7 +43,7 @@ namespace ecruise.Api.Controllers
         
         // POST: /Maintenances
         [HttpPost(Name="CreateMaintenance")]
-        public IActionResult Post([FromBody]CarMaintenance m)
+        public IActionResult Post([FromBody]Maintenance m)
         {
             if (ModelState.IsValid)
                 return Created($"{BasePath}/maintenances/1",

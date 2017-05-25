@@ -61,16 +61,16 @@ namespace ecruise.Api.Controllers
         }
 
         
-        // PATCH: /CarMaintenances/5/completed-date/<date>
-        [HttpPatch("{id}/completed-date/{date}")]
+        // PATCH: /CarMaintenances/5/completed-date
+        [HttpPatch("{id}/completed-date")]
         public IActionResult Patch(uint id, [FromBody] string date)
         {
             if (ModelState.IsValid && id < 3 && id > 0)
             {
                 DateTime plannedDate;
 
-                if (DateTime.TryParseExact(date, "o", CultureInfo.InvariantCulture, DateTimeStyles.AdjustToUniversal,
-                    out plannedDate))
+                if (DateTime.TryParseExact(date, @"yyyy-MM-dd\THH:mm:ss.fff\Z", CultureInfo.InvariantCulture, 
+                    DateTimeStyles.AssumeUniversal, out plannedDate))
                 {
                     CarMaintenance cm = new CarMaintenance(2, 1, 2, null, plannedDate, null);
 
@@ -97,20 +97,20 @@ namespace ecruise.Api.Controllers
 
         // GET: /CarMaintenances/by-car/5
         [HttpGet("by-car/{id}", Name = "GetCarMaintenancesByCar")]
-        public IActionResult GetByCarId(uint carId)
+        public IActionResult GetByCarId(uint id)
         {
-            if (ModelState.IsValid && carId < 3 && carId > 0)
+            if (ModelState.IsValid && id < 3 && id > 0)
             {
-                CarMaintenance cm1 = new CarMaintenance(1, carId, 1, null, null, null);
-                CarMaintenance cm2 = new CarMaintenance(2, carId, 1, null, null, null);
+                CarMaintenance cm1 = new CarMaintenance(1, id, 1, null, null, null);
+                CarMaintenance cm2 = new CarMaintenance(2, id, 1, null, null, null);
 
                 return Ok(new List<CarMaintenance> { cm1, cm2 });
             }
-            else if (ModelState.IsValid && carId >= 3 && carId < 6)
+            else if (ModelState.IsValid && id >= 3 && id < 6)
             {
                 return NoContent();
             }
-            else if (ModelState.IsValid && carId >= 6)
+            else if (ModelState.IsValid && id >= 6)
             {
                 return NotFound(new Error(1, "CarMaintenance with requested id does not exist.",
                     "An error occured. Please check the message for further information."));
@@ -124,20 +124,20 @@ namespace ecruise.Api.Controllers
 
         // GET: /CarMaintenances/by-maintenance/5
         [HttpGet("by-maintenance/{id}", Name = "GetCarMaintenancesByMaintenance")]
-        public IActionResult GetByMaintenanceId(uint maintenanceId)
+        public IActionResult GetByMaintenanceId(uint id)
         {
-            if (ModelState.IsValid && maintenanceId < 3 && maintenanceId > 0)
+            if (ModelState.IsValid && id < 3 && id > 0)
             {
-                CarMaintenance cm1 = new CarMaintenance(1, 1, maintenanceId, null, null, null);
-                CarMaintenance cm2 = new CarMaintenance(2, 1, maintenanceId, null, null, null);
+                CarMaintenance cm1 = new CarMaintenance(1, 1, id, null, null, null);
+                CarMaintenance cm2 = new CarMaintenance(2, 1, id, null, null, null);
 
                 return Ok(new List<CarMaintenance> {cm1, cm2});
             }
-            else if (ModelState.IsValid && maintenanceId >= 3 && maintenanceId < 6)
+            else if (ModelState.IsValid && id >= 3 && id < 6)
             {
                 return NoContent();
             }
-            else if (ModelState.IsValid && maintenanceId >= 6)
+            else if (ModelState.IsValid && id >= 6)
             {
                 return NotFound(new Error(1, "Maintenance with requested id does not exist.",
                     "An error occured. Please check the message for further information."));
@@ -150,18 +150,18 @@ namespace ecruise.Api.Controllers
         }
 
         // GET: /CarMaintenances/by-invoice-item/5
-        [HttpGet("by-invoice-item/{invoiceitemid}", Name = "GetCarMaintenanceByInvoiceItem")]
-        public IActionResult GetByInvoiceItemId(uint invoiceItemId)
+        [HttpGet("by-invoice-item/{id}", Name = "GetCarMaintenanceByInvoiceItem")]
+        public IActionResult GetByInvoiceItemId(uint id)
         {
-            if (ModelState.IsValid && invoiceItemId < 3 && invoiceItemId > 0)
+            if (ModelState.IsValid && id < 3 && id > 0)
             {
-                return Ok(new CarMaintenance(1, 1, 1, invoiceItemId, null, null));
+                return Ok(new CarMaintenance(1, 1, 1, id, null, null));
             }
-            else if (ModelState.IsValid && invoiceItemId >= 3 && invoiceItemId < 6)
+            else if (ModelState.IsValid && id >= 3 && id < 6)
             {
                 return NoContent();
             }
-            else if (ModelState.IsValid && invoiceItemId >= 6)
+            else if (ModelState.IsValid && id >= 6)
             {
                 return NotFound(new Error(1, "InvoiceItem with requested id does not exist.",
                     "An error occured. Please check the message for further information."));
