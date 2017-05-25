@@ -8,6 +8,31 @@ namespace ecruise.Api.Controllers
 {
     public class BookingsController : BaseController
     {
+
+        // GET: /Bookings
+        [HttpGet(Name = "GetAllBookings")]
+        public IActionResult GetAll()
+        {
+            if (ModelState.IsValid)
+            {
+                DateTime date1 = new DateTime(2017, 5, 8, 13, 37, 0, DateTimeKind.Utc);
+                DateTime date2 = new DateTime(2017, 5, 10, 13, 37, 0, DateTimeKind.Utc);
+
+                Booking booking = new Booking(1, 7, 1, 1, 49.488342, 8.466788, date1,
+                    date2);
+
+                Booking booking2 = new Booking(1, 14, 1, 1, 49.488342, 8.466788, date1,
+                    date2);
+
+                List<Booking> list = new List<Booking> { booking, booking2 };
+
+                return Ok(list);
+            }
+            else
+                return BadRequest(new Error(1, GetModelStateErrorString(),
+                    "An error occured. Please check the message for further information."));
+        }
+
         // GET: /Bookings/5
         [HttpGet("{id}", Name = "GetBooking")]
         public IActionResult Get(uint id)
