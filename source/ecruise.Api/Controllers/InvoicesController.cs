@@ -17,7 +17,7 @@ namespace ecruise.Api.Controllers
         }
 
         // GET: /invoices/1
-        [HttpGet("{id}", Name = "GetInvoice")]
+        [HttpGet("{id}", Name = "GetInvoiceByInvoiceId")]
         public IActionResult Get(uint id)
         {
             if (ModelState.IsValid && id < 3)
@@ -37,14 +37,34 @@ namespace ecruise.Api.Controllers
             }
         }
 
+        // GET: /invoices/by-invoice-item/1
+        [HttpGet("by-invoice-item/{id}", Name = "GetInvoiceByInvoiceItemId")]
+        public IActionResult GetByInvoiceItemId(uint id)
+        {
+            if (ModelState.IsValid && id < 3)
+            {
+                Invoice invoice1 = new Invoice(1, 123.45, false);
+                return Ok(invoice1);
+            }
+            else if (ModelState.IsValid && (id >= 3 || id == 0))
+            {
+                return NotFound(new Error(1, "Invoice with requested Invoice-Item-id does not exist.",
+                    "An error occured. Please check the message for further information."));
+            }
+            else
+            {
+                return BadRequest(new Error(1, "The id given was not formatted correctly. Id has to be unsinged int",
+                    "An error occured. Please check the message for further information."));
+            }
+        }
+
         // PATCH: /invoices/1/paid
         [HttpPatch("{id}/paid")]
         public IActionResult Patch(uint id, [FromBody] bool paid)
         {
             if (ModelState.IsValid && id < 3 && id > 0)
             {
-                return Created($"{BasePath}/invoices/{id}",
-                    new PostReference(id, $"{BasePath}/invoices/{id}"));
+                return Ok(new PostReference(id, $"{BasePath}/invoices/{id}"));
             }
             else if (ModelState.IsValid && id >= 3)
             {

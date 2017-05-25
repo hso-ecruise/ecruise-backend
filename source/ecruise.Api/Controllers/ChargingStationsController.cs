@@ -53,7 +53,7 @@ namespace ecruise.Api.Controllers
         }
 
         // GET: /ChargingStations/closest-to/58/8
-        [HttpGet("closest-to/{Latitude}/{Longitude}", Name = "GetClosestChargingStation")]
+        [HttpGet("closest-to/{latitude}/{longitude}", Name = "GetClosestChargingStation")]
         public IActionResult GetClosestChargingStation(uint latitude, uint longitude)
         {
             if (ModelState.IsValid)
