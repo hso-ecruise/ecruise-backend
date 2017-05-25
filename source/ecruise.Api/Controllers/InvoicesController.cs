@@ -22,7 +22,7 @@ namespace ecruise.Api.Controllers
         {
             if (ModelState.IsValid && id < 3)
             {
-                Invoice invoice1 = new Invoice(1, 123.45, false);
+                Invoice invoice1 = new Invoice(1, 1, 123.45, false);
                 return Ok(invoice1);
             }
             else if (ModelState.IsValid && (id >= 3 || id == 0))
@@ -93,8 +93,8 @@ namespace ecruise.Api.Controllers
         public IActionResult Post(uint id, [FromBody] InvoiceItem invoiceItem)
         {
             if (ModelState.IsValid)
-                return Created($"{BasePath}/invoices/1",
-                    new PostReference(invoiceItem.InvoiceId, $"{BasePath}/invoices/1"));
+                return Created($"{BasePath}/invoices/by-invoice-item/{invoiceItem.InvoiceItemId}",
+                    new PostReference(invoiceItem.InvoiceItemId, $"{BasePath}/invoices/by-invoice-item/{invoiceItem.InvoiceItemId}"));
             else
                 return BadRequest(new Error(1, ModelState.ToString(),
                     "An error occured. Please check the message for further information."));
