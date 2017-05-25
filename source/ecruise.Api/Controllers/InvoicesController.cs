@@ -10,8 +10,8 @@ namespace ecruise.Api.Controllers
         [HttpGet(Name = "GetAllInvoices")]
         public IActionResult Get()
         {
-            Invoice invoice1 = new Invoice(1, 123.45, false);
-            Invoice invoice2 = new Invoice(1, 0.27, true);
+            Invoice invoice1 = new Invoice(1, 1, 123.45, false);
+            Invoice invoice2 = new Invoice(1, 2, 0.27, true);
 
             return Ok(new List<Invoice> { invoice1, invoice2 });
         }
@@ -43,7 +43,7 @@ namespace ecruise.Api.Controllers
         {
             if (ModelState.IsValid && id < 3)
             {
-                Invoice invoice1 = new Invoice(1, 123.45, false);
+                Invoice invoice1 = new Invoice(1, 1, 123.45, false);
                 return Ok(invoice1);
             }
             else if (ModelState.IsValid && (id >= 3 || id == 0))
