@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 namespace ecruise.Database.Models
 {
@@ -13,10 +12,10 @@ namespace ecruise.Database.Models
         }
 
         public uint ChargingStationId { get; set; }
+        public uint Slots { get; set; }
+        public uint SlotsOccupied { get; set; }
         public double Latitude { get; set; }
         public double Longitude { get; set; }
-        public int Slots { get; set; }
-        public int SlotsOccupied { get; set; }
 
         public virtual ICollection<CarChargingStation> CarChargingStation { get; set; }
         public virtual ICollection<Trip> TripEndChargingStation { get; set; }

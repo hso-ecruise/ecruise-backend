@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 namespace ecruise.Database.Models
 {
@@ -14,26 +13,25 @@ namespace ecruise.Database.Models
         }
 
         public uint CustomerId { get; set; }
-        public bool Activated { get; set; }
-        public string AddressExtraLine { get; set; }
-        public string ChipCardUid { get; set; }
-        public string City { get; set; }
-        public string Country { get; set; }
-        public string Email { get; set; }
-        public string FirstName { get; set; }
-        public string HouseNumber { get; set; }
-        public string LastName { get; set; }
         public string PasswordHash { get; set; }
         public string PasswordSalt { get; set; }
+        public string Email { get; set; }
         public string PhoneNumber { get; set; }
+        public string ChipCardUid { get; set; }
+        public string FirstName { get; set; }
+        public string LastName { get; set; }
+        public string Country { get; set; }
+        public string City { get; set; }
+        public uint ZipCode { get; set; }
         public string Street { get; set; }
+        public string HouseNumber { get; set; }
+        public string AddressExtraLine { get; set; }
+        public bool Activated { get; set; }
         public bool Verified { get; set; }
-        public int ZipCode { get; set; }
 
         public virtual ICollection<Booking> Booking { get; set; }
         public virtual ICollection<CustomerToken> CustomerToken { get; set; }
         public virtual ICollection<Trip> Trip { get; set; }
-
         public virtual ICollection<Invoice> Invoice { get; set; }
     }
 }
