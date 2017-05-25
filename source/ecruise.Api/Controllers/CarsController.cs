@@ -11,10 +11,10 @@ namespace ecruise.Api.Controllers
         [HttpGet(Name = "GetAllCars")]
         public IActionResult GetAll()
         {
-            Car car1 = new Car(1, "OG-XY-123", Car.ChargingStateEnum.Full, Car.BookingStateEnum.Available, 1, 2.0, 100, "Audi", "A6", 2004, 48.5, 8.5, new DateTime(2017, 5, 8, 21, 5, 46));
-            Car car2 = new Car(1, "OG-XY-123", Car.ChargingStateEnum.Full, Car.BookingStateEnum.Available, 1, 7.9, 100, "Audi", "A6", 2004, 17.23, 84.6, new DateTime(2017, 5, 8, 21, 5, 46));
+            Car car1 = new Car(1, "OG XY 123", Car.ChargingStateEnum.Full, Car.BookingStateEnum.Available, 1, 2.0, 100, "Audi", "A6", 2004, 48.5, 8.5, new DateTime(2017, 5, 8, 21, 5, 46));
+            Car car2 = new Car(1, "OG XY 123", Car.ChargingStateEnum.Full, Car.BookingStateEnum.Available, 1, 7.9, 100, "Audi", "A6", 2004, 17.23, 84.6, new DateTime(2017, 5, 8, 21, 5, 46));
             
-            return Ok(new List<Car> { car1, car2});
+            return Ok(new List<Car> { car1, car2 });
         }
 
 
@@ -136,9 +136,9 @@ namespace ecruise.Api.Controllers
             }
         }
 
-        // PATCH: /Cars/1/2
-        [HttpPatch("{id}/{position}")]
-        public IActionResult PatchPosition(uint id, [FromBody]  string position)
+        // PATCH: /Cars/1/position/2.512/-5.215
+        [HttpPatch("{id}/position/{latitude}/{longitude}")]
+        public IActionResult PatchPosition(uint id, double latitude, double longitude)
         {
             if (ModelState.IsValid && id < 3 && id > 0)
             {
@@ -158,15 +158,15 @@ namespace ecruise.Api.Controllers
         }
 
         // GET: /Cars/closest-to/58/8
-        [HttpGet("closest-to/{Latitude}/{Longitude}", Name = "GetClosestCar")]
-        public IActionResult GetClosestCarChargingStation(uint Latitude, uint Longitude)
+        [HttpGet("closest-to/{latitude}/{longitude}", Name = "GetClosestCar")]
+        public IActionResult GetClosestCarChargingStation(uint latitude, uint longitude)
         {
-            if (ModelState.IsValid && Latitude <= 90 && Longitude <= 90)
+            if (ModelState.IsValid && latitude <= 90 && longitude <= 90)
             {
-                Car car1 = new Car(1, "OG-XY-123", Car.ChargingStateEnum.Full, Car.BookingStateEnum.Available, 1, 2.0, 100, "Audi", "A6", 2004, 48.5, 8.5, new DateTime(2017, 5, 8, 21, 5, 46));
+                Car car1 = new Car(1, "OG XY 123", Car.ChargingStateEnum.Full, Car.BookingStateEnum.Available, 1, 2.0, 100, "Audi", "A6", 2004, 48.5, 8.5, new DateTime(2017, 5, 8, 21, 5, 46));
                 return Ok(car1);
             }
-            else if (ModelState.IsValid && (Latitude > 90 || Latitude > 90))
+            else if (ModelState.IsValid && (latitude > 90 || latitude > 90))
             {
                 return NotFound(new Error(1, "Position does not exist on earth.",
                     "An error occured. Please check the message for further information."));
