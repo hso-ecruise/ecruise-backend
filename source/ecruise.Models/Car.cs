@@ -47,7 +47,7 @@ namespace ecruise.Models
         /// <exception cref="ArgumentNullException">The described argument has an invalid value.</exception>
         public Car(uint carId, string licensePlate, ChargingStateEnum chargingState, BookingStateEnum bookingState,
             uint mileage, double chargeLevel, uint kilowatts, string manufacturer, string model,
-            uint yearOfConstruction, double? lastKnownPositionLatitude, double? lastKnownPositionLongitude,
+            int yearOfConstruction, double? lastKnownPositionLatitude, double? lastKnownPositionLongitude,
             DateTime? lastKnownPositionDate)
         {
             CarId = carId;
@@ -68,13 +68,13 @@ namespace ecruise.Models
         /// <summary>
         /// Gets or Sets CarId
         /// </summary>
-        [Range(1, uint.MaxValue)]
+        [Required, Range(0, uint.MaxValue)]
         public uint CarId { get; }
 
         /// <summary>
         /// Gets or Sets LicensePlate
         /// </summary>
-        [Required, RegularExpression(@"^[A-Z]{1,3}-[A-Z]{1,2} [0-9]{1,4}$"), StringLength(16, MinimumLength = 16)]
+        [Required, RegularExpression(@"^[A-Z]{1,3} [A-Z]{1,2} [0-9]{1,4}$"), StringLength(16, MinimumLength = 5)]
         public string LicensePlate { get; }
 
         /// <summary>
@@ -99,13 +99,13 @@ namespace ecruise.Models
         /// Current charging level of the car. From 0. to 100.
         /// </summary>
         /// <value>Current charging level of the car. From 0. to 100.</value>
-        [Required, Range(0, 100)]
+        [Required, Range(0.0, 100.0)]
         public double ChargeLevel { get; set; }
 
         /// <summary>
         /// Gets or Sets Kilowatts
         /// </summary>
-        [Required, Range(0, 2000)]
+        [Required, Range(0, 999)]
         public uint Kilowatts { get; }
 
         /// <summary>
@@ -124,16 +124,18 @@ namespace ecruise.Models
         /// Gets or Sets YearOfConstruction
         /// </summary>
         [Required, Range(1950, 2100)]
-        public uint YearOfConstruction { get; }
+        public int YearOfConstruction { get; }
 
         /// <summary>
         /// Gets or Sets LastKnownPositionLatitude
         /// </summary>
+        [Range(-90.0, 90.0)]
         public double? LastKnownPositionLatitude { get; set; }
 
         /// <summary>
         /// Gets or Sets LastKnownPositionLongitude
         /// </summary>
+        [Range(-180.0, 180.0)]
         public double? LastKnownPositionLongitude { get; set; }
 
         /// <summary>

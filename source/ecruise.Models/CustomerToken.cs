@@ -40,7 +40,7 @@ namespace ecruise.Models
         /// <summary>
         /// Gets CustomerTokenId
         /// </summary>
-        [Range(1, uint.MaxValue)]
+        [Required, Range(0, uint.MaxValue)]
         public uint CustomerTokenId { get; }
 
         /// <summary>
