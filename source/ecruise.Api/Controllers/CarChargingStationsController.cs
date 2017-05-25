@@ -36,15 +36,15 @@ namespace ecruise.Api.Controllers
             }
         }
 
-        // Patch: /CarChargingStations/5
-        [HttpPatch("{id}")]
+        // Patch: /CarChargingStations/5/charge-end
+        [HttpPatch("{id}/charge-end")]
         public IActionResult Patch(uint id, [FromBody]string chargeEnd)
         {
             if (ModelState.IsValid && id < 3 && id > 0)
             {
                 DateTime chargeEndDate;
-                if (DateTime.TryParseExact(chargeEnd, "o", CultureInfo.InvariantCulture, DateTimeStyles.AdjustToUniversal,
-                    out chargeEndDate))
+                if (DateTime.TryParseExact(chargeEnd, @"yyyy-MM-dd\THH:mm:ss.fff\Z", CultureInfo.InvariantCulture,
+                    DateTimeStyles.AssumeUniversal, out chargeEndDate))
                 {
                     CarChargingStation ccs = new CarChargingStation(1, 1, 1, chargeEndDate.AddHours(-2), chargeEndDate);
 
@@ -68,7 +68,7 @@ namespace ecruise.Api.Controllers
         }
 
         // GET: /CarChargingStations/by-car/5
-        [HttpGet("{carId}", Name = "GetCarChargingStationsByCar")]
+        [HttpGet("by-car/{carId}", Name = "GetCarChargingStationsByCar")]
         public IActionResult GetByCarId(uint carId)
         {
             if (ModelState.IsValid && carId < 3 && carId > 0)
@@ -93,7 +93,7 @@ namespace ecruise.Api.Controllers
         }
 
         // GET: /CarChargingStations/by-charging-station/5
-        [HttpGet("{chargingStationId}", Name = "GetCarChargingStationsByChargingStation")]
+        [HttpGet("by-charging-station/{chargingStationId}", Name = "GetCarChargingStationsByChargingStation")]
         public IActionResult GetByChargingStationId(uint chargingStationId)
         {
             if (ModelState.IsValid && chargingStationId < 3 && chargingStationId > 0)
