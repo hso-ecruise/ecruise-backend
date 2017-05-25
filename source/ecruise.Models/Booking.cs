@@ -14,18 +14,18 @@ namespace ecruise.Models
         /// <param name="bookingId">BookingId (required)</param>
         /// <param name="customerId">CustomerId (required)</param>
         /// <param name="tripId">TripId</param>
-        /// <param name="invoiceId">InvoiceId (required)</param>
+        /// <param name="invoiceItemId">InvoiceItemId (required)</param>
         /// <param name="bookingPositionLatitude">BookingPositionLatitude (required)</param>
         /// <param name="bookingPositionLongitude">BookingPositionLongitude (required)</param>
         /// <param name="bookingDate">BookingDate (required)</param>
         /// <param name="plannedDate">PlannedDate</param>
-        public Booking(uint bookingId, uint customerId, uint? tripId, uint invoiceId, double bookingPositionLatitude,
+        public Booking(uint bookingId, uint customerId, uint? tripId, uint invoiceItemId, double bookingPositionLatitude,
             double bookingPositionLongitude, DateTime bookingDate, DateTime? plannedDate)
         {
             BookingId = bookingId;
             CustomerId = customerId;
             TripId = tripId;
-            InvoiceId = invoiceId;
+            InvoiceItemId = invoiceItemId;
             BookingPositionLatitude = bookingPositionLongitude;
             BookingPositionLongitude = bookingPositionLongitude;
             BookingDate = bookingDate;
@@ -42,7 +42,7 @@ namespace ecruise.Models
         public uint? TripId { get; set; }
 
         [Required, Range(1, uint.MaxValue)]
-        public uint InvoiceId { get; }
+        public uint InvoiceItemId { get; }
 
         [Required]
         public double BookingPositionLatitude { get; }
@@ -63,7 +63,7 @@ namespace ecruise.Models
             sb.Append("  BookingId: ").Append(BookingId).Append("\n");
             sb.Append("  CustomerId: ").Append(CustomerId).Append("\n");
             sb.Append("  TripId: ").Append(TripId).Append("\n");
-            sb.Append("  InvoiceId: ").Append(InvoiceId).Append("\n");
+            sb.Append("  InvoiceItemId: ").Append(InvoiceItemId).Append("\n");
             sb.Append("  BookingPositionLatutude: ").Append(BookingPositionLatitude).Append("\n");
             sb.Append("  BookingPositionLongitude: ").Append(BookingPositionLongitude).Append("\n");
             sb.Append("  BookingDate: ").Append(BookingDate.ToString("o")).Append("\n");
@@ -108,7 +108,7 @@ namespace ecruise.Models
                 (BookingId == other.BookingId || BookingId.Equals(other.BookingId)) &&
                 (CustomerId == other.CustomerId || CustomerId.Equals(other.CustomerId)) &&
                 (TripId == other.TripId || (TripId.HasValue && TripId.Equals(other.TripId))) &&
-                (InvoiceId == other.InvoiceId || InvoiceId.Equals(other.InvoiceId)) &&
+                (InvoiceItemId == other.InvoiceItemId || InvoiceItemId.Equals(other.InvoiceItemId)) &&
                 (
                     Math.Abs(BookingPositionLatitude - other.BookingPositionLatitude) < 0.00001 ||
                     BookingPositionLatitude.Equals(other.BookingPositionLatitude)
@@ -133,7 +133,7 @@ namespace ecruise.Models
 
                 hash = hash * 59 + BookingId.GetHashCode();
                 hash = hash * 59 + CustomerId.GetHashCode();
-                hash = hash * 59 + InvoiceId.GetHashCode();
+                hash = hash * 59 + InvoiceItemId.GetHashCode();
                 hash = hash * 59 + BookingPositionLongitude.GetHashCode();
                 hash = hash * 59 + BookingPositionLatitude.GetHashCode();
                 hash = hash * 59 + BookingDate.GetHashCode();

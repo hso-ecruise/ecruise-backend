@@ -11,7 +11,7 @@ namespace ecruise.Models
         /// <summary>
         /// Initializes a new instance of the <see cref="Invoice" /> class.
         /// </summary>
-        /// <param name="invoiceId">InvoiceId (required)</param>
+        /// <param name="invoiceId">InvoiceItemId (required)</param>
         /// <param name="totalAmount">TotalAmount (required)</param>
         /// <param name="paid">Paid (required)</param>
         public Invoice(uint invoiceId, double totalAmount, bool paid = false)
@@ -22,7 +22,7 @@ namespace ecruise.Models
         }
 
         /// <summary>
-        /// Gets InvoiceId
+        /// Gets InvoiceItemId
         /// </summary>
         [Range(1, uint.MaxValue)]
         public uint InvoiceId { get; }
@@ -47,7 +47,7 @@ namespace ecruise.Models
         {
             var sb = new StringBuilder();
             sb.Append("class Invoice {\n");
-            sb.Append("  InvoiceId: ").Append(InvoiceId).Append("\n");
+            sb.Append("  InvoiceItemId: ").Append(InvoiceId).Append("\n");
             sb.Append("  TotalAmount: ").Append(TotalAmount).Append("\n");
             sb.Append("  Paid: ").Append(Paid).Append("\n");
             sb.Append("}\n");
