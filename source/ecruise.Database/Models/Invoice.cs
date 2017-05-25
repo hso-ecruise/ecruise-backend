@@ -7,15 +7,13 @@ namespace ecruise.Database.Models
     {
         public Invoice()
         {
-            Booking = new HashSet<Booking>();
             InvoiceItem = new HashSet<InvoiceItem>();
         }
 
-        public int InvoiceId { get; set; }
+        public uint InvoiceId { get; set; }
         public bool Payed { get; set; }
         public double TotalAmount { get; set; }
-
-        public virtual ICollection<Booking> Booking { get; set; }
+        
         public virtual ICollection<InvoiceItem> InvoiceItem { get; set; }
     }
 }

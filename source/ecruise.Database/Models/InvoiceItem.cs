@@ -7,16 +7,18 @@ namespace ecruise.Database.Models
     {
         public InvoiceItem()
         {
+            Booking = new HashSet<Booking>();
             CarMaintenance = new HashSet<CarMaintenance>();
         }
 
-        public int InvoiceItemId { get; set; }
-        public int? InvoiceId { get; set; }
+        public uint InvoiceItemId { get; set; }
+        public uint? InvoiceId { get; set; }
         public string Reason { get; set; }
         public InvoiceItemType Type { get; set; }
         public double Amount { get; set; }
 
         public virtual ICollection<CarMaintenance> CarMaintenance { get; set; }
+        public virtual ICollection<Booking> Booking { get; set; }
         public virtual Invoice Invoice { get; set; }
     }
 

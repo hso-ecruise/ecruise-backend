@@ -1,6 +1,11 @@
+using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Net;
+using ecruise.Database.Models;
 using Microsoft.AspNetCore.Mvc;
 using ecruise.Models;
+using Customer = ecruise.Models.Customer;
 
 namespace ecruise.Api.Controllers
 {
