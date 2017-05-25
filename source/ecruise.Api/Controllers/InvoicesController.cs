@@ -15,18 +15,6 @@ namespace ecruise.Api.Controllers
 
             return Ok(new List<Invoice> { invoice1, invoice2 });
         }
-        
-        // POST: /Invoices
-        [HttpPost(Name = "CreateNewInvoice")]
-        public IActionResult Post([FromBody] Invoice invoice1)
-        {
-            if (ModelState.IsValid)
-                return Created($"{BasePath}/invoices/1",
-                    new PostReference(invoice1.InvoiceId, $"{BasePath}/invoices/1"));
-            else
-                return BadRequest(new Error(1, ModelState.ToString(),
-                    "An error occured. Please check the message for further information."));
-        }
 
         // GET: /invoices/1
         [HttpGet("{id}", Name = "GetInvoice")]
@@ -51,7 +39,7 @@ namespace ecruise.Api.Controllers
 
         // PATCH: /invoices/1/paid
         [HttpPatch("{id}/paid")]
-        public IActionResult Patch(uint id, [FromBody] string date)
+        public IActionResult Patch(uint id, [FromBody] bool paid)
         {
             if (ModelState.IsValid && id < 3 && id > 0)
             {
@@ -81,20 +69,20 @@ namespace ecruise.Api.Controllers
         }
 
         // POST: /Invoices/1/items
-        [HttpPost("{id}/itemsName", Name = "CreateNewInvoiceItem")]
-        public IActionResult Post(uint id, [FromBody] Invoice invoice1)
+        [HttpPost("{id}/items", Name = "CreateNewInvoiceItem")]
+        public IActionResult Post(uint id, [FromBody] InvoiceItem invoiceItem)
         {
             if (ModelState.IsValid)
                 return Created($"{BasePath}/invoices/1",
-                    new PostReference(invoice1.InvoiceId, $"{BasePath}/invoices/1"));
+                    new PostReference(invoiceItem.InvoiceId, $"{BasePath}/invoices/1"));
             else
                 return BadRequest(new Error(1, ModelState.ToString(),
                     "An error occured. Please check the message for further information."));
         }
 
         // GET: /invoices/1/items/1
-        [HttpGet("{id}/items/{itemId}", Name = "GetInvoiceItem")]
-        public IActionResult GetAllInvoiceItems(uint id, uint itemId, [FromBody] Invoice invoice1)
+        [HttpGet("{id}/items/{invoiceItemId}", Name = "GetInvoiceItem")]
+        public IActionResult GetAllInvoiceItems(uint id, uint invoiceItemId)
         {
             if (ModelState.IsValid && id < 3)
             {
