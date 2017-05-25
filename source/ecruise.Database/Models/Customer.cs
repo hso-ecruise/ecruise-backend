@@ -12,7 +12,7 @@ namespace ecruise.Database.Models
             Trip = new HashSet<Trip>();
         }
 
-        public int CustomerId { get; set; }
+        public uint CustomerId { get; set; }
         public bool Activated { get; set; }
         public string AddressExtraLine { get; set; }
         public string ChipCardUid { get; set; }
