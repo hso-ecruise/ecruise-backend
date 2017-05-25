@@ -10,6 +10,7 @@ namespace ecruise.Database.Models
             Booking = new HashSet<Booking>();
             CustomerToken = new HashSet<CustomerToken>();
             Trip = new HashSet<Trip>();
+            Invoice = new HashSet<Invoice>();
         }
 
         public uint CustomerId { get; set; }
@@ -32,5 +33,7 @@ namespace ecruise.Database.Models
         public virtual ICollection<Booking> Booking { get; set; }
         public virtual ICollection<CustomerToken> CustomerToken { get; set; }
         public virtual ICollection<Trip> Trip { get; set; }
+
+        public virtual ICollection<Invoice> Invoice { get; set; }
     }
 }
