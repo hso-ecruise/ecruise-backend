@@ -20,12 +20,12 @@ namespace ecruise.Api.Controllers
         }
 
         // POST: /ChargingStations
-        [HttpPost(Name = "CreateCarChargingStation")]
-        public IActionResult Post([FromBody]CarChargingStation station)
+        [HttpPost(Name = "CreateChargingStation")]
+        public IActionResult Post([FromBody]ChargingStation chargingStation)
         {
             if (ModelState.IsValid)
                 return Created($"{BasePath}/ChargingStations/1",
-                    new PostReference(station.CarChargingStationId, $"{BasePath}/ChargingStations/1"));
+                    new PostReference(chargingStation.ChargingStationId, $"{BasePath}/ChargingStations/1"));
             else
                 return BadRequest(new Error(1, ModelState.ToString(),
                     "An error occured. Please check the message for further information."));
@@ -37,12 +37,12 @@ namespace ecruise.Api.Controllers
         {
             if (ModelState.IsValid && id < 3)
             {
-                CarChargingStation station1 = new CarChargingStation(1, 1, 1, new DateTime(2017, 5, 8, 21, 5, 46), new DateTime(2017, 5, 8, 21, 57, 23));
+                ChargingStation station1 = new ChargingStation(id, 2, 0, 49.485636, 8.4680978);
                 return Ok(station1);
             }
             else if (ModelState.IsValid && (id >= 3 || id == 0))
             {
-                return NotFound(new Error(1, "CarChargingStation with requested CarChargingStation id does not exist.",
+                return NotFound(new Error(1, "ChargingStation with requested charging station id does not exist.",
                     "An error occured. Please check the message for further information."));
             }
             else
@@ -53,15 +53,15 @@ namespace ecruise.Api.Controllers
         }
 
         // GET: /ChargingStations/closest-to/58/8
-        [HttpGet("closest-to/{Latitude}/{Longitude}", Name = "GetClosestCarChargingStation")]
-        public IActionResult GetClosestCarChargingStation(uint Latitude, uint Longitude)
+        [HttpGet("closest-to/{Latitude}/{Longitude}", Name = "GetClosestChargingStation")]
+        public IActionResult GetClosestChargingStation(uint latitude, uint longitude)
         {
-            if (ModelState.IsValid && Latitude <= 90 && Longitude <= 90)
+            if (ModelState.IsValid)
             {
-                CarChargingStation station1 = new CarChargingStation(1, 1, 1, new DateTime(2017, 5, 8, 21, 5, 46), new DateTime(2017, 5, 8, 21, 57, 23));
+                ChargingStation station1 = new ChargingStation(1, 2, 0, 49.485636, 8.4680978);
                 return Ok(station1);
             }
-            else if (ModelState.IsValid && (Latitude > 90 || Latitude > 90))
+            else if (ModelState.IsValid)
             {
                 return NotFound(new Error(1, "Position does not exist on earth.",
                     "An error occured. Please check the message for further information."));
