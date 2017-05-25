@@ -25,7 +25,7 @@ namespace ecruise.Api.Controllers
             Customer c4 = new Customer(4, "mhauer@ecruise.me", "078108154", "", "Moritz", "Hauer", "DE", "Offenburg",
                 77652, "Badstraﬂe", "24a", "", true, false);
 
-            return Ok(new List<Customer> {c1, c2, c3});
+            return Ok(new List<Customer> {c1, c2, c3, c4});
         }
 
         // TODO: Customer can only request it's own data \
@@ -73,8 +73,7 @@ namespace ecruise.Api.Controllers
         {
             if (ModelState.IsValid && (id < 3 && id > 0))
             {
-                return Created($"{BasePath}/customers/{id}",
-                    new PostReference(id, $"{BasePath}/customers/{id}"));
+                return Ok(new PostReference(id, $"{BasePath}/customers/{id}")));
             }
             else if (ModelState.IsValid && id >= 3)
             {
@@ -94,8 +93,7 @@ namespace ecruise.Api.Controllers
         {
             if (ModelState.IsValid && (id < 3 && id > 0))
             {
-                return Created($"{BasePath}/customers/{id}",
-                    new PostReference(id, $"{BasePath}/customers/{id}"));
+                return Ok(new PostReference(id, $"{BasePath}/customers/{id}"));
             }
             else if (ModelState.IsValid && id >= 3)
             {
@@ -115,8 +113,7 @@ namespace ecruise.Api.Controllers
         {
             if (ModelState.IsValid && (id < 3 && id > 0))
             {
-                return Created($"{BasePath}/customers/{id}",
-                    new PostReference(id, $"{BasePath}/customers/{id}"));
+                return Ok(new PostReference(id, $"{BasePath}/customers/{id}"));
             }
             else if (ModelState.IsValid && id >= 3)
             {
