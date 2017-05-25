@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/hso-ecruise/ecruise-backend.svg?branch=master)](https://travis-ci.org/hso-ecruise/ecruise-backend)
+
 # ecruise-backend
 
 [![Creative Commons License][2]][1]
