@@ -13,7 +13,7 @@ namespace ecruise.Api.Controllers
             Invoice invoice1 = new Invoice(1, 1, 123.45, false);
             Invoice invoice2 = new Invoice(1, 2, 0.27, true);
 
-            return Ok(new List<Invoice> { invoice1, invoice2 });
+            return Ok(new List<Invoice> {invoice1, invoice2});
         }
 
         // GET: /invoices/1
@@ -85,7 +85,7 @@ namespace ecruise.Api.Controllers
             InvoiceItem item1 = new InvoiceItem(1, 1, "Trip123", InvoiceItem.TypeEnum.Credit, 10.0);
             InvoiceItem item2 = new InvoiceItem(1, 1, "MwSt", InvoiceItem.TypeEnum.Credit, 1.9);
 
-            return Ok(new List<InvoiceItem> { item1, item2 });
+            return Ok(new List<InvoiceItem> {item1, item2});
         }
 
         // POST: /Invoices/1/items
@@ -94,7 +94,8 @@ namespace ecruise.Api.Controllers
         {
             if (ModelState.IsValid)
                 return Created($"{BasePath}/invoices/by-invoice-item/{invoiceItem.InvoiceItemId}",
-                    new PostReference(invoiceItem.InvoiceItemId, $"{BasePath}/invoices/by-invoice-item/{invoiceItem.InvoiceItemId}"));
+                    new PostReference(invoiceItem.InvoiceItemId,
+                        $"{BasePath}/invoices/by-invoice-item/{invoiceItem.InvoiceItemId}"));
             else
                 return BadRequest(new Error(1, ModelState.ToString(),
                     "An error occured. Please check the message for further information."));
@@ -112,6 +113,28 @@ namespace ecruise.Api.Controllers
             else if (ModelState.IsValid && (id >= 3 || id == 0))
             {
                 return NotFound(new Error(1, "Invoice with requested Invoice id does not exist.",
+                    "An error occured. Please check the message for further information."));
+            }
+            else
+            {
+                return BadRequest(new Error(1, "The id given was not formatted correctly. Id has to be unsinged int",
+                    "An error occured. Please check the message for further information."));
+            }
+        }
+
+        // GET: /invoices/by-customer/{customerId}
+        [HttpGet("invoices/by-customer/{customerId}", Name = "GetInvoiceByCustomerId")]
+        public IActionResult GetInvoiceByCustomerId(uint customerId)
+        {
+            if (ModelState.IsValid && customerId < 3)
+            {
+                Invoice i1 = new Invoice(1, customerId, 12.34, false);
+                Invoice i2 = new Invoice(1, customerId, 56.78, true);
+                return Ok(new List<Invoice> {i1, i2});
+            }
+            else if (ModelState.IsValid && (customerId >= 3 || customerId == 0))
+            {
+                return NotFound(new Error(1, "No customerId.",
                     "An error occured. Please check the message for further information."));
             }
             else
