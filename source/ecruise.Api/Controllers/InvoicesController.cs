@@ -58,6 +58,28 @@ namespace ecruise.Api.Controllers
             }
         }
 
+        // GET: /invoices/by-customer/{customerId}
+        [HttpGet("by-customer/{customerId}", Name = "GetInvoiceByCustomerId")]
+        public IActionResult GetInvoiceByCustomerId(uint customerId)
+        {
+            if (ModelState.IsValid && customerId < 3)
+            {
+                Invoice i1 = new Invoice(1, customerId, 12.34, false);
+                Invoice i2 = new Invoice(1, customerId, 56.78, true);
+                return Ok(new List<Invoice> { i1, i2 });
+            }
+            else if (ModelState.IsValid && (customerId >= 3 || customerId == 0))
+            {
+                return NotFound(new Error(1, "No customerId.",
+                    "An error occured. Please check the message for further information."));
+            }
+            else
+            {
+                return BadRequest(new Error(1, "The id given was not formatted correctly. Id has to be unsinged int",
+                    "An error occured. Please check the message for further information."));
+            }
+        }
+
         // PATCH: /invoices/1/paid
         [HttpPatch("{id}/paid")]
         public IActionResult Patch(uint id, [FromBody] bool paid)
@@ -113,28 +135,6 @@ namespace ecruise.Api.Controllers
             else if (ModelState.IsValid && (id >= 3 || id == 0))
             {
                 return NotFound(new Error(1, "Invoice with requested Invoice id does not exist.",
-                    "An error occured. Please check the message for further information."));
-            }
-            else
-            {
-                return BadRequest(new Error(1, "The id given was not formatted correctly. Id has to be unsinged int",
-                    "An error occured. Please check the message for further information."));
-            }
-        }
-
-        // GET: /invoices/by-customer/{customerId}
-        [HttpGet("invoices/by-customer/{customerId}", Name = "GetInvoiceByCustomerId")]
-        public IActionResult GetInvoiceByCustomerId(uint customerId)
-        {
-            if (ModelState.IsValid && customerId < 3)
-            {
-                Invoice i1 = new Invoice(1, customerId, 12.34, false);
-                Invoice i2 = new Invoice(1, customerId, 56.78, true);
-                return Ok(new List<Invoice> {i1, i2});
-            }
-            else if (ModelState.IsValid && (customerId >= 3 || customerId == 0))
-            {
-                return NotFound(new Error(1, "No customerId.",
                     "An error occured. Please check the message for further information."));
             }
             else
