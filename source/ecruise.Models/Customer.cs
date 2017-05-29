@@ -23,11 +23,11 @@ namespace ecruise.Models
         /// <param name="street">Street (required)</param>
         /// <param name="houseNumber">HouseNumber (required)</param>
         /// <param name="addressExtraLine">Extra line for the user's address. Can contain various detail information about the user's address. (required)</param>
-        /// <param name="activated">True if the user has activated his account by clicking on the link in the activation email. (required)</param>
-        /// <param name="verified">True if the user has verified his account at our head-quarter by bringing us his driver's license. (required)</param>
+        /// <param name="activated">True if the user has activated his account by clicking on the link in the activation email.</param>
+        /// <param name="verified">True if the user has verified his account at our head-quarter by bringing us his driver's license.</param>
         public Customer(uint customerId, string email, string phoneNumber, string chipCardUid, string firstName,
             string lastName, string country, string city, uint zipCode, string street, string houseNumber,
-            string addressExtraLine, bool activated, bool verified)
+            string addressExtraLine, bool activated = false, bool verified = false)
         {
             CustomerId = customerId;
             Email = email;
@@ -123,14 +123,12 @@ namespace ecruise.Models
         /// True if the user has activated his account by clicking on the link in the activation email. 
         /// </summary>
         /// <value>True if the user has activated his account by clicking on the link in the activation email. </value>
-        [Required]
         public bool Activated { get; set; }
 
         /// <summary>
         /// True if the user has verified his account at our head-quarter by bringing us his driver's license. 
         /// </summary>
         /// <value>True if the user has verified his account at our head-quarter by bringing us his driver's license.</value>
-        [Required]
         public bool Verified { get; set; }
 
         /// <summary>
