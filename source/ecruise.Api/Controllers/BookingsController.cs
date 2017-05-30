@@ -1,8 +1,15 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Linq;
+using System.Net;
+using System.Net.Http;
+using System.Net.Http.Headers;
+using ecruise.Database.Models;
 using ecruise.Models;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Booking = ecruise.Models.Booking;
 
 namespace ecruise.Api.Controllers
 {
@@ -13,40 +20,44 @@ namespace ecruise.Api.Controllers
         [HttpGet(Name = "GetAllBookings")]
         public IActionResult GetAll()
         {
-            if (ModelState.IsValid)
+            try
             {
-                DateTime date1 = new DateTime(2017, 5, 8, 13, 37, 0, DateTimeKind.Utc);
-                DateTime date2 = new DateTime(2017, 5, 10, 13, 37, 0, DateTimeKind.Utc);
+                // Get all bookings from database
+                var bookings = Context.Bookings.ToList();
 
-                Booking booking = new Booking(1, 7, 1, 1, 49.488342, 8.466788, date1,
-                    date2);
+                if (bookings.Count < 1)
+                    // Return that there are no results
+                    return NoContent();
 
-                Booking booking2 = new Booking(1, 14, 1, 1, 49.488342, 8.466788, date1,
-                    date2);
-
-                List<Booking> list = new List<Booking> { booking, booking2 };
-
-                return Ok(list);
+                else
+                    // Return found bookings
+                    return Ok(bookings);
             }
-            else
-                return BadRequest(new Error(1, GetModelStateErrorString(),
-                    "An error occured. Please check the message for further information."));
+            catch (Exception e)
+            {
+                // return Internal Server Error (500)
+                return StatusCode(StatusCodes.Status500InternalServerError,
+                    new Error(101, e.Message, "An error occured.Please check the message for further information."));
+            }
         }
 
         // GET: /Bookings/5
         [HttpGet("{id}", Name = "GetBooking")]
         public IActionResult Get(uint id)
         {
+            // Check for correct value
             if (!ModelState.IsValid)
                 return BadRequest(new Error(1, "The id given was not formatted correctly. Id must be unsigned int",
                     "An error occured. Please check the message for further information."));
 
-            var bookingEntity = Context.Bookings.Find(id);
+            // Get booking from database
+            var booking = Context.Bookings.Find(id);    // DEBUG Check for return when no booking found
 
-            if (bookingEntity == null)
-                return NotFound(new Error(1, "Booking with requested booking id does not exist.", "An error occured. Please check the message for further information."));
+            if (booking != null)
+                return Ok(booking);
 
-            return Ok(bookingEntity);
+            else
+                return NotFound(new Error(201, "Booking with requested booking id does not exist.", "An error occured. Please check the message for further information."));
         }
 
         // POST: /Bookings
@@ -54,11 +65,18 @@ namespace ecruise.Api.Controllers
         public IActionResult Post([FromBody]Booking booking)
         {
             if (ModelState.IsValid)
-                return Created($"{BasePath}/Bookings/1",
-                    new PostReference(booking.BookingId, "api/Bookings/"));
+            {
+                // Check booking for logical validity
+                // Check customer
+                if (Context.Customers.Find(booking.CustomerId) == null)
+                    return NotFound(new Error(202, "The customer id referenced in the booking does not exist.",
+                        "An error occured. Please check the message for further information."));
+
+                return Ok();// Dummy
+            }
             else
                 return BadRequest(new Error(1, GetModelStateErrorString(),
-                    "An error occured. Please check the message for further information."));
+                    "The given data could not be converted to a booking. Please check the message for further information."));
         }
 
         // GET: /Bookings/by-trip/5
