@@ -14,7 +14,7 @@ namespace ecruise.Api.Controllers
         {
             Maintenance m1 = new Maintenance(1, false, 3000, null);
             Maintenance m2 = new Maintenance(2, false, null, new DateTime(2017, 5, 8, 13, 37, 0, DateTimeKind.Utc));
-            Maintenance m3 = new Maintenance(3, true, 3000, new DateTime(2017, 5, 8, 13, 50, 0, DateTimeKind.Utc));
+            Maintenance m3 = new Maintenance(3, true, null, null);
 
             return Ok(new List<Maintenance> {m1, m2, m3});
         }
