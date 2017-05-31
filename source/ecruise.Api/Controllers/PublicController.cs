@@ -13,7 +13,7 @@ namespace ecruise.Api.Controllers
                 return BadRequest(new Error(1, GetModelStateErrorString(),
                     "An error occured. Please check the message for further information."));
 
-            if (email == "login@ecruise.me" && password == "test123")
+            if (email == "login@ecruise.me" && password == "test1234")
                 return Ok(new { Id = 1, Token = "3AB904DECE2AA46ED4189AC0D68409DEB1B1DC0DD7EFD602F23D060A87E0D86C"});
             else
                 return Unauthorized();
