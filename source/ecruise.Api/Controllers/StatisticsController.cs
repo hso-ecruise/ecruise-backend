@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using ecruise.Models;
 using System.Globalization;
+using Statistic = ecruise.Models.Statistic;
 
 namespace ecruise.Api.Controllers
 {
@@ -21,19 +22,8 @@ namespace ecruise.Api.Controllers
             {
                 List<Statistic> list = new List<Statistic>()
                 {
-                    new Statistic()
-                    {
-                        AverageChargeLevel = 93,
-                        Bookings = 28,
-                        Date = new DateTime(2017, 05, 30, 0, 0, 0)
-                    },
-
-                    new Statistic()
-                    {
-                        AverageChargeLevel = 89,
-                        Bookings = 30,
-                        Date = new DateTime(2017, 05, 31, 0, 0, 0)
-                    }
+                    new Statistic(new DateTime(2017, 05, 30, 0, 0, 0), 28, 93, 15, 30),
+                    new Statistic(new DateTime(2017, 05, 31, 0, 0, 0), 30, 89, 14, 31)
                 };
 
                 return Ok(list);
@@ -54,12 +44,7 @@ namespace ecruise.Api.Controllers
             if (DateTime.TryParseExact(date, @"yyyy-MM-dd\THH:mm:ss.fff\Z", CultureInfo.InvariantCulture,
                 DateTimeStyles.AssumeUniversal, out requestedDateTime))
             {
-                return Ok(new Statistic()
-                {
-                    AverageChargeLevel = 90,
-                    Bookings = 42,
-                    Date = requestedDateTime.ToUniversalTime().Date
-                });
+                return Ok(new Statistic(new DateTime(2017, 05, 30, 0, 0, 0), 42, 90, 16, 31));
             }
             else
             {
