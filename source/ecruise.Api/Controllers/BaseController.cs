@@ -1,9 +1,7 @@
 using System.Linq;
-using ecruise.Database;
 using ecruise.Database.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
-using Microsoft.EntityFrameworkCore.Infrastructure;
 
 namespace ecruise.Api.Controllers
 {

@@ -58,8 +58,7 @@ namespace ecruise.Api.Controllers
         {
             if (ModelState.IsValid && id < 3 && id > 0)
             {
-                return Created($"{BasePath}/Cars/{id}",
-                    new PostReference(id, $"{BasePath}/Cars/{id}"));
+                return Ok(new PostReference(id, $"{BasePath}/Cars/{id}"));
             }
             else if (ModelState.IsValid && id >= 3)
             {
@@ -79,8 +78,7 @@ namespace ecruise.Api.Controllers
         {
             if (ModelState.IsValid && id < 3 && id > 0)
             {
-                return Created($"{BasePath}/Cars/{id}",
-                    new PostReference(id, $"{BasePath}/Cars/{id}"));
+                return Ok(new PostReference(id, $"{BasePath}/Cars/{id}"));
             }
             else if (ModelState.IsValid && id >= 3)
             {
@@ -100,8 +98,7 @@ namespace ecruise.Api.Controllers
         {
             if (ModelState.IsValid && id < 3 && id > 0)
             {
-                return Created($"{BasePath}/Cars/{id}",
-                    new PostReference(id, $"{BasePath}/Cars/{id}"));
+                return Ok(new PostReference(id, $"{BasePath}/Cars/{id}"));
             }
             else if (ModelState.IsValid && id >= 3)
             {
@@ -121,8 +118,7 @@ namespace ecruise.Api.Controllers
         {
             if (ModelState.IsValid && id < 3 && id > 0)
             {
-                return Created($"{BasePath}/Cars/{id}",
-                    new PostReference(id, $"{BasePath}/Cars/{id}"));
+                return Ok(new PostReference(id, $"{BasePath}/Cars/{id}"));
             }
             else if (ModelState.IsValid && id >= 3)
             {
@@ -142,8 +138,7 @@ namespace ecruise.Api.Controllers
         {
             if (ModelState.IsValid && id < 3 && id > 0)
             {
-                return Created($"{BasePath}/Cars/{id}",
-                    new PostReference(id, $"{BasePath}/Cars/{id}"));
+                return Ok(new PostReference(id, $"{BasePath}/Cars/{id}"));
             }
             else if (ModelState.IsValid && id >= 3)
             {

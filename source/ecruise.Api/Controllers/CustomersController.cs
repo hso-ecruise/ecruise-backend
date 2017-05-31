@@ -133,8 +133,7 @@ namespace ecruise.Api.Controllers
         {
             if (ModelState.IsValid && (id < 3 && id > 0))
             {
-                return Created($"{BasePath}/customers/{id}",
-                    new PostReference(id, $"{BasePath}/customers/{id}"));
+                return Ok(new PostReference(id, $"{BasePath}/customers/{id}"));
             }
             else if (ModelState.IsValid && id >= 3)
             {
@@ -154,8 +153,7 @@ namespace ecruise.Api.Controllers
         {
             if (ModelState.IsValid && (id < 3 && id > 0))
             {
-                return Created($"{BasePath}/customers/{id}",
-                    new PostReference(id, $"{BasePath}/customers/{id}"));
+                return Ok(new PostReference(id, $"{BasePath}/customers/{id}"));
             }
             else if (ModelState.IsValid && id >= 3)
             {
