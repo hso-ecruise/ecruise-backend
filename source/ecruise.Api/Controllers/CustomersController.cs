@@ -133,8 +133,27 @@ namespace ecruise.Api.Controllers
         {
             if (ModelState.IsValid && (id < 3 && id > 0))
             {
-                return Created($"{BasePath}/customers/{id}",
-                    new PostReference(id, $"{BasePath}/customers/{id}"));
+                return Ok(new PostReference(id, $"{BasePath}/customers/{id}"));
+            }
+            else if (ModelState.IsValid && id >= 3)
+            {
+                return NotFound(new Error(1, "Customer with requested id does not exist.",
+                    "An error occured. Please check the message for further information."));
+            }
+            else
+            {
+                return BadRequest(new Error(1, GetModelStateErrorString(),
+                    "An error occured. Please check the message for further information."));
+            }
+        }
+
+        // PATCH: /Customers/5/verified
+        [HttpPatch("{id}/verified", Name = "UpdateCustomerVerified")]
+        public IActionResult UpdateVerified(uint id, [FromBody] bool verified)
+        {
+            if (ModelState.IsValid && (id < 3 && id > 0))
+            {
+                return Ok(new PostReference(id, $"{BasePath}/customers/{id}"));
             }
             else if (ModelState.IsValid && id >= 3)
             {
