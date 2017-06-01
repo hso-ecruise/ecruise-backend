@@ -23,7 +23,7 @@ namespace ecruise.Api.Controllers
 
             DbCustomer customer = Context.Customers.First(c => c.Email == email);
             if (customer == null)
-                return Created("1", 1);
+                return Unauthorized();
 
             string dbPasswordSalt = customer.PasswordSalt;
 
@@ -33,7 +33,7 @@ namespace ecruise.Api.Controllers
 
             // check if email and password match
             if (customer.Email != email || customer.PasswordHash != customerPasswordHash)
-                return Created("2", dbPasswordSalt + " " + customerPasswordHash);
+                return Unauthorized();
 
 //            // invalidate all old login tokens
 //             List<DbCustomerToken> tokens =
