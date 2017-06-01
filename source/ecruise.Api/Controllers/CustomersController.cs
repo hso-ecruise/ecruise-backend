@@ -1,11 +1,12 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net;
-using ecruise.Database.Models;
+using System.Security.Cryptography;
+using System.Text;
 using Microsoft.AspNetCore.Mvc;
+
 using ecruise.Models;
-using Customer = ecruise.Models.Customer;
+using DbCustomer = ecruise.Database.Models.Customer;
 
 namespace ecruise.Api.Controllers
 {
@@ -16,16 +17,11 @@ namespace ecruise.Api.Controllers
         [HttpGet(Name = "GetAllCustomers")]
         public IActionResult GetAll()
         {
-            Customer c1 = new Customer(1, "admin@ecruise.me", "078108151", "", "Peter", "Admin", "DE", "Offenburg",
-                77652, "Badstraﬂe", "24a", "", false, false);
-            Customer c2 = new Customer(2, "tschwendemann@ecruise.me", "078108152", "", "Tobias", "Schwendemann", "DE",
-                "Offenburg", 77652, "Badstraﬂe", "24a", "", true, true);
-            Customer c3 = new Customer(3, "ffischbach@ecruise.me", "078108153", "", "Felix", "Fischbach", "DE",
-                "Offenburg", 77652, "Badstraﬂe", "24a", "", false, true);
-            Customer c4 = new Customer(4, "mhauer@ecruise.me", "078108154", "", "Moritz", "Hauer", "DE", "Offenburg",
-                77652, "Badstraﬂe", "24a", "", true, false);
+            List<DbCustomer> customers = Context.Customers.ToList();
+            if (customers.Count == 0)
+                return NoContent();
 
-            return Ok(new List<Customer> {c1, c2, c3, c4});
+            return Ok(customers);
         }
 
         // TODO: Customer can only request it's own data \
@@ -34,169 +30,159 @@ namespace ecruise.Api.Controllers
         [HttpGet("{id}", Name = "GetCustomer")]
         public IActionResult GetOne(uint id)
         {
-            if (ModelState.IsValid && (id > 0 && id < 3))
-            {
-                Customer c = new Customer(1, "admin@ecruise.me", "072210815", "", "Peter", "Admin", "DE", "Offenburg",
-                    77652, "Badstraﬂe", "24a", "", false, false);
+            if (!ModelState.IsValid)
+                return BadRequest(new Error(400, GetModelStateErrorString(),
+                    "An error occured. Please check the message for further information."));
 
-                return Ok(c);
-            }
-            else if (ModelState.IsValid && (id >= 3 || id == 0))
-            {
-                return NotFound(new Error(1, "Customer with requested id does not exist.",
-                    "An error occured. Please check the message for further information."));
-            }
-            else
-            {
-                return BadRequest(new Error(1, GetModelStateErrorString(),
-                    "An error occured. Please check the message for further information."));
-            }
-        }
+            DbCustomer customer = Context.Customers.Find(id);
+            if (customer == null)
+                return NotFound(new Error(201, "Customer with requested id does not exist.",
+                    $"There is no customer that has the id {id}."));
 
-        // POST: /Customers
-        [HttpPost(Name = "CreateCustomer")]
-        public IActionResult Post([FromBody] Registration r)
-        {
-            if (ModelState.IsValid)
-                return Created($"{BasePath}/customers/1",
-                    new PostReference(1, $"{BasePath}/customers/1"));
-            else
-            {
-                return BadRequest(new Error(1, GetModelStateErrorString(),
-                    "An error occured. Please check the message for further information."));
-            }
+            return Ok(customer);
         }
 
         // PATCH: /Customers/5/password
         [HttpPatch("{id}/password", Name = "UpdateCustomerPassword")]
         public IActionResult UpdatePassword(uint id, [FromBody] string password)
         {
-            if (ModelState.IsValid && (id < 3 && id > 0))
-            {
-                return Ok(new PostReference(id, $"{BasePath}/customers/{id}"));
-            }
-            else if (ModelState.IsValid && id >= 3)
-            {
-                return NotFound(new Error(1, "Customer with requested id does not exist.",
+            // TODO(Lyrex): Implement proper update password method
+
+            if (!ModelState.IsValid)
+                return BadRequest(new Error(400, GetModelStateErrorString(),
                     "An error occured. Please check the message for further information."));
-            }
-            else
-            {
-                return BadRequest(new Error(1, GetModelStateErrorString(),
-                    "An error occured. Please check the message for further information."));
-            }
+
+            DbCustomer customer = Context.Customers.Find(id);
+            if (customer == null)
+                return NotFound(new Error(201, "Customer with requested id does not exist.",
+                    $"There is no customer that has the id {id}."));
+
+            string passwordSalt = Guid.NewGuid().ToString().Replace("-", string.Empty).Substring(0, 16);
+
+            SHA256 alg = SHA256.Create();
+            byte[] result = alg.ComputeHash(Encoding.UTF8.GetBytes(password + passwordSalt));
+            string passwordHash = BitConverter.ToString(result).ToLowerInvariant().Replace("-", "");
+
+            customer.PasswordHash = passwordHash;
+            customer.PasswordSalt = passwordSalt;
+
+            return Ok(new PostReference(id, $"{BasePath}/customer/{id}"));
         }
 
         // PATCH: /Customers/5/email
         [HttpPatch("{id}/email", Name = "UpdateCustomerEmail")]
         public IActionResult UpdateEmail(uint id, [FromBody] string email)
         {
-            if (ModelState.IsValid && (id < 3 && id > 0))
-            {
-                return Ok(new PostReference(id, $"{BasePath}/customers/{id}"));
-            }
-            else if (ModelState.IsValid && id >= 3)
-            {
-                return NotFound(new Error(1, "Customer with requested id does not exist.",
+            // TODO(Lyrex): Implement proper update email method
+
+            if (!ModelState.IsValid)
+                return BadRequest(new Error(400, GetModelStateErrorString(),
                     "An error occured. Please check the message for further information."));
-            }
-            else
-            {
-                return BadRequest(new Error(1, GetModelStateErrorString(),
-                    "An error occured. Please check the message for further information."));
-            }
+
+            DbCustomer customer = Context.Customers.Find(id);
+            if (customer == null)
+                return NotFound(new Error(201, "Customer with requested id does not exist.",
+                    $"There is no customer that has the id {id}."));
+
+            customer.Email = email;
+
+            return Ok(new PostReference(id, $"{BasePath}/customer/{id}"));
         }
 
         // PATCH: /Customers/5/phone-number
         [HttpPatch("{id}/phone-number", Name = "UpdateCustomerPhoneNumber")]
-        public IActionResult UpdatePhoneNumber(uint id, [FromBody] string phone)
+        public IActionResult UpdatePhoneNumber(uint id, [FromBody] string phoneNumber)
         {
-            if (ModelState.IsValid && (id < 3 && id > 0))
-            {
-                return Ok(new PostReference(id, $"{BasePath}/customers/{id}"));
-            }
-            else if (ModelState.IsValid && id >= 3)
-            {
-                return NotFound(new Error(1, "Customer with requested id does not exist.",
+            if (!ModelState.IsValid)
+                return BadRequest(new Error(400, GetModelStateErrorString(),
                     "An error occured. Please check the message for further information."));
-            }
-            else
-            {
-                return BadRequest(new Error(1, GetModelStateErrorString(),
-                    "An error occured. Please check the message for further information."));
-            }
+
+            DbCustomer customer = Context.Customers.Find(id);
+            if (customer == null)
+                return NotFound(new Error(201, "Customer with requested id does not exist.",
+                    $"There is no customer that has the id {id}."));
+
+            customer.PhoneNumber = phoneNumber;
+
+            return Ok(new PostReference(id, $"{BasePath}/customer/{id}"));
         }
 
         // PATCH: /Customers/5/address
         [HttpPatch("{id}/address", Name = "UpdateCustomerAddress")]
         public IActionResult UpdateAddress(uint id, [FromBody] Address address)
         {
-            if (ModelState.IsValid && (id < 3 && id > 0))
-            {
-                return Ok(new PostReference(id, $"{BasePath}/customers/{id}"));
-            }
-            else if (ModelState.IsValid && id >= 3)
-            {
-                return NotFound(new Error(1, "Customer with requested id does not exist.",
+            if (!ModelState.IsValid)
+                return BadRequest(new Error(400, GetModelStateErrorString(),
                     "An error occured. Please check the message for further information."));
-            }
-            else
+
+            DbCustomer customer = Context.Customers.Find(id);
+            if (customer == null)
+                return NotFound(new Error(201, "Customer with requested id does not exist.",
+                    $"There is no customer that has the id {id}."));
+
+            using (var transaction = Context.Database.BeginTransaction())
             {
-                return BadRequest(new Error(1, GetModelStateErrorString(),
-                    "An error occured. Please check the message for further information."));
+                customer.Country = address.Country;
+                customer.City = address.City;
+                customer.ZipCode = address.ZipCode;
+                customer.Street = address.Street;
+                customer.HouseNumber = address.HouseNumber;
+                customer.AddressExtraLine = address.AdressExtraLine;
+
+                transaction.Commit();
             }
+            return Ok(new PostReference(1, $"{BasePath}/customer/{customer.CustomerId}"));
         }
 
         // PATCH: /Customers/5/verified
         [HttpPatch("{id}/verified", Name = "UpdateCustomerVerified")]
         public IActionResult UpdateVerified(uint id, [FromBody] bool verified)
         {
-            if (ModelState.IsValid && (id < 3 && id > 0))
-            {
-                return Ok(new PostReference(id, $"{BasePath}/customers/{id}"));
-            }
-            else if (ModelState.IsValid && id >= 3)
-            {
-                return NotFound(new Error(1, "Customer with requested id does not exist.",
+            if (!ModelState.IsValid)
+                return BadRequest(new Error(400, GetModelStateErrorString(),
                     "An error occured. Please check the message for further information."));
-            }
-            else
-            {
-                return BadRequest(new Error(1, GetModelStateErrorString(),
-                    "An error occured. Please check the message for further information."));
-            }
+
+            DbCustomer customer = Context.Customers.Find(id);
+            if (customer == null)
+                return NotFound(new Error(201, "Customer with requested id does not exist.",
+                    $"There is no customer that has the id {id}."));
+
+            customer.Verified = verified;
+
+            return Ok(new PostReference(1, $"{BasePath}/customer/{customer.CustomerId}"));
         }
 
         // PATCH: /Customers/5/chipcarduid
         [HttpPatch("{id}/chipcarduid", Name = "UpdateCustomerChipCardUid")]
         public IActionResult UpdateChipCardUid(uint id, [FromBody] string chipCardUid)
         {
-            if (ModelState.IsValid && (id < 3 && id > 0))
-            {
-                return Ok(new PostReference(id, $"{BasePath}/customers/{id}"));
-            }
-            else if (ModelState.IsValid && id >= 3)
-            {
-                return NotFound(new Error(1, "Customer with requested id does not exist.",
+            if (!ModelState.IsValid)
+                return BadRequest(new Error(400, GetModelStateErrorString(),
                     "An error occured. Please check the message for further information."));
-            }
-            else
-            {
-                return BadRequest(new Error(1, GetModelStateErrorString(),
-                    "An error occured. Please check the message for further information."));
-            }
+
+            DbCustomer customer = Context.Customers.Find(id);
+            if (customer == null)
+                return NotFound(new Error(201, "Customer with requested id does not exist.",
+                    $"There is no customer that has the id {id}."));
+
+            customer.ChipCardUid = chipCardUid;
+
+            return Ok(new PostReference(1, $"{BasePath}/customer/{customer.CustomerId}"));
         }
 
         // GET: /Customers/by-lastname/5
         [HttpGet("by-lastname/{name}", Name = "GetCustomerByLastName")]
         public IActionResult GetCustomerByLastName(string name)
         {
-            Customer c1 = new Customer(1, "max@ecruise.me", "072210815", "", ",ax", "Mustermann", "DE", "Offenburg",
-                77652, "Badstraﬂe", "24a", "", false, false);
-            Customer c2 = new Customer(7, "andrea@ecruise.me", "072210815", "", "Andrea", "Mustermann", "DE", "Offenburg",
-                77652, "Badstraﬂe", "24a", "", false, false);
+            if (!ModelState.IsValid)
+                return BadRequest(new Error(400, GetModelStateErrorString(),
+                    "An error occured. Please check the message for further information."));
 
-            return Ok(new List<Customer>{c1, c2});
+            List<DbCustomer> customers = Context.Customers.Where(c => c.LastName == name).ToList();
+            if (customers.Count == 0)
+                return NoContent();
+
+            return Ok(customers);
         }
     }
 }
