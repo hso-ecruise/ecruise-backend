@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using ecruise.Database.Models;
 using Microsoft.AspNetCore.Mvc;
@@ -18,6 +19,13 @@ namespace ecruise.Api.Controllers
             return string.Join(" | ", ModelState.Values
                 .SelectMany(v => v.Errors)
                 .Select(e => e.ErrorMessage));
+        }
+
+        protected uint GetCustomerIdByToken(string token)
+        {
+            CustomerToken customerToken =
+                Context.CustomerTokens.FirstOrDefault(t => (t.Token == token && t.ExpireDate > DateTime.Now));
+            return customerToken?.CustomerId ?? 0;
         }
 
         // Code to be executed after each action
