@@ -13,7 +13,7 @@ namespace ecruise.Models
         /// </summary>
         public enum TypeEnum
         {
-            Debit,
+            Debit = 1,
             Credit
         }
 

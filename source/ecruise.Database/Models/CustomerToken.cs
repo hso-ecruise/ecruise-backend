@@ -16,7 +16,7 @@ namespace ecruise.Database.Models
 
     public enum TokenType
     {
-        EmailActivation = 0,
-        Login = 1
+        EmailActivation = 1,
+        Login = 2
     }
 }
