@@ -24,7 +24,7 @@ namespace ecruise.Database.Models
 
     public enum InvoiceItemType
     {
-        Debit = 0,
-        Credit = 1
+        Debit = 1,
+        Credit
     }
 }

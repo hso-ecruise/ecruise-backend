@@ -13,7 +13,7 @@ namespace ecruise.Models
         /// </summary>
         public enum ChargingStateEnum
         {
-            Discharging,
+            Discharging = 1,
             Charging,
             Full
         }
@@ -23,7 +23,7 @@ namespace ecruise.Models
         /// </summary>
         public enum BookingStateEnum
         {
-            Available,
+            Available = 1,
             Booked,
             Blocked
         }

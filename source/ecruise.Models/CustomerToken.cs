@@ -13,7 +13,7 @@ namespace ecruise.Models
         /// </summary>
         public enum TokenTypeEnum
         {
-            EmailActivation,
+            EmailActivation = 1,
             Login
         }
 

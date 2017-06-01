@@ -33,15 +33,15 @@ namespace ecruise.Database.Models
 
     public enum ChargingState
     {
-        Discharging = 0,
-        Charging = 1,
-        Full = 2
+        Discharging = 1,
+        Charging,
+        Full
     }
 
     public enum BookingState
     {
-        Available = 0,
-        Booked = 1,
-        Blocked = 2
+        Available = 1,
+        Booked,
+        Blocked
     }
 }
