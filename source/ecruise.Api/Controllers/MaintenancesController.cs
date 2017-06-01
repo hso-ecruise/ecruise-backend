@@ -55,7 +55,6 @@ namespace ecruise.Api.Controllers
 
 
             var insert = Context.Maintenances.Add(insertMaintenance);
-            Context.SaveChanges();
 
             return Created($"{BasePath}/maintenances/{insert.Entity.MaintenanceId}",
                 new PostReference(insert.Entity.MaintenanceId, $"{BasePath}/maintenances/{insert.Entity.MaintenanceId}"));
