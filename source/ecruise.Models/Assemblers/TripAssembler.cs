@@ -4,7 +4,7 @@ using System.Text;
 
 namespace ecruise.Models.Assemblers
 {
-    class TripAssembler
+    public class TripAssembler
     {
         public static Database.Models.Trip AssembleEntity(Trip tripModel)
         {

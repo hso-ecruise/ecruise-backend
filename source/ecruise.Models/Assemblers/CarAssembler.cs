@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore.Scaffolding.Internal;
 
 namespace ecruise.Models.Assemblers
 {
-    class CarAssembler
+    public class CarAssembler
     {
         public static Database.Models.Car AssembleEntity(Car carModel)
         {

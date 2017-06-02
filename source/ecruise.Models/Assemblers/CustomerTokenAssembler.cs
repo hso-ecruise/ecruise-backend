@@ -5,7 +5,7 @@ using System.Text;
 
 namespace ecruise.Models.Assemblers
 {
-    class CustomerTokenAssembler
+    public class CustomerTokenAssembler
     {
         public static Database.Models.CustomerToken AssembleEntity(CustomerToken customerTokenModel)
         {

@@ -4,7 +4,7 @@ using System.Text;
 
 namespace ecruise.Models.Assemblers
 {
-    class CarChargingStationAssembler
+    public class CarChargingStationAssembler
     {
         public static Database.Models.CarChargingStation AssembleEntity(CarChargingStation carChargingStationModel)
         {

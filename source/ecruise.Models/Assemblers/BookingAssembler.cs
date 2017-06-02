@@ -4,7 +4,7 @@ using System.Text;
 
 namespace ecruise.Models.Assemblers
 {
-    class BookingAssembler
+    public class BookingAssembler
     {
         public static Database.Models.Booking AssembleEntity(Booking bookingModel)
         {

@@ -4,7 +4,7 @@ using System.Text;
 
 namespace ecruise.Models.Assemblers
 {
-    class InvoiceAssembler
+    public class InvoiceAssembler
     {
         public static Database.Models.Invoice AssembleEntity(Invoice invoiceModel)
         {
