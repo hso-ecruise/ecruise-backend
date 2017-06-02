@@ -49,7 +49,7 @@ namespace ecruise.Api.Controllers
             var inserted = Context.Trips.Add(insertTrip);
 
             return Created($"{BasePath}/trips/{inserted.Entity.TripId}",
-                new PostReference(inserted.Entity.TripId, $"{BasePath}/trips/{inserted.Entity.TripId}"));
+                new PostReference((uint)inserted.Entity.TripId, $"{BasePath}/trips/{inserted.Entity.TripId}"));
         }
 
         // GET: /trips/1
