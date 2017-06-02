@@ -1,0 +1,32 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Text;
+
+namespace ecruise.Models.Assemblers
+{
+    class CarChargingStationAssembler
+    {
+        public static Database.Models.CarChargingStation AssembleEntity(CarChargingStation carChargingStationModel)
+        {
+            return new Database.Models.CarChargingStation
+            {
+                CarChargingStationId = carChargingStationModel.CarChargingStationId,
+                CarId = carChargingStationModel.CarId,
+                ChargeEnd = carChargingStationModel.ChargeEnd,
+                ChargeStart = carChargingStationModel.ChargeStart,
+                ChargingStationId = carChargingStationModel.CarChargingStationId
+            };
+        }
+
+        public static CarChargingStation AssembleModel(Database.Models.CarChargingStation carChargingStationEntity)
+        {
+            return new CarChargingStation(
+                carChargingStationEntity.CarChargingStationId,
+                carChargingStationEntity.CarId,
+                carChargingStationEntity.ChargingStationId,
+                carChargingStationEntity.ChargeStart,
+                carChargingStationEntity.ChargeEnd
+            );
+        }
+    }
+}
