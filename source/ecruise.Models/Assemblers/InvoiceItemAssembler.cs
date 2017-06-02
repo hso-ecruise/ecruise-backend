@@ -21,8 +21,8 @@ namespace ecruise.Models.Assemblers
         public static InvoiceItem AssembleModel(Database.Models.InvoiceItem invoiceItemEntity)
         {
             return new InvoiceItem(
-                invoiceItemEntity.InvoiceItemId,
-                invoiceItemEntity.InvoiceId,
+                (uint)invoiceItemEntity.InvoiceItemId,
+                (uint?)invoiceItemEntity.InvoiceId,
                 invoiceItemEntity.Reason,
                 (InvoiceItem.TypeEnum)invoiceItemEntity.Type,
                 invoiceItemEntity.Amount);

@@ -21,7 +21,7 @@ namespace ecruise.Models.Assemblers
         public static ChargingStation AssembleModel(Database.Models.ChargingStation chargingStationEntity)
         {
             return new ChargingStation(
-                chargingStationEntity.ChargingStationId,
+                (uint)chargingStationEntity.ChargingStationId,
                 chargingStationEntity.Slots,
                 chargingStationEntity.SlotsOccupied,
                 chargingStationEntity.Latitude,

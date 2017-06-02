@@ -20,8 +20,8 @@ namespace ecruise.Models.Assemblers
         public static Invoice AssembleModel(Database.Models.Invoice invoiceEntity)
         {
             return new Invoice(
-                invoiceEntity.InvoiceId,
-                invoiceEntity.CustomerId,
+                (uint)invoiceEntity.InvoiceId,
+                (uint)invoiceEntity.CustomerId,
                 invoiceEntity.TotalAmount,
                 invoiceEntity.Payed);
         }

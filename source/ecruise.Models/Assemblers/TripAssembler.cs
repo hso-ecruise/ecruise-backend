@@ -24,9 +24,9 @@ namespace ecruise.Models.Assemblers
         public static Trip AssembleModel(Database.Models.Trip tripEntity)
         {
             return new Trip(
-                tripEntity.TripId,
-                tripEntity.CarId,
-                tripEntity.CustomerId,
+                (uint)tripEntity.TripId,
+                (uint?)tripEntity.CarId,
+                (uint)tripEntity.CustomerId,
                 tripEntity.StartDate,
                 tripEntity.EndDate,
                 tripEntity.StartChargingStationId,

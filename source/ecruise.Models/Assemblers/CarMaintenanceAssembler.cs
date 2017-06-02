@@ -22,10 +22,10 @@ namespace ecruise.Models.Assemblers
         public static CarMaintenance AssembleModel(Database.Models.CarMaintenance carMaintenanceEntity)
         {
             return new CarMaintenance(
-                carMaintenanceEntity.CarMaintenanceId,
-                carMaintenanceEntity.CarId,
-                carMaintenanceEntity.MaintenanceId,
-                carMaintenanceEntity.InvoiceItemId,
+                (uint)carMaintenanceEntity.CarMaintenanceId,
+                (uint)carMaintenanceEntity.CarId,
+                (uint)carMaintenanceEntity.MaintenanceId,
+                (uint?)carMaintenanceEntity.InvoiceItemId,
                 carMaintenanceEntity.PlannedDate,
                 carMaintenanceEntity.CompletedDate
             );

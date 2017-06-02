@@ -30,7 +30,7 @@ namespace ecruise.Models.Assemblers
         public static Customer AssembleModel(Database.Models.Customer customerEntity)
         {
             return new Customer(
-                customerEntity.CustomerId,
+                (uint)customerEntity.CustomerId,
                 customerEntity.Email,
                 customerEntity.PhoneNumber,
                 customerEntity.ChipCardUid,

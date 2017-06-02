@@ -27,10 +27,10 @@ namespace ecruise.Models.Assemblers
         public static Booking AssembleModel(Database.Models.Booking bookingEntity)
         {
             return new Booking(
-                bookingEntity.BookingId,
-                bookingEntity.CustomerId,
-                bookingEntity.TripId,
-                bookingEntity.InvoiceItemId,
+                (uint)bookingEntity.BookingId,
+                (uint)bookingEntity.CustomerId,
+                (uint?)bookingEntity.TripId,
+                (uint?)bookingEntity.InvoiceItemId,
                 bookingEntity.BookedPositionLatitude,
                 bookingEntity.BookedPositionLongitude,
                 bookingEntity.BookingDate,

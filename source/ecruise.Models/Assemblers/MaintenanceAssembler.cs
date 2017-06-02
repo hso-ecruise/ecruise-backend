@@ -20,7 +20,7 @@ namespace ecruise.Models.Assemblers
         public static Maintenance AssembleModel(Database.Models.Maintenance maintenanceEntity)
         {
             return new Maintenance(
-                maintenanceEntity.MaintenanceId,
+                (uint)maintenanceEntity.MaintenanceId,
                 maintenanceEntity.Spontaneously,
                 maintenanceEntity.AtMileage,
                 maintenanceEntity.AtDate);

@@ -33,7 +33,8 @@ namespace ecruise.Models.Assemblers
 
         public static Car AssembleModel(Database.Models.Car carEntity)
         {
-            return new Car(carEntity.CarId,
+            return new Car(
+                (uint)carEntity.CarId,
                 carEntity.LicensePlate,
                 (Car.ChargingStateEnum)carEntity.ChargingState,
                 (Car.BookingStateEnum)carEntity.BookingState,

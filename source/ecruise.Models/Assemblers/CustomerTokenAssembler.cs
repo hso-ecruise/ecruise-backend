@@ -23,8 +23,8 @@ namespace ecruise.Models.Assemblers
         public static CustomerToken AssembleModel(Database.Models.CustomerToken customerTokenEntity)
         {
             return new CustomerToken(
-                customerTokenEntity.CustomerTokenId,
-                customerTokenEntity.CustomerId,
+                (uint)customerTokenEntity.CustomerTokenId,
+                (uint)customerTokenEntity.CustomerId,
                 (CustomerToken.TokenTypeEnum)customerTokenEntity.Type,
                 customerTokenEntity.Token,
                 customerTokenEntity.CreationDate,
