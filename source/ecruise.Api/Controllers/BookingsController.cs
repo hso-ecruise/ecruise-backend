@@ -72,7 +72,33 @@ namespace ecruise.Api.Controllers
                     return NotFound(new Error(202, "The customer id referenced in the booking does not exist.",
                         "An error occured. Please check the message for further information."));
 
-                return Ok();// Dummy
+                // Check planned date if set
+                if (booking.PlannedDate != null && booking.PlannedDate < DateTime.Now.AddMinutes(5))
+                {
+                    // The booking must be planned for the future (subtracting 5 minutes e.g. if some latency issues occur)
+                    return BadRequest(new Error(301, "PlannedDate must be in the future.",
+                        "The DateTime wasn't set properly. Please check the message for further information."));
+                }
+
+                // Force null on items that cant already be set
+                booking.TripId = null;
+                booking.InvoiceItemId = null;
+
+                // Construct entity from model
+                //Database.Models.Booking bookingEntity = Assemblers.BookingAssembler.AssembleEntity(booking);
+                 // Save to database
+                 /*
+                Context.Bookings.Add(bookingEntity);
+                Context.SaveChanges();
+
+                // Get the reference to the newly created entity
+                PostReference pr = new PostReference(bookingEntity.BookingId, $"{BasePath}/bookings/{bookingEntity.BookingId}");
+
+                // Return reference to the new object including the path to it
+                
+                return Created(bookingEntity.BookingId.ToString(), pr);
+                */
+                return Ok();
             }
             else
                 return BadRequest(new Error(1, GetModelStateErrorString(),
