@@ -7,6 +7,7 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using ecruise.Database.Models;
 using ecruise.Models;
+using ecruise.Models.Assemblers;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Booking = ecruise.Models.Booking;
@@ -64,45 +65,53 @@ namespace ecruise.Api.Controllers
         [HttpPost(Name = "PostBooking")]
         public IActionResult Post([FromBody]Booking booking)
         {
-            if (ModelState.IsValid)
+            try
             {
-                // Check booking for logical validity
-                // Check customer
-                if (Context.Customers.Find(booking.CustomerId) == null)
-                    return NotFound(new Error(202, "The customer id referenced in the booking does not exist.",
-                        "An error occured. Please check the message for further information."));
 
-                // Check planned date if set
-                if (booking.PlannedDate != null && booking.PlannedDate < DateTime.Now.AddMinutes(5))
+                if (ModelState.IsValid)
                 {
-                    // The booking must be planned for the future (subtracting 5 minutes e.g. if some latency issues occur)
-                    return BadRequest(new Error(301, "PlannedDate must be in the future.",
-                        "The DateTime wasn't set properly. Please check the message for further information."));
+                    // Check booking for logical validity
+                    // Check customer
+                    if (Context.Customers.Find(booking.CustomerId) == null)
+                        return NotFound(new Error(202, "The customer id referenced in the booking does not exist.",
+                            "An error occured. Please check the message for further information."));
+
+                    // Check planned date if set
+                    if (booking.PlannedDate != null && booking.PlannedDate < DateTime.UtcNow.AddMinutes(-5))
+                    {
+                        // The booking must be planned for the future (subtracting 5 minutes e.g. if some latency issues occur)
+                        return BadRequest(new Error(302, "PlannedDate must be in the future.",
+                            "The DateTime wasn't set properly. Please check the message for further information."));
+                    }
+
+                    // Force null on items that cant already be set
+                    booking.TripId = null;
+                    booking.InvoiceItemId = null;
+
+                    // Construct entity from model
+                    Database.Models.Booking bookingEntity = BookingAssembler.AssembleEntity(booking);
+
+                    // Save to database
+                    Context.Bookings.Add(bookingEntity);
+                    Context.SaveChanges();
+
+                    // Get the reference to the newly created entity
+                    PostReference pr = new PostReference((uint) bookingEntity.BookingId,
+                        $"{BasePath}/bookings/{bookingEntity.BookingId}");
+
+                    // Return reference to the new object including the path to it
+                    return Created(bookingEntity.BookingId.ToString(), pr);
                 }
-
-                // Force null on items that cant already be set
-                booking.TripId = null;
-                booking.InvoiceItemId = null;
-
-                // Construct entity from model
-                //Database.Models.Booking bookingEntity = Assemblers.BookingAssembler.AssembleEntity(booking);
-                 // Save to database
-                 /*
-                Context.Bookings.Add(bookingEntity);
-                Context.SaveChanges();
-
-                // Get the reference to the newly created entity
-                PostReference pr = new PostReference(bookingEntity.BookingId, $"{BasePath}/bookings/{bookingEntity.BookingId}");
-
-                // Return reference to the new object including the path to it
-                
-                return Created(bookingEntity.BookingId.ToString(), pr);
-                */
-                return Ok();
+                else
+                    return BadRequest(new Error(301, GetModelStateErrorString(),
+                        "The given data could not be converted to a booking. Please check the message for further information."));
             }
-            else
-                return BadRequest(new Error(1, GetModelStateErrorString(),
-                    "The given data could not be converted to a booking. Please check the message for further information."));
+            catch (Exception e)
+            {
+                // return Internal Server Error (500)
+                return StatusCode(StatusCodes.Status500InternalServerError,
+                    new Error(101, e.Message, "An error occured.Please check the message for further information."));
+            }
         }
 
         // GET: /Bookings/by-trip/5
