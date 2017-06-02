@@ -9,8 +9,8 @@ namespace ecruise.Database.Models
             InvoiceItem = new HashSet<InvoiceItem>();
         }
 
-        public uint InvoiceId { get; set; }
-        public uint CustomerId { get; set; }
+        public ulong InvoiceId { get; set; }
+        public ulong CustomerId { get; set; }
         public double TotalAmount { get; set; }
         public bool Payed { get; set; }
 

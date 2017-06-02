@@ -11,7 +11,7 @@ namespace ecruise.Database.Models
             TripStartChargingStation = new HashSet<Trip>();
         }
 
-        public uint ChargingStationId { get; set; }
+        public ulong ChargingStationId { get; set; }
         public uint Slots { get; set; }
         public uint SlotsOccupied { get; set; }
         public double Latitude { get; set; }
