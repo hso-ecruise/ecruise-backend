@@ -137,7 +137,7 @@ namespace ecruise.Api.Controllers
             var insert = Context.Customers.Add(insertCustomer);
 
             return Created($"{BasePath}/customers/{insert.Entity.CustomerId}",
-                new PostReference(insert.Entity.CustomerId, $"{BasePath}/customers/{insert.Entity.CustomerId}"));
+                new PostReference((uint)insert.Entity.CustomerId, $"{BasePath}/customers/{insert.Entity.CustomerId}"));
         }
     }
 }
