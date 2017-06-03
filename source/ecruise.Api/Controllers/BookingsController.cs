@@ -194,7 +194,7 @@ namespace ecruise.Api.Controllers
             else
             {
                 return BadRequest(new Error(301, "The date given was not formatted correctly.",
-                    "Date must always be in following format: 'dd-MM-yyyyTHH:mm:ss.zzzZ'"));
+                    "Date must always be in following format: 'yyyy-MM-ddTHH:mm:ss.zzzZ'"));
             }
         }
 

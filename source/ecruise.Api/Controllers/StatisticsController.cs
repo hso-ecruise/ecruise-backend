@@ -48,7 +48,7 @@ namespace ecruise.Api.Controllers
             }
             else
             {
-                return BadRequest(new Error(1, "The date given was not formatted correctly. Date must be in following format: 'dd-MM-yyyyTHH:mm:ss.zzzZ'",
+                return BadRequest(new Error(1, "The date given was not formatted correctly. Date must be in following format: 'yyyy-MM-ddTHH:mm:ss.zzzZ'",
                     "An error occured. Please check the message for further information."));
             }
         }
