@@ -6,7 +6,7 @@ using DbInvoice = ecruise.Database.Models.Invoice;
 
 namespace ecruise.Models.Assemblers
 {
-    public class InvoiceAssembler
+    public static class InvoiceAssembler
     {
         public static DbInvoice AssembleEntity(ulong invoiceId, Invoice invoiceModel)
         {

@@ -6,7 +6,7 @@ using DbCustomerToken = ecruise.Database.Models.CustomerToken;
 
 namespace ecruise.Models.Assemblers
 {
-    public class CustomerTokenAssembler
+    public static class CustomerTokenAssembler
     {
         private static string makeStringFromEnum(ecruise.Models.CustomerToken.TokenTypeEnum t)
         {

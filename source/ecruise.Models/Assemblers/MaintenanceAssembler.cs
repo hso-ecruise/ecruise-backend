@@ -5,7 +5,7 @@ using DbMaintenance = ecruise.Database.Models.Maintenance;
 
 namespace ecruise.Models.Assemblers
 {
-    public class MaintenanceAssembler
+    public static class MaintenanceAssembler
     {
         public static DbMaintenance AssembleEntity(ulong maintenanceId, Maintenance maintenanceModel)
         {

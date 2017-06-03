@@ -6,7 +6,7 @@ using DbCustomer = ecruise.Database.Models.Customer;
 
 namespace ecruise.Models.Assemblers
 {
-    public class CustomerAssembler
+    public static class CustomerAssembler
     {
         public static DbCustomer AssembleEntity(ulong customerId, Customer customerModel)
         {

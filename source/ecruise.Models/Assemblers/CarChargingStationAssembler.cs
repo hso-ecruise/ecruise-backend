@@ -6,7 +6,7 @@ using DbCarChargingStation = ecruise.Database.Models.CarChargingStation;
 
 namespace ecruise.Models.Assemblers
 {
-    public class CarChargingStationAssembler
+    public static class CarChargingStationAssembler
     {
         public static DbCarChargingStation AssembleEntity(ulong carChargingStationId, CarChargingStation carChargingStationModel)
         {

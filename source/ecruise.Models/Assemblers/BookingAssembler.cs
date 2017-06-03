@@ -6,7 +6,7 @@ using DbBooking = ecruise.Database.Models.Booking;
 
 namespace ecruise.Models.Assemblers
 {
-    public class BookingAssembler
+    public static class BookingAssembler
     {
         public static DbBooking AssembleEntity(ulong id, Booking bookingModel)
         {

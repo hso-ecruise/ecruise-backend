@@ -7,7 +7,7 @@ using DbCar = ecruise.Database.Models.Car;
 
 namespace ecruise.Models.Assemblers
 {
-    public class CarAssembler
+    public static class CarAssembler
     {
         public static DbCar AssembleEntity(ulong carId, Car carModel)
         {

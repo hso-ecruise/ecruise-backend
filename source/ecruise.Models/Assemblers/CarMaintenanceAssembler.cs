@@ -6,7 +6,7 @@ using DbCarMaintenance = ecruise.Database.Models.CarMaintenance;
 
 namespace ecruise.Models.Assemblers
 {
-    public class CarMaintenanceAssembler
+    public static class CarMaintenanceAssembler
     {
         public static DbCarMaintenance AssembleEntity(ulong carMaintenanceId, CarMaintenance carMaintenanceModel)
         {

@@ -5,7 +5,7 @@ using DbTrip = ecruise.Database.Models.Trip;
 
 namespace ecruise.Models.Assemblers
 {
-    public class TripAssembler
+    public static class TripAssembler
     {
         public static DbTrip AssembleEntity(ulong tripId, Trip tripModel)
         {
