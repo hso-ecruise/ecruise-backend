@@ -1,6 +1,11 @@
+using System.Collections.Immutable;
 using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc;
+
 using ecruise.Models;
+using DbInvoice = ecruise.Database.Models.Invoice;
+using DbInvoiceItem = ecruise.Database.Models.InvoiceItem;
+using System.Linq;
 
 namespace ecruise.Api.Controllers
 {
@@ -10,138 +15,160 @@ namespace ecruise.Api.Controllers
         [HttpGet(Name = "GetAllInvoices")]
         public IActionResult Get()
         {
-            Invoice invoice1 = new Invoice(1, 1, 123.45, false);
-            Invoice invoice2 = new Invoice(1, 2, 0.27, true);
+            ImmutableList<DbInvoice> invoices = Context.Invoices.ToImmutableList();
 
-            return Ok(new List<Invoice> {invoice1, invoice2});
+            if (invoices.Count == 0)
+                return NoContent();
+            return Ok(invoices);
         }
 
         // GET: /invoices/1
         [HttpGet("{id}", Name = "GetInvoiceByInvoiceId")]
         public IActionResult Get(uint id)
         {
-            if (ModelState.IsValid && id < 3)
-            {
-                Invoice invoice1 = new Invoice(1, 1, 123.45, false);
-                return Ok(invoice1);
-            }
-            else if (ModelState.IsValid && (id >= 3 || id == 0))
-            {
-                return NotFound(new Error(1, "Invoice with requested Invoice id does not exist.",
+            if (!ModelState.IsValid)
+                return BadRequest(new Error(400, GetModelStateErrorString(),
                     "An error occured. Please check the message for further information."));
-            }
+
+            DbInvoice invoice = Context.Invoices.Find(id);
+
+            if (invoice == null)
+                return NotFound(new Error(201, "Invoice with requested id does not exist.",
+                    $"There is no maintenance that has the id {id}."));
             else
-            {
-                return BadRequest(new Error(1, "The id given was not formatted correctly. Id has to be unsinged int",
-                    "An error occured. Please check the message for further information."));
-            }
+                return Ok(invoice);
         }
 
         // GET: /invoices/by-invoice-item/1
         [HttpGet("by-invoice-item/{id}", Name = "GetInvoiceByInvoiceItemId")]
         public IActionResult GetByInvoiceItemId(uint id)
         {
-            if (ModelState.IsValid && id < 3)
-            {
-                Invoice invoice1 = new Invoice(1, 1, 123.45, false);
-                return Ok(invoice1);
-            }
-            else if (ModelState.IsValid && (id >= 3 || id == 0))
-            {
-                return NotFound(new Error(1, "Invoice with requested Invoice-Item-id does not exist.",
+            if (!ModelState.IsValid)
+                return BadRequest(new Error(400, GetModelStateErrorString(),
                     "An error occured. Please check the message for further information."));
-            }
-            else
-            {
-                return BadRequest(new Error(1, "The id given was not formatted correctly. Id has to be unsinged int",
-                    "An error occured. Please check the message for further information."));
-            }
+
+            DbInvoiceItem item = Context.InvoiceItems.Find(id);
+            if(item == null)
+                return NotFound(new Error(201, "Trip with requested id does not exist.",
+                    $"There is no trip that has the id {id}."));
+            return Ok(item.Invoice);
         }
 
         // GET: /invoices/by-customer/{customerId}
         [HttpGet("by-customer/{customerId}", Name = "GetInvoiceByCustomerId")]
         public IActionResult GetInvoiceByCustomerId(uint customerId)
         {
-            if (ModelState.IsValid && customerId < 3)
-            {
-                Invoice i1 = new Invoice(1, customerId, 12.34, false);
-                Invoice i2 = new Invoice(1, customerId, 56.78, true);
-                return Ok(new List<Invoice> { i1, i2 });
-            }
-            else if (ModelState.IsValid && (customerId >= 3 || customerId == 0))
-            {
-                return NotFound(new Error(1, "No customerId.",
+            if (!ModelState.IsValid)
+                return BadRequest(new Error(400, GetModelStateErrorString(),
                     "An error occured. Please check the message for further information."));
-            }
-            else
-            {
-                return BadRequest(new Error(1, "The id given was not formatted correctly. Id has to be unsinged int",
-                    "An error occured. Please check the message for further information."));
-            }
+
+            ImmutableList<DbInvoice> invoices = Context.Invoices
+                .Where(t => t.CustomerId == customerId)
+                .ToImmutableList();
+
+            if (invoices.Count == 0)
+                return NoContent();
+
+            return Ok(invoices);
         }
 
         // PATCH: /invoices/1/paid
         [HttpPatch("{id}/paid")]
         public IActionResult Patch(uint id, [FromBody] bool paid)
         {
-            if (ModelState.IsValid && id < 3 && id > 0)
-            {
-                return Ok(new PostReference(id, $"{BasePath}/invoices/{id}"));
-            }
-            else if (ModelState.IsValid && id >= 3)
-            {
-                return NotFound(new Error(1, "Invoice with requested Invoice does not exist.",
+            if (!ModelState.IsValid)
+                return BadRequest(new Error(400, GetModelStateErrorString(),
                     "An error occured. Please check the message for further information."));
-            }
-            else
+
+            DbInvoice invoice = Context.Invoices.Find(id);
+            if (invoice == null)
+                return NotFound(new Error(201, "Invoice with requested id does not exist.",
+                    $"There is no trip that has the id {id}."));
+
+            using (var transaction = Context.Database.BeginTransaction())
             {
-                return BadRequest(new Error(1, "The id given was not formatted correctly. Id has to be unsinged int",
-                    "An error occured. Please check the message for further information."));
+                invoice.Payed = paid;
+                transaction.Commit();
             }
+
+            return Ok(new PostReference(id, $"{BasePath}/invoices/{id}"));
         }
 
         // GET: /invoices/1/items
         [HttpGet("{id}/items", Name = "GetAllInvoiceItems")]
         public IActionResult GetAllInvoiceItems(uint id)
         {
-            InvoiceItem item1 = new InvoiceItem(1, 1, "Trip123", InvoiceItem.TypeEnum.Credit, 10.0);
-            InvoiceItem item2 = new InvoiceItem(1, 1, "MwSt", InvoiceItem.TypeEnum.Credit, 1.9);
+            if (!ModelState.IsValid)
+                return BadRequest(new Error(400, GetModelStateErrorString(),
+                    "An error occured. Please check the message for further information."));
+            
+            DbInvoice invoice = Context.Invoices.Find(id);
 
-            return Ok(new List<InvoiceItem> {item1, item2});
+            if (invoice == null)
+                return NotFound(new Error(201, "Invoice with requested id does not exist.",
+                    $"There is no maintenance that has the id {id}."));
+
+            ImmutableList<DbInvoiceItem> items = invoice.InvoiceItem.ToImmutableList();
+
+            if(items.Count == 0)
+                return NoContent();
+
+            return Ok(items);
         }
 
         // POST: /Invoices/1/items
         [HttpPost("{id}/items", Name = "CreateNewInvoiceItem")]
         public IActionResult Post(uint id, [FromBody] InvoiceItem invoiceItem)
         {
-            if (ModelState.IsValid)
-                return Created($"{BasePath}/invoices/by-invoice-item/{invoiceItem.InvoiceItemId}",
-                    new PostReference(invoiceItem.InvoiceItemId,
-                        $"{BasePath}/invoices/by-invoice-item/{invoiceItem.InvoiceItemId}"));
-            else
-                return BadRequest(new Error(1, ModelState.ToString(),
+            if (!ModelState.IsValid)
+                return BadRequest(new Error(400, GetModelStateErrorString(),
                     "An error occured. Please check the message for further information."));
+
+            DbInvoice invoice = Context.Invoices.Find(id);
+            if (invoice == null)
+                return NotFound(new Error(201, "Invoice with requested id does not exist.",
+                    $"There is no trip that has the id {id}."));
+
+            DbInvoiceItem insertItem = new DbInvoiceItem
+            {
+                InvoiceId = invoiceItem.InvoiceId,
+                Reason = invoiceItem.Reason,
+                Type = (ecruise.Database.Models.InvoiceItemType)invoiceItem.Type,
+                Amount = invoiceItem.Amount,
+                Invoice = invoice,
+            };
+
+            var inserted = Context.InvoiceItems.Add(insertItem);
+
+            using (var transaction = Context.Database.BeginTransaction())
+            {
+                invoice.InvoiceItem.Add(insertItem);
+                transaction.Commit();
+            }
+
+            return Created($"{BasePath}/Invoices/{inserted.Entity.InvoiceId}",
+                new PostReference((uint)inserted.Entity.InvoiceItemId, $"{BasePath}/Invoices/{inserted.Entity.InvoiceId}"));
         }
 
         // GET: /invoices/1/items/1
         [HttpGet("{id}/items/{invoiceItemId}", Name = "GetInvoiceItem")]
-        public IActionResult GetAllInvoiceItems(uint id, uint invoiceItemId)
+        public IActionResult GetAllInvoiceItems(uint id, uint invoiceItemNo)
         {
-            if (ModelState.IsValid && id < 3)
-            {
-                InvoiceItem item1 = new InvoiceItem(1, 1, "Trip123", InvoiceItem.TypeEnum.Credit, 10.0);
-                return Ok(item1);
-            }
-            else if (ModelState.IsValid && (id >= 3 || id == 0))
-            {
-                return NotFound(new Error(1, "Invoice with requested Invoice id does not exist.",
+            if (!ModelState.IsValid)
+                return BadRequest(new Error(400, GetModelStateErrorString(),
                     "An error occured. Please check the message for further information."));
-            }
-            else
-            {
-                return BadRequest(new Error(1, "The id given was not formatted correctly. Id has to be unsinged int",
-                    "An error occured. Please check the message for further information."));
-            }
+            
+            DbInvoice invoice = Context.Invoices.Find(id);
+
+            if (invoice == null)
+                return NotFound(new Error(201, "Invoice with requested id does not exist.",
+                    $"There is no maintenance that has the id {id}."));
+
+            ImmutableList<DbInvoiceItem> items = invoice.InvoiceItem.ToImmutableList();
+
+            if(items.Count < invoiceItemNo-1 || invoiceItemNo < 1 || items[(int)invoiceItemNo - 1] == null )
+                return NoContent();
+            return Ok(items[(int)invoiceItemNo - 1]);
         }
     }
 }
