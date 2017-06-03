@@ -1,8 +1,9 @@
 using System.Collections.Immutable;
+using System.Linq;
 using Microsoft.AspNetCore.Mvc;
-
 using ecruise.Models;
 using ecruise.Models.Assemblers;
+using GeoCoordinatePortable;
 using DbChargingStation = ecruise.Database.Models.ChargingStation;
 
 namespace ecruise.Api.Controllers
@@ -24,8 +25,8 @@ namespace ecruise.Api.Controllers
 
         // POST: /ChargingStations
         [HttpPost(Name = "CreateChargingStation")]
-        public IActionResult Post([FromBody]ChargingStation chargingStation)
-        { 
+        public IActionResult Post([FromBody] ChargingStation chargingStation)
+        {
             if (!ModelState.IsValid)
                 return BadRequest(new Error(400, GetModelStateErrorString(),
                     "An error occured. Please check the message for further information."));
@@ -36,11 +37,12 @@ namespace ecruise.Api.Controllers
             Context.SaveChanges();
 
             return Created($"{BasePath}/ChargingStations/{inserted.Entity.ChargingStationId}",
-                new PostReference((uint) inserted.Entity.ChargingStationId, $"{BasePath}/ChargingStations/{inserted.Entity.ChargingStationId}"));
+                new PostReference((uint)inserted.Entity.ChargingStationId,
+                    $"{BasePath}/ChargingStations/{inserted.Entity.ChargingStationId}"));
         }
 
-    // GET: /ChargingStations/5
-    [HttpGet("{id}", Name = "GetChargingStation")]
+        // GET: /ChargingStations/5
+        [HttpGet("{id}", Name = "GetChargingStation")]
         public IActionResult Get(ulong id)
         {
             if (!ModelState.IsValid)
@@ -60,22 +62,22 @@ namespace ecruise.Api.Controllers
         [HttpGet("closest-to/{latitude}/{longitude}", Name = "GetClosestChargingStation")]
         public IActionResult GetClosestChargingStation(double latitude, double longitude)
         {
-            if (ModelState.IsValid)
-            {
-                ChargingStation station1 = new ChargingStation(1, 2, 0, 49.485636, 8.4680978);
-                return Ok(station1);
-            }
-            else if (ModelState.IsValid)
-            {
-                return NotFound(new Error(1, "Position does not exist on earth.",
+            if (!ModelState.IsValid)
+                return BadRequest(new Error(400, GetModelStateErrorString(),
                     "An error occured. Please check the message for further information."));
-            }
-            else
-            {
-                return BadRequest(new Error(1, "The id given was not formatted correctly. Id has to be unsinged int",
-                    "An error occured. Please check the message for further information."));
-            }
-        }
 
+            ImmutableList<DbChargingStation> dbcs = Context.ChargingStations.ToImmutableList();
+
+            // check if there are any charging stations
+            if (dbcs.Count == 0)
+                return NoContent();
+
+            GeoCoordinate destination = new GeoCoordinate(latitude, longitude);
+            DbChargingStation closest =
+                dbcs.OrderBy(cs => destination.GetDistanceTo(new GeoCoordinate(cs.Latitude, cs.Longitude)))
+                    .FirstOrDefault();
+
+            return Ok(ChargingStationAssembler.AssembleModel(closest));
+        }
     }
 }

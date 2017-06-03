@@ -1,10 +1,11 @@
 using System.Collections.Immutable;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Microsoft.AspNetCore.Mvc;
-
 using ecruise.Models;
 using ecruise.Models.Assemblers;
+using GeoCoordinatePortable;
 using DbCar = ecruise.Database.Models.Car;
 
 namespace ecruise.Api.Controllers
@@ -159,25 +160,41 @@ namespace ecruise.Api.Controllers
             }
         }
 
-        // GET: /Cars/closest-to/58/8
-        [HttpGet("closest-to/{latitude}/{longitude}", Name = "GetClosestCar")]
-        public IActionResult GetClosestCarChargingStation(double latitude, double longitude)
+        // GET: /Cars/closest-to/58/8?radius=100
+        // ReSharper disable PossibleInvalidOperationException
+        [HttpGet(@"closest-to/{latitude}/{longitude}", Name = "GetClosestCar")]
+        public IActionResult GetClosestCarChargingStation(double latitude, double longitude, [FromQuery]int radius)
         {
-            if (ModelState.IsValid && latitude <= 90 && longitude <= 90)
-            {
-                Car car1 = new Car(1, "OG XY 123", Car.ChargingStateEnum.Full, Car.BookingStateEnum.Available, 1, 2.0, 100, "Audi", "A6", 2004, 48.5, 8.5, new DateTime(2017, 5, 8, 21, 5, 46));
-                return Ok(car1);
-            }
-            else if (ModelState.IsValid && (latitude > 90 || latitude > 90))
-            {
-                return NotFound(new Error(1, "Position does not exist on earth.",
+            if (!ModelState.IsValid)
+                return BadRequest(new Error(400, GetModelStateErrorString(),
                     "An error occured. Please check the message for further information."));
-            }
+
+            ImmutableList<DbCar> dbcars = Context.Cars
+                .Where(c => c.LastKnownPositionLatitude != null && c.LastKnownPositionLongitude != null)
+                .ToImmutableList();
+
+            // render cars ordered by distance
+            // if radius == 0: get only closest car
+            // else if radius > 0: get all cars within radius
+            GeoCoordinate destination = new GeoCoordinate(latitude, longitude);
+            ImmutableList<DbCar> closest =
+                dbcars
+                    .Where(c => radius == 0 ||
+                                destination.GetDistanceTo(new GeoCoordinate(c.LastKnownPositionLatitude.Value,
+                                    c.LastKnownPositionLongitude.Value)) <= radius)
+                    .OrderBy(c => destination.GetDistanceTo(new GeoCoordinate(c.LastKnownPositionLatitude.Value,
+                        c.LastKnownPositionLongitude.Value)))
+                    .ToImmutableList();
+
+            // check if there are any matching cars
+            if (dbcars.Count == 0)
+                return NoContent();
+
+            // if radius is zero (or not set) get only first element
+            if (radius == 0)
+                return Ok(CarAssembler.AssembleModelList(new List<DbCar> {closest.FirstOrDefault()}));
             else
-            {
-                return BadRequest(new Error(1, "The id given was not formatted correctly. Id has to be unsinged int",
-                    "An error occured. Please check the message for further information."));
-            }
+                return Ok(CarAssembler.AssembleModelList(closest));
         }
     }
 }
