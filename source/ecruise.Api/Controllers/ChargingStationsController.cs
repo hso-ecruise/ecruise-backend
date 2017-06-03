@@ -1,7 +1,10 @@
+using System.Collections.Immutable;
 using System;
 using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc;
+
 using ecruise.Models;
+using DbChargingStation = ecruise.Database.Models.ChargingStation;
 
 namespace ecruise.Api.Controllers
 {
@@ -12,11 +15,11 @@ namespace ecruise.Api.Controllers
         [HttpGet(Name = "GetAllChargingStations")]
         public IActionResult GetAll()
         {
-            ChargingStation s1 = new ChargingStation(1, 2, 0, 49.485636, 8.4680978);
-            ChargingStation s2 = new ChargingStation(2, 1, 1, 49.487877, 8.4704328);
-            ChargingStation s3 = new ChargingStation(3, 3, 2, 49.487825, 8.4705938);
-            
-            return Ok(new List<ChargingStation> { s1, s2, s3 });
+            ImmutableList<DbChargingStation> chargingStations = Context.ChargingStations.ToImmutableList();
+
+            if (chargingStations.Count == 0)
+                return NoContent();
+            return Ok(chargingStations);
         }
 
         // POST: /ChargingStations
