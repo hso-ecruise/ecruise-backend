@@ -1,6 +1,9 @@
+using System.Collections.Immutable;
 using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc;
+
 using ecruise.Models;
+using DbInvoice = ecruise.Database.Models.Invoice;
 
 namespace ecruise.Api.Controllers
 {
@@ -10,10 +13,11 @@ namespace ecruise.Api.Controllers
         [HttpGet(Name = "GetAllInvoices")]
         public IActionResult Get()
         {
-            Invoice invoice1 = new Invoice(1, 1, 123.45, false);
-            Invoice invoice2 = new Invoice(1, 2, 0.27, true);
+            ImmutableList<DbInvoice> invoices = Context.Invoices.ToImmutableList();
 
-            return Ok(new List<Invoice> {invoice1, invoice2});
+            if (invoices.Count == 0)
+                return NoContent();
+            return Ok(invoices);
         }
 
         // GET: /invoices/1
