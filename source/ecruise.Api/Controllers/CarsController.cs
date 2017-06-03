@@ -50,7 +50,7 @@ namespace ecruise.Api.Controllers
             var inserted = Context.Cars.Add(insertCar);
 
             return Created($"{BasePath}/cars/{inserted.Entity.CarId}",
-                new PostReference((uint)inserted.Entity.CarId, $"{BasePath}/trips/{inserted.Entity.CarId}"));
+                new PostReference((uint)inserted.Entity.CarId, $"{BasePath}/cars/{inserted.Entity.CarId}"));
         }
 
         // GET: /Cars/1

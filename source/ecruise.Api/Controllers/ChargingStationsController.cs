@@ -25,17 +25,28 @@ namespace ecruise.Api.Controllers
         // POST: /ChargingStations
         [HttpPost(Name = "CreateChargingStation")]
         public IActionResult Post([FromBody]ChargingStation chargingStation)
-        {
-            if (ModelState.IsValid)
-                return Created($"{BasePath}/ChargingStations/1",
-                    new PostReference(chargingStation.ChargingStationId, $"{BasePath}/ChargingStations/1"));
-            else
-                return BadRequest(new Error(1, ModelState.ToString(),
+        { 
+            if (!ModelState.IsValid)
+                return BadRequest(new Error(400, GetModelStateErrorString(),
                     "An error occured. Please check the message for further information."));
+
+            DbChargingStation insertChargingStation = new DbChargingStation
+            {
+                ChargingStationId = chargingStation.ChargingStationId,
+                Slots = chargingStation.Slots,
+                SlotsOccupied = chargingStation.SlotsOccupuied,
+                Latitude = chargingStation.Latitude,
+                Longitude = chargingStation.Longitude,
+            };
+
+        var inserted = Context.ChargingStations.Add(insertChargingStation);
+
+            return Created($"{BasePath}/ChargingStations/{inserted.Entity.ChargingStationId}",
+                new PostReference((uint) inserted.Entity.ChargingStationId, $"{BasePath}/ChargingStations/{inserted.Entity.ChargingStationId}"));
         }
 
-        // GET: /ChargingStations/5
-        [HttpGet("{id}", Name = "GetChargingStation")]
+    // GET: /ChargingStations/5
+    [HttpGet("{id}", Name = "GetChargingStation")]
         public IActionResult Get(uint id)
         {
             if (!ModelState.IsValid)
