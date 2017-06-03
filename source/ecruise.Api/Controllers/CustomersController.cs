@@ -69,13 +69,13 @@ namespace ecruise.Api.Controllers
             customer.PasswordSalt = passwordSalt;
 
             // invalidate all old login tokens
-            var tokens =
+            var customerTokens =
                 Context.CustomerTokens
-                    .Where(t => t.Type == TokenType.Login)
+                    .Where(t => t.Type == "LOGIN")
                     .Where(t => t.CustomerId == customer.CustomerId)
                     .ToList();
 
-            foreach (var t in tokens)
+            foreach (var t in customerTokens)
                 t.ExpireDate = DateTime.UtcNow;
 
             Context.SaveChangesAsync();
@@ -103,7 +103,7 @@ namespace ecruise.Api.Controllers
             // invalidate all old login tokens
             var tokens =
                 Context.CustomerTokens
-                    .Where(t => t.Type == TokenType.Login)
+                    .Where(t => t.Type == "LOGIN")
                     .Where(t => t.CustomerId == customer.CustomerId)
                     .ToList();
 

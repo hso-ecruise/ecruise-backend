@@ -1,6 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
-
 using CustomerToken = ecruise.Models.CustomerToken;
 using DbCustomerToken = ecruise.Database.Models.CustomerToken;
 
@@ -8,13 +8,39 @@ namespace ecruise.Models.Assemblers
 {
     public class CustomerTokenAssembler
     {
+        private static string makeStringFromEnum(ecruise.Models.CustomerToken.TokenTypeEnum t)
+        {
+            switch (t)
+            {
+                case CustomerToken.TokenTypeEnum.EmailActivation:
+                    return "EMAIL_ACTIVATION";
+                case CustomerToken.TokenTypeEnum.Login:
+                    return "LOGIN";
+                default:
+                    throw new NotImplementedException();
+            }
+        }
+
+        private static CustomerToken.TokenTypeEnum makeEnumFromString(string e)
+        {
+            switch (e)
+            {
+                case "EMAIL_ACTIVATION":
+                    return CustomerToken.TokenTypeEnum.EmailActivation;
+                case "LOGIN":
+                    return CustomerToken.TokenTypeEnum.Login;
+                default:
+                    throw new NotImplementedException();
+            }  
+        }
+
         public static DbCustomerToken AssembleEntity(ulong customerTokenId, CustomerToken customerTokenModel)
         {
             return new DbCustomerToken
             {
                 CustomerTokenId = customerTokenId != 0 ? customerTokenId : customerTokenModel.CustomerTokenId,
                 CustomerId = customerTokenModel.CustomerId,
-                Type = (Database.Models.TokenType)customerTokenModel.Type,
+                Type = makeStringFromEnum(customerTokenModel.Type),
                 Token = customerTokenModel.Token,
                 CreationDate = customerTokenModel.CreationDate,
                 ExpireDate = customerTokenModel.ExpireDate
@@ -26,11 +52,11 @@ namespace ecruise.Models.Assemblers
             return new CustomerToken(
                 (uint)customerTokenEntity.CustomerTokenId,
                 (uint)customerTokenEntity.CustomerId,
-                (CustomerToken.TokenTypeEnum)customerTokenEntity.Type,
+                makeEnumFromString(customerTokenEntity.Type),
                 customerTokenEntity.Token,
                 customerTokenEntity.CreationDate,
                 customerTokenEntity.ExpireDate
-                );
+            );
         }
 
         public static List<CustomerToken> AssembleModelList(IList<DbCustomerToken> entities)

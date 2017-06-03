@@ -5,7 +5,7 @@ using System.Text;
 using Microsoft.AspNetCore.Mvc;
 
 using ecruise.Models;
-
+using ecruise.Models.Assemblers;
 using DbCustomer = ecruise.Database.Models.Customer;
 using DbCustomerToken = ecruise.Database.Models.CustomerToken;
 
@@ -56,13 +56,8 @@ namespace ecruise.Api.Controllers
             }
 
             // create matching customer token
-            DbCustomerToken newCustomerToken = new DbCustomerToken
-            {
-                CustomerId = customer.CustomerId,
-                Type = Database.Models.TokenType.Login,
-                Token = newToken,
-                CreationDate = DateTime.UtcNow
-            };
+            DbCustomerToken newCustomerToken = CustomerTokenAssembler.AssembleEntity(0,
+                new CustomerToken(0, (uint)customer.CustomerId, CustomerToken.TokenTypeEnum.Login, newToken, DateTime.UtcNow, null));
 
             Context.CustomerTokens.Add(newCustomerToken);
             Context.SaveChangesAsync();
@@ -89,7 +84,7 @@ namespace ecruise.Api.Controllers
 
             DbCustomerToken activationToken =
                 Context.CustomerTokens
-                    .Where(t => t.Type == Database.Models.TokenType.EmailActivation)
+                    .Where(t => t.Type == "EMAIL_ACTIVATION")
                     .Where(t => t.Token == token)
                     .FirstOrDefault(t => t.CustomerId == customer.CustomerId);
 

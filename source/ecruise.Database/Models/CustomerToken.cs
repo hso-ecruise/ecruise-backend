@@ -6,7 +6,7 @@ namespace ecruise.Database.Models
     {
         public ulong CustomerTokenId { get; set; }
         public ulong CustomerId { get; set; }
-        public TokenType Type { get; set; }
+        public string Type { get; set; }
         public string Token { get; set; }
         public DateTime CreationDate { get; set; }
         public DateTime? ExpireDate { get; set; }
