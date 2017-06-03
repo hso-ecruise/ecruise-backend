@@ -3,7 +3,6 @@ using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 using Microsoft.AspNetCore.Mvc;
-
 using ecruise.Models;
 using ecruise.Models.Assemblers;
 using DbCustomer = ecruise.Database.Models.Customer;
@@ -41,7 +40,7 @@ namespace ecruise.Api.Controllers
             //         .Where(t => t.Type == TokenType.Login)
             //         .Where(t => t.CustomerId == customer.CustomerId)
             //         .ToList();
-             
+
             // foreach (var token in tokens)
             //     token.ExpireDate = DateTime.UtcNow;
 
@@ -57,7 +56,8 @@ namespace ecruise.Api.Controllers
 
             // create matching customer token
             DbCustomerToken newCustomerToken = CustomerTokenAssembler.AssembleEntity(0,
-                new CustomerToken(0, (uint)customer.CustomerId, CustomerToken.TokenTypeEnum.Login, newToken, DateTime.UtcNow, null));
+                new CustomerToken(0, (uint)customer.CustomerId, CustomerToken.TokenTypeEnum.Login, newToken,
+                    DateTime.UtcNow, null));
 
             Context.CustomerTokens.Add(newCustomerToken);
             Context.SaveChangesAsync();
@@ -85,16 +85,26 @@ namespace ecruise.Api.Controllers
             DbCustomerToken activationToken =
                 Context.CustomerTokens
                     .Where(t => t.Type == "EMAIL_ACTIVATION")
-                    .Where(t => t.Token == token)
+                    .Where(t => t.ExpireDate == null || t.ExpireDate >= DateTime.UtcNow)
+                    .Where(t => string.Equals(t.Token, token, StringComparison.OrdinalIgnoreCase))
                     .FirstOrDefault(t => t.CustomerId == customer.CustomerId);
 
             // there is no such activation token
             if (activationToken == null)
                 return NotFound();
 
-            // update customer, activate him
-            customer.Activated = true;
-            Context.SaveChangesAsync();
+            using (var transaction = Context.Database.BeginTransaction())
+            {
+                // update customer, activate him
+                customer.Activated = true;
+
+                // invalidate activation token
+                activationToken.ExpireDate = DateTime.UtcNow;
+
+                transaction.Commit();
+
+                Context.SaveChangesAsync();
+            }
 
             return NoContent();
         }
