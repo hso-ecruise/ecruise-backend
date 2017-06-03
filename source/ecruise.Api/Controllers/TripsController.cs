@@ -29,9 +29,10 @@ namespace ecruise.Api.Controllers
                 return BadRequest(new Error(400, GetModelStateErrorString(),
                     "An error occured. Please check the message for further information."));
 
-            var insertTrip = TripAssembler.AssembleEntity(trip);
+            var insertTrip = TripAssembler.AssembleEntity(0, trip);
 
             var inserted = Context.Trips.Add(insertTrip);
+            Context.SaveChanges();
 
             return Created($"{BasePath}/trips/{inserted.Entity.TripId}",
                 new PostReference((uint)inserted.Entity.TripId, $"{BasePath}/trips/{inserted.Entity.TripId}"));
@@ -50,7 +51,7 @@ namespace ecruise.Api.Controllers
                 return NotFound(new Error(201, "Trip with requested id does not exist.",
                     $"There is no trip that has the id {id}."));
 
-            return Ok(trip);
+            return Ok(TripAssembler.AssembleModel(trip));
         }
 
         // PATCH: /trips/1
@@ -71,10 +72,8 @@ namespace ecruise.Api.Controllers
                 dbtrip.EndChargingStationId = trip.EndChargingStationId;
                 dbtrip.DistanceTravelled = trip.DistanceTravelled;
 
-                // update entity (?)
-                dbtrip.EndChargingStation = Context.ChargingStations.Find(trip.EndChargingStationId);
-
                 transaction.Commit();
+                Context.SaveChangesAsync();
             }
 
             return Ok(new PostReference(id, $"{BasePath}/trips/{id}"));
@@ -95,7 +94,7 @@ namespace ecruise.Api.Controllers
             if (trips.Count == 0)
                 return NoContent();
 
-            return Ok(trips);
+            return Ok(TripAssembler.AssembleModelList(trips));
         }
     }
 }

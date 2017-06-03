@@ -1,9 +1,8 @@
 using System.Collections.Immutable;
-using System;
-using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc;
 
 using ecruise.Models;
+using ecruise.Models.Assemblers;
 using DbChargingStation = ecruise.Database.Models.ChargingStation;
 
 namespace ecruise.Api.Controllers
@@ -19,7 +18,8 @@ namespace ecruise.Api.Controllers
 
             if (chargingStations.Count == 0)
                 return NoContent();
-            return Ok(chargingStations);
+
+            return Ok(ChargingStationAssembler.AssembleModelList(chargingStations));
         }
 
         // POST: /ChargingStations
@@ -30,16 +30,10 @@ namespace ecruise.Api.Controllers
                 return BadRequest(new Error(400, GetModelStateErrorString(),
                     "An error occured. Please check the message for further information."));
 
-            DbChargingStation insertChargingStation = new DbChargingStation
-            {
-                ChargingStationId = chargingStation.ChargingStationId,
-                Slots = chargingStation.Slots,
-                SlotsOccupied = chargingStation.SlotsOccupuied,
-                Latitude = chargingStation.Latitude,
-                Longitude = chargingStation.Longitude,
-            };
+            DbChargingStation insertChargingStation = ChargingStationAssembler.AssembleEntity(0, chargingStation);
 
-        var inserted = Context.ChargingStations.Add(insertChargingStation);
+            var inserted = Context.ChargingStations.Add(insertChargingStation);
+            Context.SaveChanges();
 
             return Created($"{BasePath}/ChargingStations/{inserted.Entity.ChargingStationId}",
                 new PostReference((uint) inserted.Entity.ChargingStationId, $"{BasePath}/ChargingStations/{inserted.Entity.ChargingStationId}"));

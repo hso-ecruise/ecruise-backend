@@ -1,11 +1,11 @@
 using System.Collections.Immutable;
-using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc;
 
 using ecruise.Models;
 using DbInvoice = ecruise.Database.Models.Invoice;
 using DbInvoiceItem = ecruise.Database.Models.InvoiceItem;
 using System.Linq;
+using ecruise.Models.Assemblers;
 
 namespace ecruise.Api.Controllers
 {
@@ -19,7 +19,8 @@ namespace ecruise.Api.Controllers
 
             if (invoices.Count == 0)
                 return NoContent();
-            return Ok(invoices);
+
+            return Ok(InvoiceAssembler.AssembleModelList(invoices));
         }
 
         // GET: /invoices/1
@@ -34,9 +35,10 @@ namespace ecruise.Api.Controllers
 
             if (invoice == null)
                 return NotFound(new Error(201, "Invoice with requested id does not exist.",
-                    $"There is no maintenance that has the id {id}."));
+                    $"There is no invoice that has the id {id}."));
+
             else
-                return Ok(invoice);
+                return Ok(InvoiceAssembler.AssembleModel(invoice));
         }
 
         // GET: /invoices/by-invoice-item/1
@@ -48,10 +50,12 @@ namespace ecruise.Api.Controllers
                     "An error occured. Please check the message for further information."));
 
             DbInvoiceItem item = Context.InvoiceItems.Find(id);
+
             if(item == null)
-                return NotFound(new Error(201, "Trip with requested id does not exist.",
-                    $"There is no trip that has the id {id}."));
-            return Ok(item.Invoice);
+                return NotFound(new Error(201, "Invoice with requested id does not exist.",
+                    $"There is no invoice that has the id {id}."));
+
+            return Ok(InvoiceAssembler.AssembleModel(item.Invoice));
         }
 
         // GET: /invoices/by-customer/{customerId}
@@ -69,7 +73,7 @@ namespace ecruise.Api.Controllers
             if (invoices.Count == 0)
                 return NoContent();
 
-            return Ok(invoices);
+            return Ok(InvoiceAssembler.AssembleModelList(invoices));
         }
 
         // PATCH: /invoices/1/paid
@@ -81,15 +85,14 @@ namespace ecruise.Api.Controllers
                     "An error occured. Please check the message for further information."));
 
             DbInvoice invoice = Context.Invoices.Find(id);
+
             if (invoice == null)
                 return NotFound(new Error(201, "Invoice with requested id does not exist.",
-                    $"There is no trip that has the id {id}."));
+                    $"There is no invoice that has the id {id}."));
 
-            using (var transaction = Context.Database.BeginTransaction())
-            {
-                invoice.Payed = paid;
-                transaction.Commit();
-            }
+            invoice.Payed = paid;
+
+            Context.SaveChanges();
 
             return Ok(new PostReference(id, $"{BasePath}/invoices/{id}"));
         }
@@ -106,14 +109,14 @@ namespace ecruise.Api.Controllers
 
             if (invoice == null)
                 return NotFound(new Error(201, "Invoice with requested id does not exist.",
-                    $"There is no maintenance that has the id {id}."));
+                    $"There is no invoice that has the id {id}."));
 
             ImmutableList<DbInvoiceItem> items = invoice.InvoiceItem.ToImmutableList();
 
             if(items.Count == 0)
                 return NoContent();
 
-            return Ok(items);
+            return Ok(InvoiceItemAssembler.AssembleModelList(items));
         }
 
         // POST: /Invoices/1/items
@@ -125,50 +128,35 @@ namespace ecruise.Api.Controllers
                     "An error occured. Please check the message for further information."));
 
             DbInvoice invoice = Context.Invoices.Find(id);
+
             if (invoice == null)
                 return NotFound(new Error(201, "Invoice with requested id does not exist.",
-                    $"There is no trip that has the id {id}."));
+                    $"There is no invoice that has the id {id}."));
 
-            DbInvoiceItem insertItem = new DbInvoiceItem
-            {
-                InvoiceId = invoiceItem.InvoiceId,
-                Reason = invoiceItem.Reason,
-                Type = (ecruise.Database.Models.InvoiceItemType)invoiceItem.Type,
-                Amount = invoiceItem.Amount,
-                Invoice = invoice,
-            };
+            DbInvoiceItem insertItem = InvoiceItemAssembler.AssembleEntity(0, invoiceItem);
 
             var inserted = Context.InvoiceItems.Add(insertItem);
+            Context.SaveChanges();
 
-            using (var transaction = Context.Database.BeginTransaction())
-            {
-                invoice.InvoiceItem.Add(insertItem);
-                transaction.Commit();
-            }
-
-            return Created($"{BasePath}/Invoices/{inserted.Entity.InvoiceId}",
-                new PostReference((uint)inserted.Entity.InvoiceItemId, $"{BasePath}/Invoices/{inserted.Entity.InvoiceId}"));
+            return Created($"{BasePath}/invoices/{inserted.Entity.InvoiceId}",
+                new PostReference((uint)inserted.Entity.InvoiceItemId, $"{BasePath}/invoices/{inserted.Entity.InvoiceId}"));
         }
 
-        // GET: /invoices/1/items/1
-        [HttpGet("{id}/items/{invoiceItemId}", Name = "GetInvoiceItem")]
-        public IActionResult GetAllInvoiceItems(uint id, uint invoiceItemNo)
+        // GET: /invoices/items/1
+        [HttpGet("items/{invoiceItemId}", Name = "GetInvoiceItem")]
+        public IActionResult GetInvoiceItem(uint invoiceItemId)
         {
             if (!ModelState.IsValid)
                 return BadRequest(new Error(400, GetModelStateErrorString(),
                     "An error occured. Please check the message for further information."));
+
+            DbInvoiceItem invoiceItem = Context.InvoiceItems.Find(invoiceItemId);
+
+            if (invoiceItem == null)
+                return NotFound(new Error(201, "InvoiceItem with requested id does not exist.",
+                    $"There is no invoice item that has the id {invoiceItemId}."));
             
-            DbInvoice invoice = Context.Invoices.Find(id);
-
-            if (invoice == null)
-                return NotFound(new Error(201, "Invoice with requested id does not exist.",
-                    $"There is no maintenance that has the id {id}."));
-
-            ImmutableList<DbInvoiceItem> items = invoice.InvoiceItem.ToImmutableList();
-
-            if(items.Count < invoiceItemNo-1 || invoiceItemNo < 1 || items[(int)invoiceItemNo - 1] == null )
-                return NoContent();
-            return Ok(items[(int)invoiceItemNo - 1]);
+            return Ok(InvoiceItemAssembler.AssembleModel(invoiceItem));
         }
     }
 }

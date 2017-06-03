@@ -24,18 +24,8 @@ namespace ecruise.Api.Controllers
         protected uint GetCustomerIdByToken(string token)
         {
             CustomerToken customerToken =
-                Context.CustomerTokens.FirstOrDefault(t => (t.Token == token && t.ExpireDate > DateTime.Now));
+                Context.CustomerTokens.FirstOrDefault(t => (t.Token == token && t.ExpireDate > DateTime.UtcNow));
             return (uint?)customerToken?.CustomerId ?? 0;
-        }
-
-        // Code to be executed after each action
-        public override void OnActionExecuted(ActionExecutedContext context)
-        {
-            // Check if changes were made
-            if (Context.ChangeTracker.HasChanges())
-                Context.SaveChanges();
-
-            base.OnActionExecuted(context);
         }
     }
 }

@@ -2,6 +2,7 @@ using System.Collections.Immutable;
 using Microsoft.AspNetCore.Mvc;
 
 using ecruise.Models;
+using ecruise.Models.Assemblers;
 using DbMaintenance = ecruise.Database.Models.Maintenance;
 
 namespace ecruise.Api.Controllers
@@ -17,7 +18,7 @@ namespace ecruise.Api.Controllers
             if (maintenances.Count == 0)
                 return NoContent();
 
-            return Ok(maintenances);
+            return Ok(MaintenanceAssembler.AssembleModelList(maintenances));
         }
 
         // GET: /Maintenances/5
@@ -34,7 +35,7 @@ namespace ecruise.Api.Controllers
                 return NotFound(new Error(201, "Maintenance with requested id does not exist.",
                     $"There is no maintenance that has the id {id}."));
             else
-                return Ok(maintenance);
+                return Ok(MaintenanceAssembler.AssembleModel(maintenance));
         }
 
         // POST: /Maintenances
@@ -45,16 +46,10 @@ namespace ecruise.Api.Controllers
                 return BadRequest(new Error(400, GetModelStateErrorString(),
                     "An error occured. Please check the message for further information."));
 
-            DbMaintenance insertMaintenance =
-                new DbMaintenance
-                {
-                    Spontaneously = m.Spontaneously,
-                    AtMileage = m.AtMileage,
-                    AtDate = m.AtDate
-                };
-
+            DbMaintenance insertMaintenance = MaintenanceAssembler.AssembleEntity(0, m);
 
             var insert = Context.Maintenances.Add(insertMaintenance);
+            Context.SaveChanges();
 
             return Created($"{BasePath}/maintenances/{insert.Entity.MaintenanceId}",
                 new PostReference((uint)insert.Entity.MaintenanceId, $"{BasePath}/maintenances/{insert.Entity.MaintenanceId}"));

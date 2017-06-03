@@ -3,9 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
+using ecruise.Database.Models;
 using Microsoft.AspNetCore.Mvc;
 
 using ecruise.Models;
+using ecruise.Models.Assemblers;
 using DbCustomer = ecruise.Database.Models.Customer;
 
 namespace ecruise.Api.Controllers
@@ -21,7 +23,7 @@ namespace ecruise.Api.Controllers
             if (customers.Count == 0)
                 return NoContent();
 
-            return Ok(customers);
+            return Ok(CustomerAssembler.AssembleModelList(customers));
         }
 
         // TODO: Customer can only request it's own data \
@@ -39,7 +41,7 @@ namespace ecruise.Api.Controllers
                 return NotFound(new Error(201, "Customer with requested id does not exist.",
                     $"There is no customer that has the id {id}."));
 
-            return Ok(customer);
+            return Ok(CustomerAssembler.AssembleModel(customer));
         }
 
         // PATCH: /Customers/5/password
@@ -66,6 +68,18 @@ namespace ecruise.Api.Controllers
             customer.PasswordHash = passwordHash;
             customer.PasswordSalt = passwordSalt;
 
+            // invalidate all old login tokens
+            var tokens =
+                Context.CustomerTokens
+                    .Where(t => t.Type == TokenType.Login)
+                    .Where(t => t.CustomerId == customer.CustomerId)
+                    .ToList();
+
+            foreach (var t in tokens)
+                t.ExpireDate = DateTime.UtcNow;
+
+            Context.SaveChangesAsync();
+
             return Ok(new PostReference(id, $"{BasePath}/customer/{id}"));
         }
 
@@ -86,6 +100,18 @@ namespace ecruise.Api.Controllers
 
             customer.Email = email;
 
+            // invalidate all old login tokens
+            var tokens =
+                Context.CustomerTokens
+                    .Where(t => t.Type == TokenType.Login)
+                    .Where(t => t.CustomerId == customer.CustomerId)
+                    .ToList();
+
+            foreach (var t in tokens)
+                t.ExpireDate = DateTime.UtcNow;
+
+            Context.SaveChangesAsync();
+
             return Ok(new PostReference(id, $"{BasePath}/customer/{id}"));
         }
 
@@ -103,6 +129,7 @@ namespace ecruise.Api.Controllers
                     $"There is no customer that has the id {id}."));
 
             customer.PhoneNumber = phoneNumber;
+            Context.SaveChangesAsync();
 
             return Ok(new PostReference(id, $"{BasePath}/customer/{id}"));
         }
@@ -130,6 +157,7 @@ namespace ecruise.Api.Controllers
                 customer.AddressExtraLine = address.AdressExtraLine;
 
                 transaction.Commit();
+                Context.SaveChangesAsync();
             }
             return Ok(new PostReference(1, $"{BasePath}/customer/{customer.CustomerId}"));
         }
@@ -143,11 +171,13 @@ namespace ecruise.Api.Controllers
                     "An error occured. Please check the message for further information."));
 
             DbCustomer customer = Context.Customers.Find(id);
+
             if (customer == null)
                 return NotFound(new Error(201, "Customer with requested id does not exist.",
                     $"There is no customer that has the id {id}."));
 
             customer.Verified = verified;
+            Context.SaveChangesAsync();
 
             return Ok(new PostReference(1, $"{BasePath}/customer/{customer.CustomerId}"));
         }
@@ -166,6 +196,7 @@ namespace ecruise.Api.Controllers
                     $"There is no customer that has the id {id}."));
 
             customer.ChipCardUid = chipCardUid;
+            Context.SaveChangesAsync();
 
             return Ok(new PostReference(1, $"{BasePath}/customer/{customer.CustomerId}"));
         }
@@ -182,7 +213,7 @@ namespace ecruise.Api.Controllers
             if (customers.Count == 0)
                 return NoContent();
 
-            return Ok(customers);
+            return Ok(CustomerAssembler.AssembleModelList(customers));
         }
     }
 }

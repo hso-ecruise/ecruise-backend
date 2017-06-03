@@ -1,7 +1,9 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
+using ecruise.Database.Models;
 using Microsoft.AspNetCore.Mvc;
 
 using ecruise.Models;
@@ -35,15 +37,15 @@ namespace ecruise.Api.Controllers
             if (customer.Email != email || customer.PasswordHash != customerPasswordHash)
                 return Unauthorized();
 
-//            // invalidate all old login tokens
-//             List<DbCustomerToken> tokens =
-//                 Context.CustomerTokens
-//                     .Where(t => t.Type == TokenType.Login)
-//                     .Where(t => t.CustomerId == customer.CustomerId)
-//                     .ToList();
-//             
-//             foreach (var token in tokens)
-//                 token.ExpireDate = DateTime.Now;
+            //// invalidate all old login tokens
+            // List<DbCustomerToken> tokens =
+            //     Context.CustomerTokens
+            //         .Where(t => t.Type == TokenType.Login)
+            //         .Where(t => t.CustomerId == customer.CustomerId)
+            //         .ToList();
+             
+            // foreach (var token in tokens)
+            //     token.ExpireDate = DateTime.UtcNow;
 
             // create new random login token
             string newToken;
@@ -58,13 +60,14 @@ namespace ecruise.Api.Controllers
             // create matching customer token
             DbCustomerToken newCustomerToken = new DbCustomerToken
             {
-                CustomerId = 1,
+                CustomerId = customer.CustomerId,
                 Type = Database.Models.TokenType.Login,
                 Token = newToken,
                 CreationDate = DateTime.UtcNow
             };
 
             Context.CustomerTokens.Add(newCustomerToken);
+            Context.SaveChangesAsync();
 
             return Ok(new
             {
@@ -98,6 +101,8 @@ namespace ecruise.Api.Controllers
 
             // update customer, activate him
             customer.Activated = true;
+            Context.SaveChangesAsync();
+
             return NoContent();
         }
 
@@ -135,6 +140,7 @@ namespace ecruise.Api.Controllers
                 };
 
             var insert = Context.Customers.Add(insertCustomer);
+            Context.SaveChanges();
 
             return Created($"{BasePath}/customers/{insert.Entity.CustomerId}",
                 new PostReference((uint)insert.Entity.CustomerId, $"{BasePath}/customers/{insert.Entity.CustomerId}"));

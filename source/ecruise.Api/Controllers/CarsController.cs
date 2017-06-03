@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc;
 
 using ecruise.Models;
+using ecruise.Models.Assemblers;
 using DbCar = ecruise.Database.Models.Car;
 
 namespace ecruise.Api.Controllers
@@ -18,7 +19,8 @@ namespace ecruise.Api.Controllers
 
             if (cars.Count == 0)
                 return NoContent();
-            return Ok(cars);
+
+            return Ok(CarAssembler.AssembleModelList(cars));
         }
 
 
@@ -30,24 +32,10 @@ namespace ecruise.Api.Controllers
                 return BadRequest(new Error(400, GetModelStateErrorString(),
                     "An error occured. Please check the message for further information."));
 
-            DbCar insertCar = new DbCar
-            {
-                CarId = car.CarId,
-                LicensePlate = car.LicensePlate,
-                ChargingState = (ecruise.Database.Models.ChargingState) car.ChargingState,
-                BookingState = (ecruise.Database.Models.BookingState) car.BookingState,
-                Milage = car.Mileage,
-                ChargeLevel = car.ChargeLevel,
-                Kilowatts = car.Kilowatts,
-                Manufacturer = car.Manufacturer,
-                Model = car.Model,
-                YearOfConstruction = car.YearOfConstruction,
-                LastKnownPositionLatitude = car.LastKnownPositionLatitude,
-                LastKnownPositionLongitude = car.LastKnownPositionLongitude,
-                LastKnownPositionDate = car.LastKnownPositionDate,
-            };
+            DbCar insertCar = CarAssembler.AssembleEntity(0, car);
 
             var inserted = Context.Cars.Add(insertCar);
+            Context.SaveChanges();
 
             return Created($"{BasePath}/cars/{inserted.Entity.CarId}",
                 new PostReference((uint)inserted.Entity.CarId, $"{BasePath}/cars/{inserted.Entity.CarId}"));
@@ -66,8 +54,9 @@ namespace ecruise.Api.Controllers
             if (car == null)
                 return NotFound(new Error(201, "Car with requested id does not exist.",
                     $"There is no maintenance that has the id {id}."));
+
             else
-                return Ok(car);
+                return Ok(CarAssembler.AssembleModel(car));
         }
 
         // PATCH: /Cars/1/2

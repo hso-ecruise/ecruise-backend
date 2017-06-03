@@ -53,7 +53,7 @@ namespace ecruise.Api.Controllers
             var booking = Context.Bookings.Find(id);    // DEBUG Check for return when no booking found
 
             if (booking != null)
-                return Ok(booking);
+                return Ok(BookingAssembler.AssembleModel(booking));
 
             else
                 return NotFound(new Error(201, "Booking with requested booking id does not exist.", "An error occured. Please check the message for further information."));
@@ -65,7 +65,6 @@ namespace ecruise.Api.Controllers
         {
             try
             {
-
                 if (ModelState.IsValid)
                 {
                     // Check booking for logical validity
@@ -87,7 +86,7 @@ namespace ecruise.Api.Controllers
                     booking.InvoiceItemId = null;
 
                     // Construct entity from model
-                    Database.Models.Booking bookingEntity = BookingAssembler.AssembleEntity(booking);
+                    Database.Models.Booking bookingEntity = BookingAssembler.AssembleEntity(0, booking);
 
                     // Save to database
                     Context.Bookings.Add(bookingEntity);
@@ -98,7 +97,7 @@ namespace ecruise.Api.Controllers
                         $"{BasePath}/bookings/{bookingEntity.BookingId}");
 
                     // Return reference to the new object including the path to it
-                    return Created(bookingEntity.BookingId.ToString(), pr);
+                    return Created($"{BasePath}/bookings/{bookingEntity.BookingId}", pr);
                 }
                 else
                     return BadRequest(new Error(301, GetModelStateErrorString(),
