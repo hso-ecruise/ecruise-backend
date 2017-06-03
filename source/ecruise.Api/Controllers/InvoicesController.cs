@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 
 using ecruise.Models;
 using DbInvoice = ecruise.Database.Models.Invoice;
+using DbInvoiceItem = ecruise.Database.Models.InvoiceItem;
 
 namespace ecruise.Api.Controllers
 {
@@ -41,21 +42,15 @@ namespace ecruise.Api.Controllers
         [HttpGet("by-invoice-item/{id}", Name = "GetInvoiceByInvoiceItemId")]
         public IActionResult GetByInvoiceItemId(uint id)
         {
-            if (ModelState.IsValid && id < 3)
-            {
-                Invoice invoice1 = new Invoice(1, 1, 123.45, false);
-                return Ok(invoice1);
-            }
-            else if (ModelState.IsValid && (id >= 3 || id == 0))
-            {
-                return NotFound(new Error(1, "Invoice with requested Invoice-Item-id does not exist.",
+            if (!ModelState.IsValid)
+                return BadRequest(new Error(400, GetModelStateErrorString(),
                     "An error occured. Please check the message for further information."));
-            }
-            else
-            {
-                return BadRequest(new Error(1, "The id given was not formatted correctly. Id has to be unsinged int",
-                    "An error occured. Please check the message for further information."));
-            }
+
+            DbInvoiceItem item = Context.InvoiceItems.Find(id);
+            if(item == null)
+                return NotFound(new Error(201, "Trip with requested id does not exist.",
+                    $"There is no trip that has the id {id}."));
+            return Ok(item.Invoice);
         }
 
         // GET: /invoices/by-customer/{customerId}
