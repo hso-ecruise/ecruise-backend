@@ -1,7 +1,10 @@
+using System.Collections.Immutable;
 using System;
 using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc;
+
 using ecruise.Models;
+using DbCar = ecruise.Database.Models.Car;
 
 namespace ecruise.Api.Controllers
 {
@@ -11,10 +14,11 @@ namespace ecruise.Api.Controllers
         [HttpGet(Name = "GetAllCars")]
         public IActionResult GetAll()
         {
-            Car car1 = new Car(1, "OG XY 123", Car.ChargingStateEnum.Full, Car.BookingStateEnum.Available, 1, 2.0, 100, "Audi", "A6", 2004, 48.5, 8.5, new DateTime(2017, 5, 8, 21, 5, 46));
-            Car car2 = new Car(1, "OG XY 123", Car.ChargingStateEnum.Full, Car.BookingStateEnum.Available, 1, 7.9, 100, "Audi", "A6", 2004, 17.23, 84.6, new DateTime(2017, 5, 8, 21, 5, 46));
-            
-            return Ok(new List<Car> { car1, car2 });
+            ImmutableList<DbCar> cars = Context.Cars.ToImmutableList();
+
+            if (cars.Count == 0)
+                return NoContent();
+            return Ok(cars);
         }
 
 
