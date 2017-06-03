@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using ecruise.Models;
 using DbInvoice = ecruise.Database.Models.Invoice;
 using DbInvoiceItem = ecruise.Database.Models.InvoiceItem;
+using System.Linq;
 
 namespace ecruise.Api.Controllers
 {
@@ -57,22 +58,18 @@ namespace ecruise.Api.Controllers
         [HttpGet("by-customer/{customerId}", Name = "GetInvoiceByCustomerId")]
         public IActionResult GetInvoiceByCustomerId(uint customerId)
         {
-            if (ModelState.IsValid && customerId < 3)
-            {
-                Invoice i1 = new Invoice(1, customerId, 12.34, false);
-                Invoice i2 = new Invoice(1, customerId, 56.78, true);
-                return Ok(new List<Invoice> { i1, i2 });
-            }
-            else if (ModelState.IsValid && (customerId >= 3 || customerId == 0))
-            {
-                return NotFound(new Error(1, "No customerId.",
+            if (!ModelState.IsValid)
+                return BadRequest(new Error(400, GetModelStateErrorString(),
                     "An error occured. Please check the message for further information."));
-            }
-            else
-            {
-                return BadRequest(new Error(1, "The id given was not formatted correctly. Id has to be unsinged int",
-                    "An error occured. Please check the message for further information."));
-            }
+
+            ImmutableList<DbInvoice> invoices = Context.Invoices
+                .Where(t => t.CustomerId == customerId)
+                .ToImmutableList();
+
+            if (invoices.Count == 0)
+                return NoContent();
+
+            return Ok(invoices);
         }
 
         // PATCH: /invoices/1/paid
