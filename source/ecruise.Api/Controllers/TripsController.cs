@@ -69,6 +69,7 @@ namespace ecruise.Api.Controllers
 
             using (var transaction = Context.Database.BeginTransaction())
             {
+                dbtrip.EndDate = System.DateTime.UtcNow;
                 dbtrip.EndChargingStationId = trip.EndChargingStationId;
                 dbtrip.DistanceTravelled = trip.DistanceTravelled;
 
