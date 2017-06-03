@@ -1,9 +1,7 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
-using ecruise.Database.Models;
 using Microsoft.AspNetCore.Mvc;
 
 using ecruise.Models;
@@ -54,7 +52,7 @@ namespace ecruise.Api.Controllers
                 var randBytes = new byte[64];
                 crypt.GetBytes(randBytes);
 
-                newToken = BitConverter.ToString(randBytes).ToLowerInvariant();
+                newToken = BitConverter.ToString(randBytes).ToLowerInvariant().Replace("-", "");
             }
 
             // create matching customer token
