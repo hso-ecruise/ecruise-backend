@@ -26,12 +26,31 @@ namespace ecruise.Api.Controllers
         [HttpPost(Name = "CreateCar")]
         public IActionResult Post([FromBody] Car car)
         {
-            if (ModelState.IsValid)
-                return Created($"{BasePath}/cars/1",
-                    new PostReference(car.CarId, $"{BasePath}/cars/1"));
-            else
-                return BadRequest(new Error(1, ModelState.ToString(),
+            if (!ModelState.IsValid)
+                return BadRequest(new Error(400, GetModelStateErrorString(),
                     "An error occured. Please check the message for further information."));
+
+            DbCar insertCar = new DbCar
+            {
+                CarId = car.CarId,
+                LicensePlate = car.LicensePlate,
+                ChargingState = (ecruise.Database.Models.ChargingState) car.ChargingState,
+                BookingState = (ecruise.Database.Models.BookingState) car.BookingState,
+                Milage = car.Mileage,
+                ChargeLevel = car.ChargeLevel,
+                Kilowatts = car.Kilowatts,
+                Manufacturer = car.Manufacturer,
+                Model = car.Model,
+                YearOfConstruction = car.YearOfConstruction,
+                LastKnownPositionLatitude = car.LastKnownPositionLatitude,
+                LastKnownPositionLongitude = car.LastKnownPositionLongitude,
+                LastKnownPositionDate = car.LastKnownPositionDate,
+            };
+
+            var inserted = Context.Cars.Add(insertCar);
+
+            return Created($"{BasePath}/cars/{inserted.Entity.CarId}",
+                new PostReference((uint)inserted.Entity.CarId, $"{BasePath}/trips/{inserted.Entity.CarId}"));
         }
 
         // GET: /Cars/1
