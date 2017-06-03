@@ -8,11 +8,11 @@ namespace ecruise.Models.Assemblers
 {
     public class CustomerAssembler
     {
-        public static DbCustomer AssembleEntity(Customer customerModel)
+        public static DbCustomer AssembleEntity(ulong customerId, Customer customerModel)
         {
             return new DbCustomer
             {
-                CustomerId = customerModel.CustomerId,
+                CustomerId = customerId != 0 ? customerId : customerModel.CustomerId,
                 Email = customerModel.Email,
                 PhoneNumber = customerModel.PhoneNumber,
                 ChipCardUid = customerModel.ChipCardUid,
@@ -32,7 +32,7 @@ namespace ecruise.Models.Assemblers
         public static Customer AssembleModel(DbCustomer customerEntity)
         {
             return new Customer(
-                customerEntity.CustomerId,
+                (uint)customerEntity.CustomerId,
                 customerEntity.Email,
                 customerEntity.PhoneNumber,
                 customerEntity.ChipCardUid,
@@ -53,9 +53,13 @@ namespace ecruise.Models.Assemblers
             return entities.Select(AssembleModel).ToList();
         }
 
-        public static List<DbCustomer> AssembleEntityList(IList<Customer> models)
+        public static List<DbCustomer> AssembleEntityList(bool setIdsNull, IList<Customer> models)
         {
-            return models.Select(AssembleEntity).ToList();
+            if (setIdsNull)
+                return models.Select(e => AssembleEntity(0, e)).ToList();
+
+            else
+                return models.Select(e => AssembleEntity(e.CustomerId, e)).ToList();
         }
     }
 }

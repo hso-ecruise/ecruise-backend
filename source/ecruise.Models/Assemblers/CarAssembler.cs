@@ -9,11 +9,11 @@ namespace ecruise.Models.Assemblers
 {
     public class CarAssembler
     {
-        public static DbCar AssembleEntity(Car carModel)
+        public static DbCar AssembleEntity(ulong carId, Car carModel)
         {
             DbCar carEntity = new DbCar
             {
-                CarId = carModel.CarId,
+                CarId = carId != 0 ? carId : carModel.CarId,
                 LicensePlate = carModel.LicensePlate,
                 ChargingState = (ChargingState)carModel.ChargingState,
                 BookingState = (BookingState) carModel.BookingState,
@@ -34,7 +34,7 @@ namespace ecruise.Models.Assemblers
         public static Car AssembleModel(DbCar carEntity)
         {
             return new Car(
-                carEntity.CarId,
+                (uint)carEntity.CarId,
                 carEntity.LicensePlate,
                 (Car.ChargingStateEnum)carEntity.ChargingState,
                 (Car.BookingStateEnum)carEntity.BookingState,
@@ -55,9 +55,13 @@ namespace ecruise.Models.Assemblers
             return entities.Select(AssembleModel).ToList();
         }
 
-        public static List<DbCar> AssembleEntityList(IList<Car> models)
+        public static List<DbCar> AssembleEntityList(bool setIdsNull, IList<Car> models)
         {
-            return models.Select(AssembleEntity).ToList();
+            if (setIdsNull)
+                return models.Select(e => AssembleEntity(0, e)).ToList();
+
+            else
+                return models.Select(e => AssembleEntity(e.CarId, e)).ToList();
         }
     }
 }

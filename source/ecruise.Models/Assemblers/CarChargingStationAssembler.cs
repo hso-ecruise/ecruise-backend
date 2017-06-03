@@ -8,11 +8,11 @@ namespace ecruise.Models.Assemblers
 {
     public class CarChargingStationAssembler
     {
-        public static DbCarChargingStation AssembleEntity(CarChargingStation carChargingStationModel)
+        public static DbCarChargingStation AssembleEntity(ulong carChargingStationId, CarChargingStation carChargingStationModel)
         {
             return new DbCarChargingStation
             {
-                CarChargingStationId = carChargingStationModel.CarChargingStationId,
+                CarChargingStationId = carChargingStationId != 0 ? carChargingStationId : carChargingStationModel.CarChargingStationId,
                 CarId = carChargingStationModel.CarId,
                 ChargeEnd = carChargingStationModel.ChargeEnd,
                 ChargeStart = carChargingStationModel.ChargeStart,
@@ -23,9 +23,9 @@ namespace ecruise.Models.Assemblers
         public static CarChargingStation AssembleModel(DbCarChargingStation carChargingStationEntity)
         {
             return new CarChargingStation(
-                carChargingStationEntity.CarChargingStationId,
-                carChargingStationEntity.CarId,
-                carChargingStationEntity.ChargingStationId,
+                (uint)carChargingStationEntity.CarChargingStationId,
+                (uint)carChargingStationEntity.CarId,
+                (uint)carChargingStationEntity.ChargingStationId,
                 carChargingStationEntity.ChargeStart,
                 carChargingStationEntity.ChargeEnd
             );
@@ -36,9 +36,13 @@ namespace ecruise.Models.Assemblers
             return entities.Select(AssembleModel).ToList();
         }
 
-        public static List<DbCarChargingStation> AssembleEntityList(IList<CarChargingStation> models)
+        public static List<DbCarChargingStation> AssembleEntityList(bool setIdsNull, IList<CarChargingStation> models)
         {
-            return models.Select(AssembleEntity).ToList();
+            if (setIdsNull)
+                return models.Select(e => AssembleEntity(0, e)).ToList();
+
+            else
+                return models.Select(e => AssembleEntity(e.CarChargingStationId, e)).ToList();
         }
     }
 }

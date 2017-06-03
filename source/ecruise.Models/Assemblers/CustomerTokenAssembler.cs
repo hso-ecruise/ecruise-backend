@@ -8,11 +8,11 @@ namespace ecruise.Models.Assemblers
 {
     public class CustomerTokenAssembler
     {
-        public static DbCustomerToken AssembleEntity(CustomerToken customerTokenModel)
+        public static DbCustomerToken AssembleEntity(ulong customerTokenId, CustomerToken customerTokenModel)
         {
             return new DbCustomerToken
             {
-                CustomerTokenId = customerTokenModel.CustomerTokenId,
+                CustomerTokenId = customerTokenId != 0 ? customerTokenId : customerTokenModel.CustomerTokenId,
                 CustomerId = customerTokenModel.CustomerId,
                 Type = (Database.Models.TokenType)customerTokenModel.Type,
                 Token = customerTokenModel.Token,
@@ -24,8 +24,8 @@ namespace ecruise.Models.Assemblers
         public static CustomerToken AssembleModel(DbCustomerToken customerTokenEntity)
         {
             return new CustomerToken(
-                customerTokenEntity.CustomerTokenId,
-                customerTokenEntity.CustomerId,
+                (uint)customerTokenEntity.CustomerTokenId,
+                (uint)customerTokenEntity.CustomerId,
                 (CustomerToken.TokenTypeEnum)customerTokenEntity.Type,
                 customerTokenEntity.Token,
                 customerTokenEntity.CreationDate,
@@ -38,9 +38,13 @@ namespace ecruise.Models.Assemblers
             return entities.Select(AssembleModel).ToList();
         }
 
-        public static List<DbCustomerToken> AssembleEntityList(IList<CustomerToken> models)
+        public static List<DbCustomerToken> AssembleEntityList(bool setIdsNull, IList<CustomerToken> models)
         {
-            return models.Select(AssembleEntity).ToList();
+            if (setIdsNull)
+                return models.Select(e => AssembleEntity(0, e)).ToList();
+
+            else
+                return models.Select(e => AssembleEntity(e.CustomerTokenId, e)).ToList();
         }
     }
 }

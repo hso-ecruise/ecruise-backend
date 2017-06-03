@@ -8,11 +8,11 @@ namespace ecruise.Models.Assemblers
 {
     public class ChargingStationAssembler
     {
-        public static DbChargingStation AssembleEntity(ChargingStation chargingStationModel)
+        public static DbChargingStation AssembleEntity(ulong chargingStationId, ChargingStation chargingStationModel)
         {
             return new DbChargingStation
             {
-                ChargingStationId = chargingStationModel.ChargingStationId,
+                ChargingStationId = chargingStationId != 0 ? chargingStationId : chargingStationModel.ChargingStationId,
                 Slots = chargingStationModel.Slots,
                 SlotsOccupied = chargingStationModel.SlotsOccupuied,
                 Latitude = chargingStationModel.Latitude,
@@ -23,7 +23,7 @@ namespace ecruise.Models.Assemblers
 
         {
             return new ChargingStation(
-                chargingStationEntity.ChargingStationId,
+                (uint)chargingStationEntity.ChargingStationId,
                 chargingStationEntity.Slots,
                 chargingStationEntity.SlotsOccupied,
                 chargingStationEntity.Latitude,
@@ -35,9 +35,13 @@ namespace ecruise.Models.Assemblers
             return entities.Select(AssembleModel).ToList();
         }
 
-        public static List<DbChargingStation> AssembleEntityList(IList<ChargingStation> models)
+        public static List<DbChargingStation> AssembleEntityList(bool setIdsNull, IList<ChargingStation> models)
         {
-            return models.Select(AssembleEntity).ToList();
+            if (setIdsNull)
+                return models.Select(e => AssembleEntity(0, e)).ToList();
+
+            else
+                return models.Select(e => AssembleEntity(e.ChargingStationId, e)).ToList();
         }
     }
 }

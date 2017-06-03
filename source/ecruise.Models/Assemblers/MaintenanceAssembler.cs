@@ -7,11 +7,11 @@ namespace ecruise.Models.Assemblers
 {
     public class MaintenanceAssembler
     {
-        public static DbMaintenance AssembleEntity(Maintenance maintenanceModel)
+        public static DbMaintenance AssembleEntity(ulong maintenanceId, Maintenance maintenanceModel)
         {
             return new DbMaintenance
             {
-                MaintenanceId = maintenanceModel.MaintenenaceId,
+                MaintenanceId = maintenanceId != 0 ? maintenanceId : maintenanceModel.MaintenenaceId,
                 Spontaneously = maintenanceModel.Spontaneously,
                 AtMileage = maintenanceModel.AtMileage,
                 AtDate = maintenanceModel.AtDate
@@ -21,7 +21,7 @@ namespace ecruise.Models.Assemblers
         public static Maintenance AssembleModel(DbMaintenance maintenanceEntity)
         {
             return new Maintenance(
-                maintenanceEntity.MaintenanceId,
+                (uint)maintenanceEntity.MaintenanceId,
                 maintenanceEntity.Spontaneously,
                 maintenanceEntity.AtMileage,
                 maintenanceEntity.AtDate);
@@ -31,9 +31,13 @@ namespace ecruise.Models.Assemblers
             return entities.Select(AssembleModel).ToList();
         }
 
-        public static List<DbMaintenance> AssembleEntityList(IList<Maintenance> models)
+        public static List<DbMaintenance> AssembleEntityList(bool setIdsNull, IList<Maintenance> models)
         {
-            return models.Select(AssembleEntity).ToList();
+            if (setIdsNull)
+                return models.Select(e => AssembleEntity(0, e)).ToList();
+
+            else
+                return models.Select(e => AssembleEntity(e.MaintenenaceId, e)).ToList();
         }
     }
 }

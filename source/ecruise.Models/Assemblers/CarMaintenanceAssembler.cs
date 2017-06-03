@@ -8,11 +8,11 @@ namespace ecruise.Models.Assemblers
 {
     public class CarMaintenanceAssembler
     {
-        public static DbCarMaintenance AssembleEntity(CarMaintenance carMaintenanceModel)
+        public static DbCarMaintenance AssembleEntity(ulong carMaintenanceId, CarMaintenance carMaintenanceModel)
         {
             return new DbCarMaintenance
             {
-                CarId = carMaintenanceModel.CarId,
+                CarId = carMaintenanceId != 0 ? carMaintenanceId : carMaintenanceModel.CarId,
                 CarMaintenanceId = carMaintenanceModel.CarMaintenanceId,
                 CompletedDate = carMaintenanceModel.CompletedDate,
                 InvoiceItemId = carMaintenanceModel.InvoiceItemId,
@@ -24,10 +24,10 @@ namespace ecruise.Models.Assemblers
         public static CarMaintenance AssembleModel(DbCarMaintenance carMaintenanceEntity)
         {
             return new CarMaintenance(
-                carMaintenanceEntity.CarMaintenanceId,
-                carMaintenanceEntity.CarId,
-                carMaintenanceEntity.MaintenanceId,
-                carMaintenanceEntity.InvoiceItemId,
+                (uint)carMaintenanceEntity.CarMaintenanceId,
+                (uint)carMaintenanceEntity.CarId,
+                (uint)carMaintenanceEntity.MaintenanceId,
+                (uint?)carMaintenanceEntity.InvoiceItemId,
                 carMaintenanceEntity.PlannedDate,
                 carMaintenanceEntity.CompletedDate
             );
@@ -38,9 +38,13 @@ namespace ecruise.Models.Assemblers
             return entities.Select(AssembleModel).ToList();
         }
 
-        public static List<DbCarMaintenance> AssembleEntityList(IList<CarMaintenance> models)
+        public static List<DbCarMaintenance> AssembleEntityList(bool setIdsNull, IList<CarMaintenance> models)
         {
-            return models.Select(AssembleEntity).ToList();
+            if (setIdsNull)
+                return models.Select(e => AssembleEntity(0, e)).ToList();
+
+            else
+                return models.Select(e => AssembleEntity(e.CarMaintenanceId, e)).ToList();
         }
     }
 }

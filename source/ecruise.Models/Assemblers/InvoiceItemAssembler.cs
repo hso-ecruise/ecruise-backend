@@ -8,11 +8,11 @@ namespace ecruise.Models.Assemblers
 {
     public class InvoiceItemAssembler
     {
-        public static DbInvoiceItem AssembleEntity(InvoiceItem invoiceItemModel)
+        public static DbInvoiceItem AssembleEntity(ulong invoiceItemId, InvoiceItem invoiceItemModel)
         {
             return new DbInvoiceItem
             {
-                InvoiceItemId = invoiceItemModel.InvoiceItemId,
+                InvoiceItemId = invoiceItemId != 0 ? invoiceItemId : invoiceItemModel.InvoiceItemId,
                 InvoiceId = invoiceItemModel.InvoiceId,
                 Reason = invoiceItemModel.Reason,
                 Type = (Database.Models.InvoiceItemType)invoiceItemModel.Type,
@@ -23,8 +23,8 @@ namespace ecruise.Models.Assemblers
         public static InvoiceItem AssembleModel(DbInvoiceItem invoiceItemEntity)
         {
             return new InvoiceItem(
-                invoiceItemEntity.InvoiceItemId,
-                invoiceItemEntity.InvoiceId,
+                (uint)invoiceItemEntity.InvoiceItemId,
+                (uint?)invoiceItemEntity.InvoiceId,
                 invoiceItemEntity.Reason,
                 (InvoiceItem.TypeEnum)invoiceItemEntity.Type,
                 invoiceItemEntity.Amount);
@@ -35,9 +35,13 @@ namespace ecruise.Models.Assemblers
             return entities.Select(AssembleModel).ToList();
         }
 
-        public static List<DbInvoiceItem> AssembleEntityList(IList<InvoiceItem> models)
+        public static List<DbInvoiceItem> AssembleEntityList(bool setIdsNull, IList<InvoiceItem> models)
         {
-            return models.Select(AssembleEntity).ToList();
+            if (setIdsNull)
+                return models.Select(e => AssembleEntity(0, e)).ToList();
+
+            else
+                return models.Select(e => AssembleEntity(e.InvoiceItemId, e)).ToList();
         }
     }
 }

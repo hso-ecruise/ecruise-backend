@@ -8,11 +8,11 @@ namespace ecruise.Models.Assemblers
 {
     public class InvoiceAssembler
     {
-        public static DbInvoice AssembleEntity(Invoice invoiceModel)
+        public static DbInvoice AssembleEntity(ulong invoiceId, Invoice invoiceModel)
         {
             return new DbInvoice
             {
-                InvoiceId = invoiceModel.InvoiceId,
+                InvoiceId = invoiceId != 0 ? invoiceId : invoiceModel.InvoiceId,
                 CustomerId = invoiceModel.CustomerId,
                 TotalAmount = invoiceModel.TotalAmount,
                 Payed = invoiceModel.Paid
@@ -22,8 +22,8 @@ namespace ecruise.Models.Assemblers
         public static Invoice AssembleModel(DbInvoice invoiceEntity)
         {
             return new Invoice(
-                invoiceEntity.InvoiceId,
-                invoiceEntity.CustomerId,
+                (uint)invoiceEntity.InvoiceId,
+                (uint)invoiceEntity.CustomerId,
                 invoiceEntity.TotalAmount,
                 invoiceEntity.Payed);
         }
@@ -33,9 +33,13 @@ namespace ecruise.Models.Assemblers
             return entities.Select(AssembleModel).ToList();
         }
 
-        public static List<DbInvoice> AssembleEntityList(IList<Invoice> models)
+        public static List<DbInvoice> AssembleEntityList(bool setIdsNull, IList<Invoice> models)
         {
-            return models.Select(AssembleEntity).ToList();
+            if (setIdsNull)
+                return models.Select(e => AssembleEntity(0, e)).ToList();
+
+            else
+                return models.Select(e => AssembleEntity(e.InvoiceId, e)).ToList();
         }
     }
 }

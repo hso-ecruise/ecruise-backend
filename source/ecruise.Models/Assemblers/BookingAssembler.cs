@@ -8,12 +8,12 @@ namespace ecruise.Models.Assemblers
 {
     public class BookingAssembler
     {
-        public static DbBooking AssembleEntity(Booking bookingModel)
+        public static DbBooking AssembleEntity(ulong id, Booking bookingModel)
         {
             DbBooking bookingEntity =
                 new DbBooking
                 {
-                    BookingId = bookingModel.BookingId,
+                    BookingId = id != 0 ? id : bookingModel.BookingId,
                     CustomerId = bookingModel.CustomerId,
                     TripId = bookingModel.TripId,
                     InvoiceItemId = bookingModel.InvoiceItemId,
@@ -29,10 +29,10 @@ namespace ecruise.Models.Assemblers
         public static Booking AssembleModel(DbBooking bookingEntity)
         {
             return new Booking(
-                bookingEntity.BookingId,
-                bookingEntity.CustomerId,
-                bookingEntity.TripId,
-                bookingEntity.InvoiceItemId,
+                (uint)bookingEntity.BookingId,
+                (uint)bookingEntity.CustomerId,
+                (uint?)bookingEntity.TripId,
+                (uint?)bookingEntity.InvoiceItemId,
                 bookingEntity.BookedPositionLatitude,
                 bookingEntity.BookedPositionLongitude,
                 bookingEntity.BookingDate,
@@ -45,9 +45,13 @@ namespace ecruise.Models.Assemblers
             return entities.Select(AssembleModel).ToList();
         }
 
-        public static List<DbBooking> AssembleEntityList(IList<Booking> models)
+        public static List<DbBooking> AssembleEntityList(bool setIdsNull, IList<Booking> models)
         {
-            return models.Select(AssembleEntity).ToList();
+            if(setIdsNull)
+                return models.Select(e => AssembleEntity(0, e)).ToList();
+
+            else
+                return models.Select(e => AssembleEntity(e.BookingId, e)).ToList();
         }
     }
 }

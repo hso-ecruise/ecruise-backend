@@ -7,11 +7,11 @@ namespace ecruise.Models.Assemblers
 {
     public class TripAssembler
     {
-        public static DbTrip AssembleEntity(Trip tripModel)
+        public static DbTrip AssembleEntity(ulong tripId, Trip tripModel)
         {
             return new DbTrip
             {
-                TripId = tripModel.TripId,
+                TripId = tripId != 0 ? tripId : tripModel.TripId,
                 CarId = tripModel.CarId,
                 CustomerId = tripModel.CustomerId,
                 StartDate = tripModel.StartDate,
@@ -25,13 +25,13 @@ namespace ecruise.Models.Assemblers
         public static Trip AssembleModel(DbTrip tripEntity)
         {
             return new Trip(
-                tripEntity.TripId,
-                tripEntity.CarId,
-                tripEntity.CustomerId,
+                (uint)tripEntity.TripId,
+                (uint?)tripEntity.CarId,
+                (uint)tripEntity.CustomerId,
                 tripEntity.StartDate,
                 tripEntity.EndDate,
-                tripEntity.StartChargingStationId,
-                tripEntity.EndChargingStationId,
+                (uint?)tripEntity.StartChargingStationId,
+                (uint?)tripEntity.EndChargingStationId,
                 tripEntity.DistanceTravelled);
         }
 
@@ -40,9 +40,13 @@ namespace ecruise.Models.Assemblers
             return entities.Select(AssembleModel).ToList();
         }
 
-        public static List<DbTrip> AssembleEntityList(IList<Trip> models)
+        public static List<DbTrip> AssembleEntityList(bool setIdsNull, IList<Trip> models)
         {
-            return models.Select(AssembleEntity).ToList();
+            if (setIdsNull)
+                return models.Select(e => AssembleEntity(0, e)).ToList();
+
+            else
+                return models.Select(e => AssembleEntity(e.TripId, e)).ToList();
         }
     }
 }
