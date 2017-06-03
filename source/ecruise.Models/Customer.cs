@@ -2,6 +2,9 @@
 using System.ComponentModel.DataAnnotations;
 using System.Text;
 using Newtonsoft.Json;
+using MailKit.Net.Smtp;
+using MimeKit;
+
 
 namespace ecruise.Models
 {
@@ -130,6 +133,52 @@ namespace ecruise.Models
         /// </summary>
         /// <value>True if the user has verified his account at our head-quarter by bringing us his driver's license.</value>
         public bool Verified { get; set; }
+
+        /// <summary>
+        /// Sends a mail with the specified subject and body to the customer
+        /// </summary>
+        /// <param name="subject">The subject for the mail</param>
+        /// <param name="body">The body for the mail</param>
+        /// <returns>True if mail could be sent, else false</returns>
+        public bool SendMail(string subject, string body)
+        {
+            // Create the message
+            MimeMessage mail = new MimeMessage();
+
+            mail.From.Add(new MailboxAddress("eCruise Information", "info@ecruise.me"));
+            mail.To.Add(new MailboxAddress($"{FirstName} {LastName}", $"{Email}"));
+            mail.Subject = subject;
+            mail.Body = new TextPart("plain")
+            {
+                Text = body
+            };
+
+            SmtpClient smtpClient = new SmtpClient();
+            if (Environment.GetEnvironmentVariable("EMAIL_SERVER") != null)
+            {
+                smtpClient.Connect(
+                    Environment.GetEnvironmentVariable("EMAIL_SERVER"),
+                    int.Parse(Environment.GetEnvironmentVariable("EMAIL_PORT")),
+                    false
+                );
+
+                smtpClient.AuthenticationMechanisms.Remove("XOAUTH2");
+
+                smtpClient.Authenticate(Environment.GetEnvironmentVariable("EMAIL_USER"),
+                    Environment.GetEnvironmentVariable("EMAIL_PASSWORD"));
+
+                // Send the mail
+                smtpClient.Send(mail);
+
+                // Disconnect and clean up
+                smtpClient.Disconnect(true);
+                smtpClient.Dispose();
+
+                return true;
+            }
+
+            return false;
+        }
 
         /// <summary>
         /// Returns the string presentation of the object
