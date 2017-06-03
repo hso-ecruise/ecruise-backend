@@ -1,14 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Collections.Generic;
+using System.Linq;
+
+using CarMaintenance = ecruise.Models.CarMaintenance;
+using DbCarMaintenance = ecruise.Database.Models.CarMaintenance;
 
 namespace ecruise.Models.Assemblers
 {
     public class CarMaintenanceAssembler
     {
-        public static Database.Models.CarMaintenance AssembleEntity(CarMaintenance carMaintenanceModel)
+        public static DbCarMaintenance AssembleEntity(CarMaintenance carMaintenanceModel)
         {
-            return new Database.Models.CarMaintenance
+            return new DbCarMaintenance
             {
                 CarId = carMaintenanceModel.CarId,
                 CarMaintenanceId = carMaintenanceModel.CarMaintenanceId,
@@ -19,16 +21,26 @@ namespace ecruise.Models.Assemblers
             };
         }
 
-        public static CarMaintenance AssembleModel(Database.Models.CarMaintenance carMaintenanceEntity)
+        public static CarMaintenance AssembleModel(DbCarMaintenance carMaintenanceEntity)
         {
             return new CarMaintenance(
-                (uint)carMaintenanceEntity.CarMaintenanceId,
-                (uint)carMaintenanceEntity.CarId,
-                (uint)carMaintenanceEntity.MaintenanceId,
-                (uint?)carMaintenanceEntity.InvoiceItemId,
+                carMaintenanceEntity.CarMaintenanceId,
+                carMaintenanceEntity.CarId,
+                carMaintenanceEntity.MaintenanceId,
+                carMaintenanceEntity.InvoiceItemId,
                 carMaintenanceEntity.PlannedDate,
                 carMaintenanceEntity.CompletedDate
             );
+        }
+
+        public static List<CarMaintenance> AssembleModelList(IList<DbCarMaintenance> entities)
+        {
+            return entities.Select(AssembleModel).ToList();
+        }
+
+        public static List<DbCarMaintenance> AssembleEntityList(IList<CarMaintenance> models)
+        {
+            return models.Select(AssembleEntity).ToList();
         }
     }
 }

@@ -1,14 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Collections.Generic;
+using System.Linq;
+
+using InvoiceItem = ecruise.Models.InvoiceItem;
+using DbInvoiceItem = ecruise.Database.Models.InvoiceItem;
 
 namespace ecruise.Models.Assemblers
 {
     public class InvoiceItemAssembler
     {
-        public static Database.Models.InvoiceItem AssembleEntity(InvoiceItem invoiceItemModel)
+        public static DbInvoiceItem AssembleEntity(InvoiceItem invoiceItemModel)
         {
-            return new Database.Models.InvoiceItem
+            return new DbInvoiceItem
             {
                 InvoiceItemId = invoiceItemModel.InvoiceItemId,
                 InvoiceId = invoiceItemModel.InvoiceId,
@@ -18,14 +20,24 @@ namespace ecruise.Models.Assemblers
             };
         }
 
-        public static InvoiceItem AssembleModel(Database.Models.InvoiceItem invoiceItemEntity)
+        public static InvoiceItem AssembleModel(DbInvoiceItem invoiceItemEntity)
         {
             return new InvoiceItem(
-                (uint)invoiceItemEntity.InvoiceItemId,
-                (uint?)invoiceItemEntity.InvoiceId,
+                invoiceItemEntity.InvoiceItemId,
+                invoiceItemEntity.InvoiceId,
                 invoiceItemEntity.Reason,
                 (InvoiceItem.TypeEnum)invoiceItemEntity.Type,
                 invoiceItemEntity.Amount);
+        }
+
+        public static List<InvoiceItem> AssembleModelList(IList<DbInvoiceItem> entities)
+        {
+            return entities.Select(AssembleModel).ToList();
+        }
+
+        public static List<DbInvoiceItem> AssembleEntityList(IList<InvoiceItem> models)
+        {
+            return models.Select(AssembleEntity).ToList();
         }
     }
 }

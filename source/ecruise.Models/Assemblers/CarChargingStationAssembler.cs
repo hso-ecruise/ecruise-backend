@@ -1,14 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Collections.Generic;
+using System.Linq;
+
+using CarChargingStation = ecruise.Models.CarChargingStation;
+using DbCarChargingStation = ecruise.Database.Models.CarChargingStation;
 
 namespace ecruise.Models.Assemblers
 {
     public class CarChargingStationAssembler
     {
-        public static Database.Models.CarChargingStation AssembleEntity(CarChargingStation carChargingStationModel)
+        public static DbCarChargingStation AssembleEntity(CarChargingStation carChargingStationModel)
         {
-            return new Database.Models.CarChargingStation
+            return new DbCarChargingStation
             {
                 CarChargingStationId = carChargingStationModel.CarChargingStationId,
                 CarId = carChargingStationModel.CarId,
@@ -18,15 +20,26 @@ namespace ecruise.Models.Assemblers
             };
         }
 
-        public static CarChargingStation AssembleModel(Database.Models.CarChargingStation carChargingStationEntity)
+        public static CarChargingStation AssembleModel(DbCarChargingStation carChargingStationEntity)
         {
             return new CarChargingStation(
-                (uint)carChargingStationEntity.CarChargingStationId,
-                (uint)carChargingStationEntity.CarId,
-                (uint)carChargingStationEntity.ChargingStationId,
+                carChargingStationEntity.CarChargingStationId,
+                carChargingStationEntity.CarId,
+                carChargingStationEntity.ChargingStationId,
                 carChargingStationEntity.ChargeStart,
                 carChargingStationEntity.ChargeEnd
             );
         }
+
+        public static List<CarChargingStation> AssembleModelList(IList<DbCarChargingStation> entities)
+        {
+            return entities.Select(AssembleModel).ToList();
+        }
+
+        public static List<DbCarChargingStation> AssembleEntityList(IList<CarChargingStation> models)
+        {
+            return models.Select(AssembleEntity).ToList();
+        }
     }
 }
+

@@ -1,14 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Collections.Generic;
+using System.Linq;
+
+using Invoice = ecruise.Models.Invoice;
+using DbInvoice = ecruise.Database.Models.Invoice;
 
 namespace ecruise.Models.Assemblers
 {
     public class InvoiceAssembler
     {
-        public static Database.Models.Invoice AssembleEntity(Invoice invoiceModel)
+        public static DbInvoice AssembleEntity(Invoice invoiceModel)
         {
-            return new Database.Models.Invoice
+            return new DbInvoice
             {
                 InvoiceId = invoiceModel.InvoiceId,
                 CustomerId = invoiceModel.CustomerId,
@@ -17,13 +19,23 @@ namespace ecruise.Models.Assemblers
             };
         }
 
-        public static Invoice AssembleModel(Database.Models.Invoice invoiceEntity)
+        public static Invoice AssembleModel(DbInvoice invoiceEntity)
         {
             return new Invoice(
-                (uint)invoiceEntity.InvoiceId,
-                (uint)invoiceEntity.CustomerId,
+                invoiceEntity.InvoiceId,
+                invoiceEntity.CustomerId,
                 invoiceEntity.TotalAmount,
                 invoiceEntity.Payed);
+        }
+
+        public static List<Invoice> AssembleModelList(IList<DbInvoice> entities)
+        {
+            return entities.Select(AssembleModel).ToList();
+        }
+
+        public static List<DbInvoice> AssembleEntityList(IList<Invoice> models)
+        {
+            return models.Select(AssembleEntity).ToList();
         }
     }
 }

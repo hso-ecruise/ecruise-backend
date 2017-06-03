@@ -1,17 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Runtime.InteropServices;
-using System.Text;
+﻿using System.Collections.Generic;
+using System.Linq;
 using ecruise.Database.Models;
-using Microsoft.EntityFrameworkCore.Scaffolding.Internal;
+
+using Car = ecruise.Models.Car;
+using DbCar = ecruise.Database.Models.Car;
 
 namespace ecruise.Models.Assemblers
 {
     public class CarAssembler
     {
-        public static Database.Models.Car AssembleEntity(Car carModel)
+        public static DbCar AssembleEntity(Car carModel)
         {
-            Database.Models.Car carEntity = new Database.Models.Car
+            DbCar carEntity = new DbCar
             {
                 CarId = carModel.CarId,
                 LicensePlate = carModel.LicensePlate,
@@ -31,10 +31,10 @@ namespace ecruise.Models.Assemblers
             return carEntity;
         }
 
-        public static Car AssembleModel(Database.Models.Car carEntity)
+        public static Car AssembleModel(DbCar carEntity)
         {
             return new Car(
-                (uint)carEntity.CarId,
+                carEntity.CarId,
                 carEntity.LicensePlate,
                 (Car.ChargingStateEnum)carEntity.ChargingState,
                 (Car.BookingStateEnum)carEntity.BookingState,
@@ -48,6 +48,16 @@ namespace ecruise.Models.Assemblers
                 carEntity.LastKnownPositionLongitude,
                 carEntity.LastKnownPositionDate
             );
+        }
+
+        public static List<Car> AssembleModelList(IList<DbCar> entities)
+        {
+            return entities.Select(AssembleModel).ToList();
+        }
+
+        public static List<DbCar> AssembleEntityList(IList<Car> models)
+        {
+            return models.Select(AssembleEntity).ToList();
         }
     }
 }

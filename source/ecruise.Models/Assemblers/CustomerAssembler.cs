@@ -1,14 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Collections.Generic;
+using System.Linq;
+
+using Customer = ecruise.Models.Customer;
+using DbCustomer = ecruise.Database.Models.Customer;
 
 namespace ecruise.Models.Assemblers
 {
     public class CustomerAssembler
     {
-        public static Database.Models.Customer AssembleEntity(Customer customerModel)
+        public static DbCustomer AssembleEntity(Customer customerModel)
         {
-            return new Database.Models.Customer
+            return new DbCustomer
             {
                 CustomerId = customerModel.CustomerId,
                 Email = customerModel.Email,
@@ -27,10 +29,10 @@ namespace ecruise.Models.Assemblers
             };
         }
 
-        public static Customer AssembleModel(Database.Models.Customer customerEntity)
+        public static Customer AssembleModel(DbCustomer customerEntity)
         {
             return new Customer(
-                (uint)customerEntity.CustomerId,
+                customerEntity.CustomerId,
                 customerEntity.Email,
                 customerEntity.PhoneNumber,
                 customerEntity.ChipCardUid,
@@ -44,6 +46,16 @@ namespace ecruise.Models.Assemblers
                 customerEntity.AddressExtraLine,
                 customerEntity.Activated,
                 customerEntity.Verified);
+        }
+
+        public static List<Customer> AssembleModelList(IList<DbCustomer> entities)
+        {
+            return entities.Select(AssembleModel).ToList();
+        }
+
+        public static List<DbCustomer> AssembleEntityList(IList<Customer> models)
+        {
+            return models.Select(AssembleEntity).ToList();
         }
     }
 }

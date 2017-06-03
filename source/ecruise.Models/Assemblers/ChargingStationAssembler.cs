@@ -1,14 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Collections.Generic;
+using System.Linq;
+
+using ChargingStation = ecruise.Models.ChargingStation;
+using DbChargingStation = ecruise.Database.Models.ChargingStation;
 
 namespace ecruise.Models.Assemblers
 {
     public class ChargingStationAssembler
     {
-        public static Database.Models.ChargingStation AssembleEntity(ChargingStation chargingStationModel)
+        public static DbChargingStation AssembleEntity(ChargingStation chargingStationModel)
         {
-            return new Database.Models.ChargingStation
+            return new DbChargingStation
             {
                 ChargingStationId = chargingStationModel.ChargingStationId,
                 Slots = chargingStationModel.Slots,
@@ -17,15 +19,25 @@ namespace ecruise.Models.Assemblers
                 Longitude = chargingStationModel.Longitude
             };
         }
+        public static ChargingStation AssembleModel(DbChargingStation chargingStationEntity)
 
-        public static ChargingStation AssembleModel(Database.Models.ChargingStation chargingStationEntity)
         {
             return new ChargingStation(
-                (uint)chargingStationEntity.ChargingStationId,
+                chargingStationEntity.ChargingStationId,
                 chargingStationEntity.Slots,
                 chargingStationEntity.SlotsOccupied,
                 chargingStationEntity.Latitude,
                 chargingStationEntity.Longitude);
+        }
+
+        public static List<ChargingStation> AssembleModelList(IList<DbChargingStation> entities)
+        {
+            return entities.Select(AssembleModel).ToList();
+        }
+
+        public static List<DbChargingStation> AssembleEntityList(IList<ChargingStation> models)
+        {
+            return models.Select(AssembleEntity).ToList();
         }
     }
 }

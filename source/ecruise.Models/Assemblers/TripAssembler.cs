@@ -1,14 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Collections.Generic;
+using System.Linq;
+using Trip = ecruise.Models.Trip;
+using DbTrip = ecruise.Database.Models.Trip;
 
 namespace ecruise.Models.Assemblers
 {
     public class TripAssembler
     {
-        public static Database.Models.Trip AssembleEntity(Trip tripModel)
+        public static DbTrip AssembleEntity(Trip tripModel)
         {
-            return new Database.Models.Trip
+            return new DbTrip
             {
                 TripId = tripModel.TripId,
                 CarId = tripModel.CarId,
@@ -21,17 +22,27 @@ namespace ecruise.Models.Assemblers
             };
         }
 
-        public static Trip AssembleModel(Database.Models.Trip tripEntity)
+        public static Trip AssembleModel(DbTrip tripEntity)
         {
             return new Trip(
-                (uint)tripEntity.TripId,
-                (uint?)tripEntity.CarId,
-                (uint)tripEntity.CustomerId,
+                tripEntity.TripId,
+                tripEntity.CarId,
+                tripEntity.CustomerId,
                 tripEntity.StartDate,
                 tripEntity.EndDate,
                 tripEntity.StartChargingStationId,
                 tripEntity.EndChargingStationId,
                 tripEntity.DistanceTravelled);
+        }
+
+        public static List<Trip> AssembleModelList(IList<DbTrip> entities)
+        {
+            return entities.Select(AssembleModel).ToList();
+        }
+
+        public static List<DbTrip> AssembleEntityList(IList<Trip> models)
+        {
+            return models.Select(AssembleEntity).ToList();
         }
     }
 }

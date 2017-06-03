@@ -1,15 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Collections.Generic;
+using System.Linq;
+
+using Booking = ecruise.Models.Booking;
+using DbBooking = ecruise.Database.Models.Booking;
 
 namespace ecruise.Models.Assemblers
 {
     public class BookingAssembler
     {
-        public static Database.Models.Booking AssembleEntity(Booking bookingModel)
+        public static DbBooking AssembleEntity(Booking bookingModel)
         {
-            Database.Models.Booking bookingEntity =
-                new Database.Models.Booking
+            DbBooking bookingEntity =
+                new DbBooking
                 {
                     BookingId = bookingModel.BookingId,
                     CustomerId = bookingModel.CustomerId,
@@ -24,18 +26,28 @@ namespace ecruise.Models.Assemblers
             return bookingEntity;
         }
 
-        public static Booking AssembleModel(Database.Models.Booking bookingEntity)
+        public static Booking AssembleModel(DbBooking bookingEntity)
         {
             return new Booking(
-                (uint)bookingEntity.BookingId,
-                (uint)bookingEntity.CustomerId,
-                (uint?)bookingEntity.TripId,
-                (uint?)bookingEntity.InvoiceItemId,
+                bookingEntity.BookingId,
+                bookingEntity.CustomerId,
+                bookingEntity.TripId,
+                bookingEntity.InvoiceItemId,
                 bookingEntity.BookedPositionLatitude,
                 bookingEntity.BookedPositionLongitude,
                 bookingEntity.BookingDate,
                 bookingEntity.PlannedDate
             );
+        }
+
+        public static List<Booking> AssembleModelList(IList<DbBooking> entities)
+        {
+            return entities.Select(AssembleModel).ToList();
+        }
+
+        public static List<DbBooking> AssembleEntityList(IList<Booking> models)
+        {
+            return models.Select(AssembleEntity).ToList();
         }
     }
 }

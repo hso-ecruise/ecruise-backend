@@ -1,14 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Collections.Generic;
+using System.Linq;
+using Maintenance = ecruise.Models.Maintenance;
+using DbMaintenance = ecruise.Database.Models.Maintenance;
 
 namespace ecruise.Models.Assemblers
 {
     public class MaintenanceAssembler
     {
-        public static Database.Models.Maintenance AssembleEntity(Maintenance maintenanceModel)
+        public static DbMaintenance AssembleEntity(Maintenance maintenanceModel)
         {
-            return new Database.Models.Maintenance
+            return new DbMaintenance
             {
                 MaintenanceId = maintenanceModel.MaintenenaceId,
                 Spontaneously = maintenanceModel.Spontaneously,
@@ -17,13 +18,22 @@ namespace ecruise.Models.Assemblers
             };
         }
 
-        public static Maintenance AssembleModel(Database.Models.Maintenance maintenanceEntity)
+        public static Maintenance AssembleModel(DbMaintenance maintenanceEntity)
         {
             return new Maintenance(
-                (uint)maintenanceEntity.MaintenanceId,
+                maintenanceEntity.MaintenanceId,
                 maintenanceEntity.Spontaneously,
                 maintenanceEntity.AtMileage,
                 maintenanceEntity.AtDate);
+        }
+        public static List<Maintenance> AssembleModelList(IList<DbMaintenance> entities)
+        {
+            return entities.Select(AssembleModel).ToList();
+        }
+
+        public static List<DbMaintenance> AssembleEntityList(IList<Maintenance> models)
+        {
+            return models.Select(AssembleEntity).ToList();
         }
     }
 }
