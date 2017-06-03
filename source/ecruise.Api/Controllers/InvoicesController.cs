@@ -101,8 +101,7 @@ namespace ecruise.Api.Controllers
             if (!ModelState.IsValid)
                 return BadRequest(new Error(400, GetModelStateErrorString(),
                     "An error occured. Please check the message for further information."));
-
-
+            
             DbInvoice invoice = Context.Invoices.Find(id);
 
             if (invoice == null)
@@ -121,13 +120,35 @@ namespace ecruise.Api.Controllers
         [HttpPost("{id}/items", Name = "CreateNewInvoiceItem")]
         public IActionResult Post(uint id, [FromBody] InvoiceItem invoiceItem)
         {
-            if (ModelState.IsValid)
-                return Created($"{BasePath}/invoices/by-invoice-item/{invoiceItem.InvoiceItemId}",
-                    new PostReference(invoiceItem.InvoiceItemId,
-                        $"{BasePath}/invoices/by-invoice-item/{invoiceItem.InvoiceItemId}"));
-            else
-                return BadRequest(new Error(1, ModelState.ToString(),
+            if (!ModelState.IsValid)
+                return BadRequest(new Error(400, GetModelStateErrorString(),
                     "An error occured. Please check the message for further information."));
+
+            DbInvoice invoice = Context.Invoices.Find(id);
+            if (invoice == null)
+                return NotFound(new Error(201, "Invoice with requested id does not exist.",
+                    $"There is no trip that has the id {id}."));
+
+            DbInvoiceItem insertItem = new DbInvoiceItem
+            {
+                InvoiceItemId = invoiceItem.InvoiceItemId,
+                InvoiceId = invoiceItem.InvoiceId,
+                Reason = invoiceItem.Reason,
+                Type = (ecruise.Database.Models.InvoiceItemType)invoiceItem.Type,
+                Amount = invoiceItem.Amount,
+                Invoice = invoice,
+            };
+
+            var inserted = Context.InvoiceItems.Add(insertItem);
+
+            using (var transaction = Context.Database.BeginTransaction())
+            {
+                invoice.InvoiceItem.Add(insertItem);
+                transaction.Commit();
+            }
+
+            return Created($"{BasePath}/Invoices/{inserted.Entity.InvoiceId}",
+                new PostReference((uint)inserted.Entity.InvoiceItemId, $"{BasePath}/Invoices/{inserted.Entity.InvoiceId}"));
         }
 
         // GET: /invoices/1/items/1
