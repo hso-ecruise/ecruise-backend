@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Globalization;
+using System.Linq;
 using ecruise.Models;
 using ecruise.Models.Assemblers;
 using Microsoft.AspNetCore.Http;
@@ -112,84 +113,116 @@ namespace ecruise.Api.Controllers
         }
 
         // GET: /Bookings/by-trip/5
-        [HttpGet("by-trip/{tripid}", Name = "GetBookingsByTrip")]
-        public IActionResult GetByTripId(ulong tripid)
+        [HttpGet("by-trip/{tripId}", Name = "GetBookingsByTrip")]
+        public IActionResult GetByTripId(ulong tripId)
         {
-            if (ModelState.IsValid && tripid < 3 && tripid > 0)
+            try
             {
-                DateTime date1 = new DateTime(2017, 5, 8, 13, 37, 0, DateTimeKind.Utc);
-                DateTime date2 = new DateTime(2017, 5, 10, 13, 37, 0, DateTimeKind.Utc);
+                if (ModelState.IsValid)
+                {
+                    // Get all bookings with the given trip id
+                    var bookingEntities = Context.Bookings.Where(b => b.TripId.HasValue && b.TripId.Value == tripId).ToImmutableList();
 
-                Booking booking = new Booking(1, 1, 1, 1, 49.488342, 8.466788, date1,
-                    date2);
+                    if (bookingEntities.Count < 1)
+                        return NoContent();
 
-                return Ok(booking);
-
+                    // Convert them to models and return OK
+                    return Ok(BookingAssembler.AssembleModelList(bookingEntities));
+                }
+                else
+                    return BadRequest(new Error(301, GetModelStateErrorString(),
+                        "The given id could not be converted. Please check the message for further information."));
             }
-            else if (ModelState.IsValid && tripid >= 3)
+            catch(Exception e)
             {
-                return NotFound("Booking with requested trip id does not exist.");
-            }
-            else
-            {
-                return BadRequest(new Error(1, "The id given was not formatted correctly. TripId must be unsigned int",
-                    "An error occured. Please check the message for further information."));
+                // return Internal Server Error (500)
+                return StatusCode(StatusCodes.Status500InternalServerError,
+                    new Error(101, e.Message, "An error occured.Please check the message for further information."));
             }
         }
 
         // GET: /Bookings/by-customer/5
-        [HttpGet("by-customer/{customerid}", Name = "GetBookingsByCustomer")]
-        public IActionResult GetByCustomerId(ulong customerid)
+        [HttpGet("by-customer/{customerId}", Name = "GetBookingsByCustomer")]
+        public IActionResult GetByCustomerId(ulong customerId)
         {
-            if (ModelState.IsValid && customerid < 3 && customerid > 0)
+            try
             {
-                DateTime date1 = new DateTime(2017, 5, 8, 13, 37, 0, DateTimeKind.Utc);
-                DateTime date2 = new DateTime(2017, 5, 10, 13, 37, 0, DateTimeKind.Utc);
+                if (ModelState.IsValid)
+                {
+                    // Get all bookings with the given trip id
+                    var bookingEntities = Context.Bookings.Where(b => b.CustomerId == customerId).ToImmutableList();
 
-                Booking booking = new Booking(1, 1, 1, 1, 49.488342, 8.466788, date1,
-                    date2);
+                    if (bookingEntities.Count < 1)
+                        return NoContent();
 
-                Booking booking2 = new Booking(1, 1, 1, 1, 49.488342, 8.466788, date1,
-                    date2);
-
-                List<Booking> list = new List<Booking> { booking, booking2 };
-
-                return Ok(list);
+                    // Convert them to models and return OK
+                    return Ok(BookingAssembler.AssembleModelList(bookingEntities));
+                }
+                else
+                    return BadRequest(new Error(301, GetModelStateErrorString(),
+                        "The given id could not be converted. Please check the message for further information."));
             }
-            else if (ModelState.IsValid && customerid >= 3)
+            catch (Exception e)
             {
-                return NotFound("Booking with requested customer id does not exist.");
-            }
-            else
-            {
-                return BadRequest(new Error(1, "The id given was not formatted correctly. CustomerId must be unsigned int greater than zero",
-                    "An error occured. Please check the message for further information."));
+                // return Internal Server Error (500)
+                return StatusCode(StatusCodes.Status500InternalServerError,
+                    new Error(101, e.Message, "An error occured.Please check the message for further information."));
             }
         }
 
-        // GET: /Bookings/by-date/<date>
-        [HttpGet("by-date/{date}", Name = "GetBookingsByDate")]
-        public IActionResult GetByDate(string date)
+        // GET: /Bookings/by-booking-date/<date>
+        [HttpGet("by-booking-date/{date}", Name = "GetBookingsByBookingDate")]
+        public IActionResult GetByBookingDate(string date)
         {
             // Transform string to date
             DateTime requestedDateTime;
             if (DateTime.TryParseExact(date, @"yyyy-MM-dd\THH:mm:ss.fff\Z", CultureInfo.InvariantCulture,
                 DateTimeStyles.AssumeUniversal, out requestedDateTime))
             {
-                DateTime date1 = new DateTime(2017, 5, 8, 13, 37, 0, DateTimeKind.Utc);
+                // Get all bookings booked at the specified day
+                var matchingbookings = Context.Bookings
+                    .Where(b => b.BookingDate.ToUniversalTime() == requestedDateTime.ToUniversalTime())
+                    .ToImmutableList();
 
-                Booking booking1 = new Booking(1, 1, 1, 1, 49.488342, 8.466788, date1,
-                    requestedDateTime);
-                Booking booking2 = new Booking(2, 1, 1, 1, 49.488342, 8.466788, date1,
-                    requestedDateTime);
+                // Check if any matches were found
+                if (matchingbookings.Count < 1)
+                    return NoContent();
 
-                List<Booking> list = new List<Booking> { booking1, booking2 };
-                return Ok(list);
+                // Return the found matches
+                return Ok(BookingAssembler.AssembleModelList(matchingbookings));
             }
             else
             {
-                return BadRequest(new Error(1, "The date given was not formatted correctly. Date must be in following format: 'dd-MM-yyyyTHH:mm:ss.zzzZ'",
-                    "An error occured. Please check the message for further information."));
+                return BadRequest(new Error(301, "The date given was not formatted correctly.",
+                    "Date must always be in following format: 'dd-MM-yyyyTHH:mm:ss.zzzZ'"));
+            }
+        }
+
+        // GET: /Bookings/by-planned-date/<date>
+        [HttpGet("by-planned-date/{date}", Name = "GetBookingsByPlannedDate")]
+        public IActionResult GetByPlannedDate(string date)
+        {
+            // Transform string to date
+            DateTime requestedDateTime;
+            if (DateTime.TryParseExact(date, @"yyyy-MM-dd\THH:mm:ss.fff\Z", CultureInfo.InvariantCulture,
+                DateTimeStyles.AssumeUniversal, out requestedDateTime))
+            {
+                // Get all bookings booked at the specified day
+                var matchingbookings = Context.Bookings
+                    .Where(b => b.PlannedDate.HasValue && b.PlannedDate.Value.ToUniversalTime() == requestedDateTime.ToUniversalTime())
+                    .ToImmutableList();
+
+                // Check if any matches were found
+                if (matchingbookings.Count < 1)
+                    return NoContent();
+
+                // Return the found matches
+                return Ok(BookingAssembler.AssembleModelList(matchingbookings));
+            }
+            else
+            {
+                return BadRequest(new Error(301, "The date given was not formatted correctly.",
+                    "Date must always be in following format: 'yyyy-MM-ddTHH:mm:ss.zzzZ'"));
             }
         }
     }
