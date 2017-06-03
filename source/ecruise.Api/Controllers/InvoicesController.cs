@@ -24,21 +24,17 @@ namespace ecruise.Api.Controllers
         [HttpGet("{id}", Name = "GetInvoiceByInvoiceId")]
         public IActionResult Get(uint id)
         {
-            if (ModelState.IsValid && id < 3)
-            {
-                Invoice invoice1 = new Invoice(1, 1, 123.45, false);
-                return Ok(invoice1);
-            }
-            else if (ModelState.IsValid && (id >= 3 || id == 0))
-            {
-                return NotFound(new Error(1, "Invoice with requested Invoice id does not exist.",
+            if (!ModelState.IsValid)
+                return BadRequest(new Error(400, GetModelStateErrorString(),
                     "An error occured. Please check the message for further information."));
-            }
+
+            DbInvoice invoice = Context.Invoices.Find(id);
+
+            if (invoice == null)
+                return NotFound(new Error(201, "Invoice with requested id does not exist.",
+                    $"There is no maintenance that has the id {id}."));
             else
-            {
-                return BadRequest(new Error(1, "The id given was not formatted correctly. Id has to be unsinged int",
-                    "An error occured. Please check the message for further information."));
-            }
+                return Ok(invoice);
         }
 
         // GET: /invoices/by-invoice-item/1
