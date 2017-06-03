@@ -10,8 +10,8 @@ namespace ecruise.Database.Models
             CarMaintenance = new HashSet<CarMaintenance>();
         }
 
-        public ulong InvoiceItemId { get; set; }
-        public ulong? InvoiceId { get; set; }
+        public uint InvoiceItemId { get; set; }
+        public uint? InvoiceId { get; set; }
         public string Reason { get; set; }
         public InvoiceItemType Type { get; set; }
         public double Amount { get; set; }

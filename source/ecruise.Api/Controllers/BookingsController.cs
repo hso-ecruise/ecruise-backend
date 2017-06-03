@@ -1,11 +1,7 @@
 using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Globalization;
-using System.Linq;
-using System.Net;
-using System.Net.Http;
-using System.Net.Http.Headers;
-using ecruise.Database.Models;
 using ecruise.Models;
 using ecruise.Models.Assemblers;
 using Microsoft.AspNetCore.Http;
@@ -24,15 +20,17 @@ namespace ecruise.Api.Controllers
             try
             {
                 // Get all bookings from database
-                var bookings = Context.Bookings.ToList();
+                var bookings = Context.Bookings.ToImmutableList();
 
                 if (bookings.Count < 1)
                     // Return that there are no results
                     return NoContent();
 
                 else
+                {
                     // Return found bookings
-                    return Ok(bookings);
+                    return Ok(BookingAssembler.AssembleModelList(bookings));
+                }   
             }
             catch (Exception e)
             {

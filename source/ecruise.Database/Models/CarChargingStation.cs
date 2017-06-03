@@ -4,9 +4,9 @@ namespace ecruise.Database.Models
 {
     public partial class CarChargingStation
     {
-        public ulong CarChargingStationId { get; set; }
-        public ulong CarId { get; set; }
-        public ulong ChargingStationId { get; set; }
+        public uint CarChargingStationId { get; set; }
+        public uint CarId { get; set; }
+        public uint ChargingStationId { get; set; }
         public DateTime ChargeStart { get; set; }
         public DateTime? ChargeEnd { get; set; }
 

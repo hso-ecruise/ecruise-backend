@@ -12,7 +12,7 @@ namespace ecruise.Database.Models
             Trip = new HashSet<Trip>();
         }
 
-        public ulong CarId { get; set; }
+        public uint CarId { get; set; }
         public string LicensePlate { get; set; }
         public ChargingState ChargingState { get; set; }
         public BookingState BookingState { get; set; }

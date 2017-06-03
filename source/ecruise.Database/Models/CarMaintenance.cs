@@ -4,10 +4,10 @@ namespace ecruise.Database.Models
 {
     public partial class CarMaintenance
     {
-        public ulong CarMaintenanceId { get; set; }
-        public ulong CarId { get; set; }
-        public ulong MaintenanceId { get; set; }
-        public ulong? InvoiceItemId { get; set; }
+        public uint CarMaintenanceId { get; set; }
+        public uint CarId { get; set; }
+        public uint MaintenanceId { get; set; }
+        public uint? InvoiceItemId { get; set; }
         public DateTime? PlannedDate { get; set; }
         public DateTime? CompletedDate { get; set; }
 

@@ -3,6 +3,7 @@ using System.Linq;
 using Microsoft.AspNetCore.Mvc;
 
 using ecruise.Models;
+using ecruise.Models.Assemblers;
 using DbTrip = ecruise.Database.Models.Trip;
 
 namespace ecruise.Api.Controllers
@@ -17,7 +18,7 @@ namespace ecruise.Api.Controllers
             if (trips.Count == 0)
                 return NoContent();
 
-            return Ok(trips);
+            return Ok(TripAssembler.AssembleModelList(trips));
         }
 
         // POST: /trips
@@ -28,23 +29,7 @@ namespace ecruise.Api.Controllers
                 return BadRequest(new Error(400, GetModelStateErrorString(),
                     "An error occured. Please check the message for further information."));
 
-            DbTrip insertTrip = new DbTrip
-            {
-                CarId = trip.CarId,
-                CustomerId = trip.CustomerId,
-                StartDate = trip.StartDate,
-                EndDate = trip.EndDate,
-
-                StartChargingStationId = trip.StartChargingStationId,
-                EndChargingStationId = trip.EndChargingStationId,
-
-                // whole entities (?)
-                Car = Context.Cars.Find(trip.CarId),
-                Customer = Context.Customers.Find(trip.CustomerId),
-
-                StartChargingStation = Context.ChargingStations.Find(trip.StartChargingStationId),
-                EndChargingStation = Context.ChargingStations.Find(trip.EndChargingStationId)
-            };
+            var insertTrip = TripAssembler.AssembleEntity(trip);
 
             var inserted = Context.Trips.Add(insertTrip);
 

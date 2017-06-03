@@ -10,7 +10,7 @@ namespace ecruise.Database.Models
             CarMaintenance = new HashSet<CarMaintenance>();
         }
 
-        public ulong MaintenanceId { get; set; }
+        public uint MaintenanceId { get; set; }
         public bool Spontaneously { get; set; }
         public uint? AtMileage { get; set; }
         public DateTime? AtDate { get; set; }

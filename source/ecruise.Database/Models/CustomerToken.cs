@@ -4,8 +4,8 @@ namespace ecruise.Database.Models
 {
     public partial class CustomerToken
     {
-        public ulong CustomerTokenId { get; set; }
-        public ulong CustomerId { get; set; }
+        public uint CustomerTokenId { get; set; }
+        public uint CustomerId { get; set; }
         public TokenType Type { get; set; }
         public string Token { get; set; }
         public DateTime CreationDate { get; set; }

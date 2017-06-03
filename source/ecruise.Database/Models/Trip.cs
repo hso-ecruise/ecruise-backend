@@ -10,9 +10,9 @@ namespace ecruise.Database.Models
             Booking = new HashSet<Booking>();
         }
 
-        public ulong TripId { get; set; }
-        public ulong? CarId { get; set; }
-        public ulong CustomerId { get; set; }
+        public uint TripId { get; set; }
+        public uint? CarId { get; set; }
+        public uint CustomerId { get; set; }
         public DateTime? StartDate { get; set; }
         public DateTime? EndDate { get; set; }
         public uint? StartChargingStationId { get; set; }
