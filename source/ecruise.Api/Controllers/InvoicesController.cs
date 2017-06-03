@@ -131,7 +131,6 @@ namespace ecruise.Api.Controllers
 
             DbInvoiceItem insertItem = new DbInvoiceItem
             {
-                InvoiceItemId = invoiceItem.InvoiceItemId,
                 InvoiceId = invoiceItem.InvoiceId,
                 Reason = invoiceItem.Reason,
                 Type = (ecruise.Database.Models.InvoiceItemType)invoiceItem.Type,
@@ -153,23 +152,23 @@ namespace ecruise.Api.Controllers
 
         // GET: /invoices/1/items/1
         [HttpGet("{id}/items/{invoiceItemId}", Name = "GetInvoiceItem")]
-        public IActionResult GetAllInvoiceItems(uint id, uint invoiceItemId)
+        public IActionResult GetAllInvoiceItems(uint id, uint invoiceItemNo)
         {
-            if (ModelState.IsValid && id < 3)
-            {
-                InvoiceItem item1 = new InvoiceItem(1, 1, "Trip123", InvoiceItem.TypeEnum.Credit, 10.0);
-                return Ok(item1);
-            }
-            else if (ModelState.IsValid && (id >= 3 || id == 0))
-            {
-                return NotFound(new Error(1, "Invoice with requested Invoice id does not exist.",
+            if (!ModelState.IsValid)
+                return BadRequest(new Error(400, GetModelStateErrorString(),
                     "An error occured. Please check the message for further information."));
-            }
-            else
-            {
-                return BadRequest(new Error(1, "The id given was not formatted correctly. Id has to be unsinged int",
-                    "An error occured. Please check the message for further information."));
-            }
+            
+            DbInvoice invoice = Context.Invoices.Find(id);
+
+            if (invoice == null)
+                return NotFound(new Error(201, "Invoice with requested id does not exist.",
+                    $"There is no maintenance that has the id {id}."));
+
+            ImmutableList<DbInvoiceItem> items = invoice.InvoiceItem.ToImmutableList();
+
+            if(items.Count < invoiceItemNo-1 || invoiceItemNo < 1 || items[(int)invoiceItemNo - 1] == null )
+                return NoContent();
+            return Ok(items[(int)invoiceItemNo - 1]);
         }
     }
 }
