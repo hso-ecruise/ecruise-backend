@@ -11,7 +11,7 @@ namespace ecruise.Models
         /// <summary>
         /// Initializes a new instance of the <see cref="Maintenance" /> class.
         /// </summary>
-        /// <param name="maintenenaceId">MaintenenaceId (required)</param>
+        /// <param name="maintenenaceId">MaintenanceId (required)</param>
         /// <param name="spontaneously">Spontaneously (required)</param>
         /// <param name="atMileage">AtMileage</param>
         /// <param name="atDate">AtDate</param>
@@ -24,7 +24,7 @@ namespace ecruise.Models
                 throw new ArgumentException("Either " + nameof(atMileage) + " or " + nameof(atDate) +
                                             " is required to have a value if the Maintenance is planned");
 
-            MaintenenaceId = maintenenaceId;
+            MaintenanceId = maintenenaceId;
             Spontaneously = spontaneously;
             AtMileage = atMileage;
             AtDate = atDate;
@@ -34,7 +34,7 @@ namespace ecruise.Models
         /// Gets MaintenenaceId
         /// </summary>
         [Required, Range(0, uint.MaxValue)]
-        public uint MaintenenaceId { get; }
+        public uint MaintenanceId { get; }
 
         /// <summary>
         /// Gets Spontaneously
@@ -62,7 +62,7 @@ namespace ecruise.Models
         {
             var sb = new StringBuilder();
             sb.Append("class Maintenance {\n");
-            sb.Append("  MaintenenaceId: ").Append(MaintenenaceId).Append("\n");
+            sb.Append("  MaintenanceId: ").Append(MaintenanceId).Append("\n");
             sb.Append("  Spontaneously: ").Append(Spontaneously).Append("\n");
             sb.Append("  AtMileage: ").Append(AtMileage).Append("\n");
             sb.Append("  AtDate: ").Append(AtDate).Append("\n");
@@ -103,7 +103,7 @@ namespace ecruise.Models
             if (ReferenceEquals(this, other)) return true;
 
             return
-                (MaintenenaceId == other.MaintenenaceId || MaintenenaceId.Equals(other.MaintenenaceId)) &&
+                (MaintenanceId == other.MaintenanceId || MaintenanceId.Equals(other.MaintenanceId)) &&
                 (Spontaneously == other.Spontaneously || Spontaneously.Equals(other.Spontaneously)) &&
                 (AtMileage == other.AtMileage || AtMileage != null && AtMileage.Equals(other.AtMileage)) &&
                 (AtDate == other.AtDate || AtDate != null && AtDate.Equals(other.AtDate));
@@ -119,7 +119,7 @@ namespace ecruise.Models
             {
                 int hash = 41;
 
-                hash = hash * 59 + MaintenenaceId.GetHashCode();
+                hash = hash * 59 + MaintenanceId.GetHashCode();
                 hash = hash * 59 + Spontaneously.GetHashCode();
                 if (AtMileage != null)
                     hash = hash * 59 + AtMileage.GetHashCode();

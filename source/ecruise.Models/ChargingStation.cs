@@ -20,7 +20,7 @@ namespace ecruise.Models
         {
             ChargingStationId = chargingStationId;
             Slots = slots;
-            SlotsOccupuied = slotsOccupied;
+            SlotsOccupied = slotsOccupied;
             Latitude = latitude;
             Longitude = longitude;
         }
@@ -35,7 +35,7 @@ namespace ecruise.Models
         public uint Slots { get; }
 
         [Required, Range(0, uint.MaxValue)]
-        public uint SlotsOccupuied { get; set; }
+        public uint SlotsOccupied { get; set; }
 
         [Required, Range(-90.0, 90.0)]
         public double Latitude { get; }
@@ -53,7 +53,7 @@ namespace ecruise.Models
             sb.Append("class ChargingStation {\n");
             sb.Append("  ChargingStationId: ").Append(ChargingStationId).Append("\n");
             sb.Append("  Slots: ").Append(Slots).Append("\n");
-            sb.Append("  SlotsOccupuied: ").Append(SlotsOccupuied).Append("\n");
+            sb.Append("  SlotsOccupied: ").Append(SlotsOccupied).Append("\n");
             sb.Append("  Latitude: ").Append(Latitude).Append("\n");
             sb.Append("  Longitude: ").Append(Longitude).Append("\n");
             sb.Append("}\n");
@@ -95,7 +95,7 @@ namespace ecruise.Models
             return
                 (ChargingStationId == other.ChargingStationId || ChargingStationId.Equals(other.ChargingStationId)) &&
                 (Slots == other.Slots || Slots.Equals(other.Slots)) &&
-                (SlotsOccupuied == other.SlotsOccupuied || SlotsOccupuied.Equals(other.SlotsOccupuied)) &&
+                (SlotsOccupied == other.SlotsOccupied || SlotsOccupied.Equals(other.SlotsOccupied)) &&
                 (Math.Abs(Latitude - other.Latitude) < 0.000000001 || Latitude.Equals(other.Latitude)) &&
                 (Math.Abs(Longitude - other.Longitude) < 0.000000001 || Longitude.Equals(other.Longitude));
         }

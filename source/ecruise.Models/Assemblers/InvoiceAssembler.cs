@@ -15,7 +15,7 @@ namespace ecruise.Models.Assemblers
                 InvoiceId = invoiceId != 0 ? invoiceId : invoiceModel.InvoiceId,
                 CustomerId = invoiceModel.CustomerId,
                 TotalAmount = invoiceModel.TotalAmount,
-                Payed = invoiceModel.Paid
+                Paid = invoiceModel.Paid
             };
         }
 
@@ -25,7 +25,7 @@ namespace ecruise.Models.Assemblers
                 (uint)invoiceEntity.InvoiceId,
                 (uint)invoiceEntity.CustomerId,
                 invoiceEntity.TotalAmount,
-                invoiceEntity.Payed);
+                invoiceEntity.Paid);
         }
 
         public static List<Invoice> AssembleModelList(IList<DbInvoice> entities)

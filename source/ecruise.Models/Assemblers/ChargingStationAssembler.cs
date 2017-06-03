@@ -14,7 +14,7 @@ namespace ecruise.Models.Assemblers
             {
                 ChargingStationId = chargingStationId != 0 ? chargingStationId : chargingStationModel.ChargingStationId,
                 Slots = chargingStationModel.Slots,
-                SlotsOccupied = chargingStationModel.SlotsOccupuied,
+                SlotsOccupied = chargingStationModel.SlotsOccupied,
                 Latitude = chargingStationModel.Latitude,
                 Longitude = chargingStationModel.Longitude
             };

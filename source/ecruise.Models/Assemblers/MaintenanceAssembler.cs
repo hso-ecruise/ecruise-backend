@@ -11,7 +11,7 @@ namespace ecruise.Models.Assemblers
         {
             return new DbMaintenance
             {
-                MaintenanceId = maintenanceId != 0 ? maintenanceId : maintenanceModel.MaintenenaceId,
+                MaintenanceId = maintenanceId != 0 ? maintenanceId : maintenanceModel.MaintenanceId,
                 Spontaneously = maintenanceModel.Spontaneously,
                 AtMileage = maintenanceModel.AtMileage,
                 AtDate = maintenanceModel.AtDate
@@ -37,7 +37,7 @@ namespace ecruise.Models.Assemblers
                 return models.Select(e => AssembleEntity(0, e)).ToList();
 
             else
-                return models.Select(e => AssembleEntity(e.MaintenenaceId, e)).ToList();
+                return models.Select(e => AssembleEntity(e.MaintenanceId, e)).ToList();
         }
     }
 }

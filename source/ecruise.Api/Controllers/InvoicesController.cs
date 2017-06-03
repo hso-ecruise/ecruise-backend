@@ -90,7 +90,7 @@ namespace ecruise.Api.Controllers
                 return NotFound(new Error(201, "Invoice with requested id does not exist.",
                     $"There is no invoice that has the id {id}."));
 
-            invoice.Payed = paid;
+            invoice.Paid = paid;
 
             Context.SaveChanges();
 

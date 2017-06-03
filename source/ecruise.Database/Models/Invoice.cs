@@ -12,7 +12,7 @@ namespace ecruise.Database.Models
         public ulong InvoiceId { get; set; }
         public ulong CustomerId { get; set; }
         public double TotalAmount { get; set; }
-        public bool Payed { get; set; }
+        public bool Paid { get; set; }
 
         public virtual Customer Customer { get; set; }
 
