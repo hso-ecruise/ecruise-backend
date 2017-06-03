@@ -38,22 +38,17 @@ namespace ecruise.Api.Controllers
         [HttpGet("{id}", Name = "GetCar")]
         public IActionResult Get(uint id)
         {
-            if (ModelState.IsValid && id < 3)
-            {
-                Car car1 = new Car(1, "OG-XY-123", Car.ChargingStateEnum.Full, Car.BookingStateEnum.Available, 1, 2.0, 100, "Audi", "A6", 2004, 48.5, 8.5, new DateTime(2017, 5, 8, 21, 5, 46));
+            if (!ModelState.IsValid)
+                return BadRequest(new Error(400, GetModelStateErrorString(),
+                    "An error occured. Please check the message for further information."));
 
-                return Ok(car1);
-            }
-            else if (ModelState.IsValid && (id >= 3 || id == 0))
-            {
-                return NotFound(new Error(1, "Car with requested Car id does not exist.",
-                    "An error occured. Please check the message for further information."));
-            }
+            DbCar car = Context.Cars.Find(id);
+
+            if (car == null)
+                return NotFound(new Error(201, "Car with requested id does not exist.",
+                    $"There is no maintenance that has the id {id}."));
             else
-            {
-                return BadRequest(new Error(1, "The id given was not formatted correctly. Id has to be unsinged int",
-                    "An error occured. Please check the message for further information."));
-            }
+                return Ok(car);
         }
 
         // PATCH: /Cars/1/2
