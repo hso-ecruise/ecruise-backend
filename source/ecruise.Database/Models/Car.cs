@@ -14,8 +14,8 @@ namespace ecruise.Database.Models
 
         public ulong CarId { get; set; }
         public string LicensePlate { get; set; }
-        public ChargingState ChargingState { get; set; }
-        public BookingState BookingState { get; set; }
+        public string ChargingState { get; set; }
+        public string BookingState { get; set; }
         public uint Milage { get; set; }
         public double ChargeLevel { get; set; }
         public uint Kilowatts { get; set; }

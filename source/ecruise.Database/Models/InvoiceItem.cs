@@ -13,7 +13,7 @@ namespace ecruise.Database.Models
         public ulong InvoiceItemId { get; set; }
         public ulong? InvoiceId { get; set; }
         public string Reason { get; set; }
-        public InvoiceItemType Type { get; set; }
+        public string Type { get; set; }
         public double Amount { get; set; }
 
         public virtual Invoice Invoice { set; get; }

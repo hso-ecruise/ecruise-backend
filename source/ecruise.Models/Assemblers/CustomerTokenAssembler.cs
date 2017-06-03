@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+
 using CustomerToken = ecruise.Models.CustomerToken;
 using DbCustomerToken = ecruise.Database.Models.CustomerToken;
 
@@ -8,7 +9,7 @@ namespace ecruise.Models.Assemblers
 {
     public static class CustomerTokenAssembler
     {
-        private static string makeStringFromEnum(ecruise.Models.CustomerToken.TokenTypeEnum t)
+        public static string EnumToString(CustomerToken.TokenTypeEnum t)
         {
             switch (t)
             {
@@ -21,7 +22,7 @@ namespace ecruise.Models.Assemblers
             }
         }
 
-        private static CustomerToken.TokenTypeEnum makeEnumFromString(string e)
+        public static CustomerToken.TokenTypeEnum StringToEnum(string e)
         {
             switch (e)
             {
@@ -40,7 +41,7 @@ namespace ecruise.Models.Assemblers
             {
                 CustomerTokenId = customerTokenId != 0 ? customerTokenId : customerTokenModel.CustomerTokenId,
                 CustomerId = customerTokenModel.CustomerId,
-                Type = makeStringFromEnum(customerTokenModel.Type),
+                Type = EnumToString(customerTokenModel.Type),
                 Token = customerTokenModel.Token,
                 CreationDate = customerTokenModel.CreationDate,
                 ExpireDate = customerTokenModel.ExpireDate
@@ -52,7 +53,7 @@ namespace ecruise.Models.Assemblers
             return new CustomerToken(
                 (uint)customerTokenEntity.CustomerTokenId,
                 (uint)customerTokenEntity.CustomerId,
-                makeEnumFromString(customerTokenEntity.Type),
+                StringToEnum(customerTokenEntity.Type),
                 customerTokenEntity.Token,
                 customerTokenEntity.CreationDate,
                 customerTokenEntity.ExpireDate

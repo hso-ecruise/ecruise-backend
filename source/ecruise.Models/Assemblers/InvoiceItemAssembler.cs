@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 
 using InvoiceItem = ecruise.Models.InvoiceItem;
@@ -8,6 +9,32 @@ namespace ecruise.Models.Assemblers
 {
     public static class InvoiceItemAssembler
     {
+        public static string EnumToString(InvoiceItem.TypeEnum t)
+        {
+            switch (t)
+            {
+                case InvoiceItem.TypeEnum.Credit:
+                    return "CREDIT";
+                case InvoiceItem.TypeEnum.Debit:
+                    return "DEBIT";
+                default:
+                    throw new NotImplementedException();
+            }
+        }
+
+        public static InvoiceItem.TypeEnum StringToEnum(string e)
+        {
+            switch (e)
+            {
+                case "CREDIT":
+                    return InvoiceItem.TypeEnum.Credit;
+                case "DEBIT":
+                    return InvoiceItem.TypeEnum.Debit;
+                default:
+                    throw new NotImplementedException();
+            }
+        }
+
         public static DbInvoiceItem AssembleEntity(ulong invoiceItemId, InvoiceItem invoiceItemModel)
         {
             return new DbInvoiceItem
@@ -15,7 +42,7 @@ namespace ecruise.Models.Assemblers
                 InvoiceItemId = invoiceItemId != 0 ? invoiceItemId : invoiceItemModel.InvoiceItemId,
                 InvoiceId = invoiceItemModel.InvoiceId,
                 Reason = invoiceItemModel.Reason,
-                Type = (Database.Models.InvoiceItemType)invoiceItemModel.Type,
+                Type = EnumToString(invoiceItemModel.Type),
                 Amount = invoiceItemModel.Amount
             };
         }
@@ -26,7 +53,7 @@ namespace ecruise.Models.Assemblers
                 (uint)invoiceItemEntity.InvoiceItemId,
                 (uint?)invoiceItemEntity.InvoiceId,
                 invoiceItemEntity.Reason,
-                (InvoiceItem.TypeEnum)invoiceItemEntity.Type,
+                StringToEnum(invoiceItemEntity.Type),
                 invoiceItemEntity.Amount);
         }
 
