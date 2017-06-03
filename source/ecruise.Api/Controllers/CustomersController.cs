@@ -72,6 +72,7 @@ namespace ecruise.Api.Controllers
             var customerTokens =
                 Context.CustomerTokens
                     .Where(t => t.Type == "LOGIN")
+                    .Where(t => t.ExpireDate == null || t.ExpireDate >= DateTime.UtcNow)
                     .Where(t => t.CustomerId == customer.CustomerId)
                     .ToList();
 
@@ -104,6 +105,7 @@ namespace ecruise.Api.Controllers
             var tokens =
                 Context.CustomerTokens
                     .Where(t => t.Type == "LOGIN")
+                    .Where(t => t.ExpireDate == null || t.ExpireDate >= DateTime.UtcNow)
                     .Where(t => t.CustomerId == customer.CustomerId)
                     .ToList();
 
