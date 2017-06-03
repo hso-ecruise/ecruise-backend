@@ -96,10 +96,23 @@ namespace ecruise.Api.Controllers
         [HttpGet("{id}/items", Name = "GetAllInvoiceItems")]
         public IActionResult GetAllInvoiceItems(uint id)
         {
-            InvoiceItem item1 = new InvoiceItem(1, 1, "Trip123", InvoiceItem.TypeEnum.Credit, 10.0);
-            InvoiceItem item2 = new InvoiceItem(1, 1, "MwSt", InvoiceItem.TypeEnum.Credit, 1.9);
+            if (!ModelState.IsValid)
+                return BadRequest(new Error(400, GetModelStateErrorString(),
+                    "An error occured. Please check the message for further information."));
 
-            return Ok(new List<InvoiceItem> {item1, item2});
+
+            DbInvoice invoice = Context.Invoices.Find(id);
+
+            if (invoice == null)
+                return NotFound(new Error(201, "Invoice with requested id does not exist.",
+                    $"There is no maintenance that has the id {id}."));
+
+            ImmutableList<DbInvoiceItem> items = invoice.InvoiceItem.ToImmutableList();
+
+            if(items.Count == 0)
+                return NoContent();
+
+            return Ok(items);
         }
 
         // POST: /Invoices/1/items
