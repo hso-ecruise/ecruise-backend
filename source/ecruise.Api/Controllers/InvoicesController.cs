@@ -25,7 +25,7 @@ namespace ecruise.Api.Controllers
 
         // GET: /invoices/1
         [HttpGet("{id}", Name = "GetInvoiceByInvoiceId")]
-        public IActionResult Get(uint id)
+        public IActionResult Get(ulong id)
         {
             if (!ModelState.IsValid)
                 return BadRequest(new Error(400, GetModelStateErrorString(),
@@ -43,7 +43,7 @@ namespace ecruise.Api.Controllers
 
         // GET: /invoices/by-invoice-item/1
         [HttpGet("by-invoice-item/{id}", Name = "GetInvoiceByInvoiceItemId")]
-        public IActionResult GetByInvoiceItemId(uint id)
+        public IActionResult GetByInvoiceItemId(ulong id)
         {
             if (!ModelState.IsValid)
                 return BadRequest(new Error(400, GetModelStateErrorString(),
@@ -60,7 +60,7 @@ namespace ecruise.Api.Controllers
 
         // GET: /invoices/by-customer/{customerId}
         [HttpGet("by-customer/{customerId}", Name = "GetInvoiceByCustomerId")]
-        public IActionResult GetInvoiceByCustomerId(uint customerId)
+        public IActionResult GetInvoiceByCustomerId(ulong customerId)
         {
             if (!ModelState.IsValid)
                 return BadRequest(new Error(400, GetModelStateErrorString(),
@@ -78,7 +78,7 @@ namespace ecruise.Api.Controllers
 
         // PATCH: /invoices/1/paid
         [HttpPatch("{id}/paid")]
-        public IActionResult Patch(uint id, [FromBody] bool paid)
+        public IActionResult Patch(ulong id, [FromBody] bool paid)
         {
             if (!ModelState.IsValid)
                 return BadRequest(new Error(400, GetModelStateErrorString(),
@@ -99,7 +99,7 @@ namespace ecruise.Api.Controllers
 
         // GET: /invoices/1/items
         [HttpGet("{id}/items", Name = "GetAllInvoiceItems")]
-        public IActionResult GetAllInvoiceItems(uint id)
+        public IActionResult GetAllInvoiceItems(ulong id)
         {
             if (!ModelState.IsValid)
                 return BadRequest(new Error(400, GetModelStateErrorString(),
@@ -121,7 +121,7 @@ namespace ecruise.Api.Controllers
 
         // POST: /Invoices/1/items
         [HttpPost("{id}/items", Name = "CreateNewInvoiceItem")]
-        public IActionResult Post(uint id, [FromBody] InvoiceItem invoiceItem)
+        public IActionResult Post(ulong id, [FromBody] InvoiceItem invoiceItem)
         {
             if (!ModelState.IsValid)
                 return BadRequest(new Error(400, GetModelStateErrorString(),
@@ -144,7 +144,7 @@ namespace ecruise.Api.Controllers
 
         // GET: /invoices/items/1
         [HttpGet("items/{invoiceItemId}", Name = "GetInvoiceItem")]
-        public IActionResult GetInvoiceItem(uint invoiceItemId)
+        public IActionResult GetInvoiceItem(ulong invoiceItemId)
         {
             if (!ModelState.IsValid)
                 return BadRequest(new Error(400, GetModelStateErrorString(),

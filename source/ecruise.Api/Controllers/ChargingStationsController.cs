@@ -41,7 +41,7 @@ namespace ecruise.Api.Controllers
 
     // GET: /ChargingStations/5
     [HttpGet("{id}", Name = "GetChargingStation")]
-        public IActionResult Get(uint id)
+        public IActionResult Get(ulong id)
         {
             if (!ModelState.IsValid)
                 return BadRequest(new Error(400, GetModelStateErrorString(),
@@ -58,7 +58,7 @@ namespace ecruise.Api.Controllers
 
         // GET: /ChargingStations/closest-to/58/8
         [HttpGet("closest-to/{latitude}/{longitude}", Name = "GetClosestChargingStation")]
-        public IActionResult GetClosestChargingStation(uint latitude, uint longitude)
+        public IActionResult GetClosestChargingStation(double latitude, double longitude)
         {
             if (ModelState.IsValid)
             {

@@ -42,7 +42,7 @@ namespace ecruise.Api.Controllers
 
         // GET: /CarMaintenances/5
         [HttpGet("{id}", Name = "GetCarMaintenance")]
-        public IActionResult Get(uint id)
+        public IActionResult Get(ulong id)
         {
             if (ModelState.IsValid && id < 3 && id > 0)
             {
@@ -63,7 +63,7 @@ namespace ecruise.Api.Controllers
         
         // PATCH: /CarMaintenances/5/completed-date
         [HttpPatch("{id}/completed-date")]
-        public IActionResult Patch(uint id, [FromBody] string date)
+        public IActionResult Patch(ulong id, [FromBody] string date)
         {
             if (ModelState.IsValid && id < 3 && id > 0)
             {
@@ -97,12 +97,12 @@ namespace ecruise.Api.Controllers
 
         // GET: /CarMaintenances/by-car/5
         [HttpGet("by-car/{id}", Name = "GetCarMaintenancesByCar")]
-        public IActionResult GetByCarId(uint id)
+        public IActionResult GetByCarId(ulong id)
         {
             if (ModelState.IsValid && id < 3 && id > 0)
             {
-                CarMaintenance cm1 = new CarMaintenance(1, id, 1, null, null, null);
-                CarMaintenance cm2 = new CarMaintenance(2, id, 1, null, null, null);
+                CarMaintenance cm1 = new CarMaintenance(1, 1, 1, null, null, null);
+                CarMaintenance cm2 = new CarMaintenance(2, 1, 1, null, null, null);
 
                 return Ok(new List<CarMaintenance> { cm1, cm2 });
             }
@@ -124,12 +124,12 @@ namespace ecruise.Api.Controllers
 
         // GET: /CarMaintenances/by-maintenance/5
         [HttpGet("by-maintenance/{id}", Name = "GetCarMaintenancesByMaintenance")]
-        public IActionResult GetByMaintenanceId(uint id)
+        public IActionResult GetByMaintenanceId(ulong id)
         {
             if (ModelState.IsValid && id < 3 && id > 0)
             {
-                CarMaintenance cm1 = new CarMaintenance(1, 1, id, null, null, null);
-                CarMaintenance cm2 = new CarMaintenance(2, 1, id, null, null, null);
+                CarMaintenance cm1 = new CarMaintenance(1, 1, 1, null, null, null);
+                CarMaintenance cm2 = new CarMaintenance(2, 1, 1, null, null, null);
 
                 return Ok(new List<CarMaintenance> {cm1, cm2});
             }
@@ -151,11 +151,11 @@ namespace ecruise.Api.Controllers
 
         // GET: /CarMaintenances/by-invoice-item/5
         [HttpGet("by-invoice-item/{id}", Name = "GetCarMaintenanceByInvoiceItem")]
-        public IActionResult GetByInvoiceItemId(uint id)
+        public IActionResult GetByInvoiceItemId(ulong id)
         {
             if (ModelState.IsValid && id < 3 && id > 0)
             {
-                return Ok(new CarMaintenance(1, 1, 1, id, null, null));
+                return Ok(new CarMaintenance(1, 1, 1, 1, null, null));
             }
             else if (ModelState.IsValid && id >= 3 && id < 6)
             {

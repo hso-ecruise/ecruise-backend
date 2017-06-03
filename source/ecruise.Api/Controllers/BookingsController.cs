@@ -42,7 +42,7 @@ namespace ecruise.Api.Controllers
 
         // GET: /Bookings/5
         [HttpGet("{id}", Name = "GetBooking")]
-        public IActionResult Get(uint id)
+        public IActionResult Get(ulong id)
         {
             // Check for correct value
             if (!ModelState.IsValid)
@@ -113,17 +113,18 @@ namespace ecruise.Api.Controllers
 
         // GET: /Bookings/by-trip/5
         [HttpGet("by-trip/{tripid}", Name = "GetBookingsByTrip")]
-        public IActionResult GetByTripId(uint tripid)
+        public IActionResult GetByTripId(ulong tripid)
         {
             if (ModelState.IsValid && tripid < 3 && tripid > 0)
             {
                 DateTime date1 = new DateTime(2017, 5, 8, 13, 37, 0, DateTimeKind.Utc);
                 DateTime date2 = new DateTime(2017, 5, 10, 13, 37, 0, DateTimeKind.Utc);
 
-                Booking booking = new Booking(1, 1, tripid, 1, 49.488342, 8.466788, date1,
+                Booking booking = new Booking(1, 1, 1, 1, 49.488342, 8.466788, date1,
                     date2);
 
                 return Ok(booking);
+
             }
             else if (ModelState.IsValid && tripid >= 3)
             {
@@ -138,17 +139,17 @@ namespace ecruise.Api.Controllers
 
         // GET: /Bookings/by-customer/5
         [HttpGet("by-customer/{customerid}", Name = "GetBookingsByCustomer")]
-        public IActionResult GetByCustomerId(uint customerid)
+        public IActionResult GetByCustomerId(ulong customerid)
         {
             if (ModelState.IsValid && customerid < 3 && customerid > 0)
             {
                 DateTime date1 = new DateTime(2017, 5, 8, 13, 37, 0, DateTimeKind.Utc);
                 DateTime date2 = new DateTime(2017, 5, 10, 13, 37, 0, DateTimeKind.Utc);
 
-                Booking booking = new Booking(1, customerid, 1, 1, 49.488342, 8.466788, date1,
+                Booking booking = new Booking(1, 1, 1, 1, 49.488342, 8.466788, date1,
                     date2);
 
-                Booking booking2 = new Booking(1, customerid, 1, 1, 49.488342, 8.466788, date1,
+                Booking booking2 = new Booking(1, 1, 1, 1, 49.488342, 8.466788, date1,
                     date2);
 
                 List<Booking> list = new List<Booking> { booking, booking2 };

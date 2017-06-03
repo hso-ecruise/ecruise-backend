@@ -21,6 +21,22 @@ namespace ecruise.Api.Controllers
             return Ok(TripAssembler.AssembleModelList(trips));
         }
 
+        // GET: /trips/1
+        [HttpGet("{id}", Name = "GetTrip")]
+        public IActionResult GetOne(ulong id)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(new Error(400, GetModelStateErrorString(),
+                    "An error occured. Please check the message for further information."));
+
+            DbTrip trip = Context.Trips.Find(id);
+            if (trip == null)
+                return NotFound(new Error(201, "Trip with requested id does not exist.",
+                    $"There is no trip that has the id {id}."));
+
+            return Ok(TripAssembler.AssembleModel(trip));
+        }
+
         // POST: /trips
         [HttpPost(Name = "CreateTrip")]
         public IActionResult Post([FromBody] Trip trip)
@@ -38,25 +54,9 @@ namespace ecruise.Api.Controllers
                 new PostReference((uint)inserted.Entity.TripId, $"{BasePath}/trips/{inserted.Entity.TripId}"));
         }
 
-        // GET: /trips/1
-        [HttpGet("{id}", Name = "GetTrip")]
-        public IActionResult GetOne(uint id)
-        {
-            if (!ModelState.IsValid)
-                return BadRequest(new Error(400, GetModelStateErrorString(),
-                    "An error occured. Please check the message for further information."));
-
-            DbTrip trip = Context.Trips.Find(id);
-            if (trip == null)
-                return NotFound(new Error(201, "Trip with requested id does not exist.",
-                    $"There is no trip that has the id {id}."));
-
-            return Ok(TripAssembler.AssembleModel(trip));
-        }
-
         // PATCH: /trips/1
         [HttpPatch("{id}")]
-        public IActionResult Patch(uint id, [FromBody] TripUpdate trip)
+        public IActionResult Patch(ulong id, [FromBody] TripUpdate trip)
         {
             if (!ModelState.IsValid)
                 return BadRequest(new Error(400, GetModelStateErrorString(),
@@ -81,7 +81,7 @@ namespace ecruise.Api.Controllers
 
         // GET: /trips/by-car/5
         [HttpGet("by-car/{carId}", Name = "GetBookingsByCar")]
-        public IActionResult GetByCarId(uint carId)
+        public IActionResult GetByCarId(ulong carId)
         {
             if (!ModelState.IsValid)
                 return BadRequest(new Error(400, GetModelStateErrorString(),

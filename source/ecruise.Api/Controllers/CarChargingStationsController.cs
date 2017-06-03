@@ -38,7 +38,7 @@ namespace ecruise.Api.Controllers
 
         // Patch: /CarChargingStations/5/charge-end
         [HttpPatch("{id}/charge-end")]
-        public IActionResult Patch(uint id, [FromBody]string chargeEnd)
+        public IActionResult Patch(ulong id, [FromBody]string chargeEnd)
         {
             if (ModelState.IsValid && id < 3 && id > 0)
             {
@@ -69,15 +69,15 @@ namespace ecruise.Api.Controllers
 
         // GET: /CarChargingStations/by-car/5
         [HttpGet("by-car/{carId}", Name = "GetCarChargingStationsByCar")]
-        public IActionResult GetByCarId(uint carId)
+        public IActionResult GetByCarId(ulong carId)
         {
             if (ModelState.IsValid && carId < 3 && carId > 0)
             {
                 DateTime date = new DateTime(2017, 5, 10, 13, 37, 0, DateTimeKind.Utc);
                 DateTime dateEnd = new DateTime(2017, 5, 10, 16, 37, 0, DateTimeKind.Utc);
 
-                CarChargingStation ccs = new CarChargingStation(1, carId, 1, date, dateEnd);
-                CarChargingStation ccs2 = new CarChargingStation(1, carId, 1, date.AddHours(2), null);
+                CarChargingStation ccs = new CarChargingStation(1, 1, 1, date, dateEnd);
+                CarChargingStation ccs2 = new CarChargingStation(1, 1, 1, date.AddHours(2), null);
 
                 return Ok(new List<CarChargingStation> {ccs, ccs2});
             }
@@ -94,15 +94,15 @@ namespace ecruise.Api.Controllers
 
         // GET: /CarChargingStations/by-charging-station/5
         [HttpGet("by-charging-station/{chargingStationId}", Name = "GetCarChargingStationsByChargingStation")]
-        public IActionResult GetByChargingStationId(uint chargingStationId)
+        public IActionResult GetByChargingStationId(ulong chargingStationId)
         {
             if (ModelState.IsValid && chargingStationId < 3 && chargingStationId > 0)
             {
                 DateTime date = new DateTime(2017, 5, 10, 13, 37, 0, DateTimeKind.Utc);
                 DateTime dateEnd = new DateTime(2017, 5, 10, 16, 37, 0, DateTimeKind.Utc);
 
-                CarChargingStation ccs = new CarChargingStation(1, chargingStationId, 1, date, dateEnd);
-                CarChargingStation ccs2 = new CarChargingStation(1, chargingStationId, 1, date.AddHours(2), null);
+                CarChargingStation ccs = new CarChargingStation(1, 1, 1, date, dateEnd);
+                CarChargingStation ccs2 = new CarChargingStation(1, 1, 1, date.AddHours(2), null);
 
                 return Ok(new List<CarChargingStation> { ccs, ccs2 });
             }

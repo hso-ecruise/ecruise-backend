@@ -43,7 +43,7 @@ namespace ecruise.Api.Controllers
 
         // GET: /Cars/1
         [HttpGet("{id}", Name = "GetCar")]
-        public IActionResult Get(uint id)
+        public IActionResult Get(ulong id)
         {
             if (!ModelState.IsValid)
                 return BadRequest(new Error(400, GetModelStateErrorString(),
@@ -61,7 +61,7 @@ namespace ecruise.Api.Controllers
 
         // PATCH: /Cars/1/2
         [HttpPatch("{id}/{chargingState}")]
-        public IActionResult PatchChargingState(uint id, [FromBody] Car.ChargingStateEnum chargingState)
+        public IActionResult PatchChargingState(ulong id, [FromBody] Car.ChargingStateEnum chargingState)
         {
             if (ModelState.IsValid && id < 3 && id > 0)
             {
@@ -81,7 +81,7 @@ namespace ecruise.Api.Controllers
 
         // PATCH: /Cars/1/2
         [HttpPatch("{id}/{bookingState}")]
-        public IActionResult PatchBookingState(uint id, [FromBody] Car.BookingStateEnum bookingState)
+        public IActionResult PatchBookingState(ulong id, [FromBody] Car.BookingStateEnum bookingState)
         {
             if (ModelState.IsValid && id < 3 && id > 0)
             {
@@ -101,7 +101,7 @@ namespace ecruise.Api.Controllers
 
         // PATCH: /Cars/1/2
         [HttpPatch("{id}/{mileage}")]
-        public IActionResult PatchMileage(uint id, uint mileage)
+        public IActionResult PatchMileage(ulong id, uint mileage)
         {
             if (ModelState.IsValid && id < 3 && id > 0)
             {
@@ -121,7 +121,7 @@ namespace ecruise.Api.Controllers
 
         // PATCH: /Cars/1/2
         [HttpPatch("{id}/{chargelevel}")]
-        public IActionResult PatchChargelevel(uint id, uint chargelevel)
+        public IActionResult PatchChargelevel(ulong id, uint chargelevel)
         {
             if (ModelState.IsValid && id < 3 && id > 0)
             {
@@ -141,7 +141,7 @@ namespace ecruise.Api.Controllers
 
         // PATCH: /Cars/1/position/2.512/-5.215
         [HttpPatch("{id}/position/{latitude}/{longitude}")]
-        public IActionResult PatchPosition(uint id, double latitude, double longitude)
+        public IActionResult PatchPosition(ulong id, double latitude, double longitude)
         {
             if (ModelState.IsValid && id < 3 && id > 0)
             {
@@ -161,7 +161,7 @@ namespace ecruise.Api.Controllers
 
         // GET: /Cars/closest-to/58/8
         [HttpGet("closest-to/{latitude}/{longitude}", Name = "GetClosestCar")]
-        public IActionResult GetClosestCarChargingStation(uint latitude, uint longitude)
+        public IActionResult GetClosestCarChargingStation(double latitude, double longitude)
         {
             if (ModelState.IsValid && latitude <= 90 && longitude <= 90)
             {

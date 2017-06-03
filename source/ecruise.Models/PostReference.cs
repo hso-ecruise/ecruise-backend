@@ -13,7 +13,7 @@ namespace ecruise.Models
         /// </summary>
         /// <param name="id">The ressource's unique identifier (required)</param>
         /// <param name="url">URL to the ressource (required)</param>
-        public PostReference(uint id, string url)
+        public PostReference(ulong id, string url)
         {
             Id = id;
             Url = url;
@@ -24,7 +24,7 @@ namespace ecruise.Models
         /// </summary>
         /// <value>The ressource's unique identifier</value>
         [Required, Range(1, uint.MaxValue)]
-        public uint Id { get; }
+        public ulong Id { get; }
 
         /// <summary>
         /// URL to the ressource 

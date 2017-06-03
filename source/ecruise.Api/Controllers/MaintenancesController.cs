@@ -23,7 +23,7 @@ namespace ecruise.Api.Controllers
 
         // GET: /Maintenances/5
         [HttpGet("{id}", Name = "GetMaintenance")]
-        public IActionResult Get(uint id)
+        public IActionResult Get(ulong id)
         {
             if (!ModelState.IsValid)
                 return BadRequest(new Error(400, GetModelStateErrorString(),

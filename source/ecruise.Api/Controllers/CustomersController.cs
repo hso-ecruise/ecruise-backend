@@ -30,7 +30,7 @@ namespace ecruise.Api.Controllers
         //         Admins can view all customers.
         // GET: /Customers/5
         [HttpGet("{id}", Name = "GetCustomer")]
-        public IActionResult GetOne(uint id)
+        public IActionResult GetOne(ulong id)
         {
             if (!ModelState.IsValid)
                 return BadRequest(new Error(400, GetModelStateErrorString(),
@@ -46,7 +46,7 @@ namespace ecruise.Api.Controllers
 
         // PATCH: /Customers/5/password
         [HttpPatch("{id}/password", Name = "UpdateCustomerPassword")]
-        public IActionResult UpdatePassword(uint id, [FromBody] string password)
+        public IActionResult UpdatePassword(ulong id, [FromBody] string password)
         {
             // TODO(Lyrex): Implement proper update password method
 
@@ -85,7 +85,7 @@ namespace ecruise.Api.Controllers
 
         // PATCH: /Customers/5/email
         [HttpPatch("{id}/email", Name = "UpdateCustomerEmail")]
-        public IActionResult UpdateEmail(uint id, [FromBody] string email)
+        public IActionResult UpdateEmail(ulong id, [FromBody] string email)
         {
             // TODO(Lyrex): Implement proper update email method
 
@@ -117,7 +117,7 @@ namespace ecruise.Api.Controllers
 
         // PATCH: /Customers/5/phone-number
         [HttpPatch("{id}/phone-number", Name = "UpdateCustomerPhoneNumber")]
-        public IActionResult UpdatePhoneNumber(uint id, [FromBody] string phoneNumber)
+        public IActionResult UpdatePhoneNumber(ulong id, [FromBody] string phoneNumber)
         {
             if (!ModelState.IsValid)
                 return BadRequest(new Error(400, GetModelStateErrorString(),
@@ -136,7 +136,7 @@ namespace ecruise.Api.Controllers
 
         // PATCH: /Customers/5/address
         [HttpPatch("{id}/address", Name = "UpdateCustomerAddress")]
-        public IActionResult UpdateAddress(uint id, [FromBody] Address address)
+        public IActionResult UpdateAddress(ulong id, [FromBody] Address address)
         {
             if (!ModelState.IsValid)
                 return BadRequest(new Error(400, GetModelStateErrorString(),
@@ -164,7 +164,7 @@ namespace ecruise.Api.Controllers
 
         // PATCH: /Customers/5/verified
         [HttpPatch("{id}/verified", Name = "UpdateCustomerVerified")]
-        public IActionResult UpdateVerified(uint id, [FromBody] bool verified)
+        public IActionResult UpdateVerified(ulong id, [FromBody] bool verified)
         {
             if (!ModelState.IsValid)
                 return BadRequest(new Error(400, GetModelStateErrorString(),
@@ -184,7 +184,7 @@ namespace ecruise.Api.Controllers
 
         // PATCH: /Customers/5/chipcarduid
         [HttpPatch("{id}/chipcarduid", Name = "UpdateCustomerChipCardUid")]
-        public IActionResult UpdateChipCardUid(uint id, [FromBody] string chipCardUid)
+        public IActionResult UpdateChipCardUid(ulong id, [FromBody] string chipCardUid)
         {
             if (!ModelState.IsValid)
                 return BadRequest(new Error(400, GetModelStateErrorString(),
