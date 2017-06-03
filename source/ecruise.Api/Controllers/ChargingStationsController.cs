@@ -38,21 +38,17 @@ namespace ecruise.Api.Controllers
         [HttpGet("{id}", Name = "GetChargingStation")]
         public IActionResult Get(uint id)
         {
-            if (ModelState.IsValid && id < 3)
-            {
-                ChargingStation station1 = new ChargingStation(id, 2, 0, 49.485636, 8.4680978);
-                return Ok(station1);
-            }
-            else if (ModelState.IsValid && (id >= 3 || id == 0))
-            {
-                return NotFound(new Error(1, "ChargingStation with requested charging station id does not exist.",
+            if (!ModelState.IsValid)
+                return BadRequest(new Error(400, GetModelStateErrorString(),
                     "An error occured. Please check the message for further information."));
-            }
+
+            DbChargingStation chargingStation = Context.ChargingStations.Find(id);
+
+            if (chargingStation == null)
+                return NotFound(new Error(201, "ChargingStation with requested id does not exist.",
+                    $"There is no maintenance that has the id {id}."));
             else
-            {
-                return BadRequest(new Error(1, "The id given was not formatted correctly. Id has to be unsinged int",
-                    "An error occured. Please check the message for further information."));
-            }
+                return Ok(chargingStation);
         }
 
         // GET: /ChargingStations/closest-to/58/8
