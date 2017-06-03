@@ -76,20 +76,22 @@ namespace ecruise.Api.Controllers
         [HttpPatch("{id}/paid")]
         public IActionResult Patch(uint id, [FromBody] bool paid)
         {
-            if (ModelState.IsValid && id < 3 && id > 0)
-            {
-                return Ok(new PostReference(id, $"{BasePath}/invoices/{id}"));
-            }
-            else if (ModelState.IsValid && id >= 3)
-            {
-                return NotFound(new Error(1, "Invoice with requested Invoice does not exist.",
+            if (!ModelState.IsValid)
+                return BadRequest(new Error(400, GetModelStateErrorString(),
                     "An error occured. Please check the message for further information."));
-            }
-            else
+
+            DbInvoice invoice = Context.Invoices.Find(id);
+            if (invoice == null)
+                return NotFound(new Error(201, "Invoice with requested id does not exist.",
+                    $"There is no trip that has the id {id}."));
+
+            using (var transaction = Context.Database.BeginTransaction())
             {
-                return BadRequest(new Error(1, "The id given was not formatted correctly. Id has to be unsinged int",
-                    "An error occured. Please check the message for further information."));
+                invoice.Payed = paid;
+                transaction.Commit();
             }
+
+            return Ok(new PostReference(id, $"{BasePath}/invoices/{id}"));
         }
 
         // GET: /invoices/1/items
