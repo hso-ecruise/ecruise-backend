@@ -6,10 +6,10 @@ namespace ecruise.Database.Models
 {
     public partial class Booking
     {
-        public uint BookingId { get; set; }
-        public uint CustomerId { get; set; }
-        public uint? TripId { get; set; }
-        public uint? InvoiceItemId { get; set; }
+        public ulong BookingId { get; set; }
+        public ulong CustomerId { get; set; }
+        public ulong? TripId { get; set; }
+        public ulong? InvoiceItemId { get; set; }
         public double BookedPositionLatitude { get; set; }
         public double BookedPositionLongitude { get; set; }
         public DateTime BookingDate { get; set; }

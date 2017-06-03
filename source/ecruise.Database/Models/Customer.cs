@@ -12,7 +12,7 @@ namespace ecruise.Database.Models
             Invoice = new HashSet<Invoice>();
         }
 
-        public uint CustomerId { get; set; }
+        public ulong CustomerId { get; set; }
         public string PasswordHash { get; set; }
         public string PasswordSalt { get; set; }
         public string Email { get; set; }

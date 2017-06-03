@@ -2,7 +2,7 @@
 {
     public partial class Configuration
     {
-        public uint ConfigurationId { get; set; }
+        public ulong ConfigurationId { get; set; }
         public bool AllowNewBookings { get; set; }
     }
 }
