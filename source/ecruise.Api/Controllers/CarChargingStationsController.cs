@@ -104,12 +104,12 @@ namespace ecruise.Api.Controllers
                 {
                     // Check object for logical validity
                     // Check car
-                    if (Context.Customers.Find(carChargingStation.CarId) == null)
+                    if (Context.Customers.Find((ulong)carChargingStation.CarId) == null)
                         return NotFound(new Error(202, "The car referenced in the given object does not exist.",
                             "The referenced car must already exist to create a new car chargingstation."));
 
                     // Check charging station
-                    if (Context.Customers.Find(carChargingStation.ChargingStationId) == null)
+                    if (Context.Customers.Find((ulong)carChargingStation.ChargingStationId) == null)
                         return NotFound(new Error(202, "The chargingstation referenced in the given object does not exist.",
                             "The referenced chargingstation must already exist to create a new car chargingstation."));
 

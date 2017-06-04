@@ -69,7 +69,7 @@ namespace ecruise.Api.Controllers
                 {
                     // Check booking for logical validity
                     // Check customer
-                    if (Context.Customers.Find(booking.CustomerId) == null)
+                    if (Context.Customers.Find((ulong)booking.CustomerId) == null)
                         return NotFound(new Error(202, "The customer id referenced in the booking does not exist.",
                             "An error occured. Please check the message for further information."));
 

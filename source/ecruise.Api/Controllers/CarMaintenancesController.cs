@@ -78,18 +78,18 @@ namespace ecruise.Api.Controllers
                 {
                     // Check car maintenace for logical validity
                     // Check car
-                    if (Context.Customers.Find(carMaintenance.CarId) == null)
+                    if (Context.Customers.Find((ulong)carMaintenance.CarId) == null)
                         return NotFound(new Error(202, "The car referenced in the given object does not exist.",
                             "The referenced car must already exist to create a new car maintenance."));
 
                     // Check maintenance
-                    if (Context.Customers.Find(carMaintenance.MaintenanceId) == null)
+                    if (Context.Customers.Find((ulong)carMaintenance.MaintenanceId) == null)
                         return NotFound(new Error(202, "The maintenance referenced in the given object does not exist.",
                             "The referenced maintenace must already exist to create a new car maintenance."));
 
                     // Check invoice item if set
                     if(carMaintenance.InvoiceItemId != null)
-                        if (Context.Customers.Find(carMaintenance.MaintenanceId) == null)
+                        if (Context.Customers.Find((ulong)carMaintenance.MaintenanceId) == null)
                             return NotFound(new Error(202, "The invoice item referenced in the given object does not exist.",
                                 "The referenced invoice item does not have to exist to create a new car maintenance."));
 
