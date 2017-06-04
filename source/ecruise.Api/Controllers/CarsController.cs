@@ -16,8 +16,10 @@ namespace ecruise.Api.Controllers
         [HttpGet(Name = "GetAllCars")]
         public IActionResult GetAll()
         {
+            // create a list of all cars
             ImmutableList<DbCar> cars = Context.Cars.ToImmutableList();
 
+            // return 203 No Content if there are no cars
             if (cars.Count == 0)
                 return NoContent();
 
@@ -29,13 +31,21 @@ namespace ecruise.Api.Controllers
         [HttpPost(Name = "CreateCar")]
         public IActionResult Post([FromBody] Car car)
         {
+            // forbid if not admin
+            if (!HasAccess())
+                return Forbid();
+
+            // validate user input
             if (!ModelState.IsValid)
                 return BadRequest(new Error(400, GetModelStateErrorString(),
                     "An error occured. Please check the message for further information."));
 
+            // create the db car to be inserted
             DbCar insertCar = CarAssembler.AssembleEntity(0, car);
 
+            // insert db car into database
             var inserted = Context.Cars.Add(insertCar);
+
             Context.SaveChanges();
 
             return Created($"{BasePath}/cars/{inserted.Entity.CarId}",
@@ -46,35 +56,46 @@ namespace ecruise.Api.Controllers
         [HttpGet("{id}", Name = "GetCar")]
         public IActionResult Get(ulong id)
         {
+            // validate user input
             if (!ModelState.IsValid)
                 return BadRequest(new Error(400, GetModelStateErrorString(),
                     "An error occured. Please check the message for further information."));
 
+            // find the requested car
             DbCar car = Context.Cars.Find(id);
 
+            // return error if car was not found
             if (car == null)
                 return NotFound(new Error(201, "Car with requested id does not exist.",
                     $"There is no maintenance that has the id {id}."));
 
-            else
-                return Ok(CarAssembler.AssembleModel(car));
+            return Ok(CarAssembler.AssembleModel(car));
         }
 
         // PATCH: /Cars/1/chargingState
         [HttpPatch("{id}/chargingState")]
         public IActionResult PatchChargingState(ulong id, [FromBody] Car.ChargingStateEnum chargingState)
         {
+            // forbid if not admin
+            if (!HasAccess())
+                return Forbid();
+
+            // validate user input
             if (!ModelState.IsValid)
                 return BadRequest(new Error(400, GetModelStateErrorString(),
                     "An error occured. Please check the message for further information."));
 
+            // find the requested car
             DbCar car = Context.Cars.Find(id);
 
+            // return error if car was not found
             if (car == null)
                 return NotFound(new Error(201, "Car with requested id does not exist.",
                     $"There is no car that has the id {id}."));
 
+            // update the car's charging state
             car.ChargingState = CarAssembler.EnumToStringChargingState(chargingState);
+
             Context.SaveChanges();
 
             return Ok(new PostReference(id, $"{BasePath}/cars/{id}"));
@@ -84,17 +105,26 @@ namespace ecruise.Api.Controllers
         [HttpPatch("{id}/bookingState")]
         public IActionResult PatchBookingState(ulong id, [FromBody] Car.BookingStateEnum bookingState)
         {
+            // forbid if not admin
+            if (!HasAccess())
+                return Forbid();
+
+            // validate user input
             if (!ModelState.IsValid)
                 return BadRequest(new Error(400, GetModelStateErrorString(),
                     "An error occured. Please check the message for further information."));
 
+            // find the requested car
             DbCar car = Context.Cars.Find(id);
 
+            // return error if car was not found
             if (car == null)
                 return NotFound(new Error(201, "Car with requested id does not exist.",
                     $"There is no car that has the id {id}."));
 
+            // update the car's booking state
             car.BookingState = CarAssembler.EnumToStringBookingState(bookingState);
+
             Context.SaveChanges();
 
             return Ok(new PostReference(id, $"{BasePath}/cars/{id}"));
@@ -104,17 +134,26 @@ namespace ecruise.Api.Controllers
         [HttpPatch("{id}/mileage")]
         public IActionResult PatchMileage(ulong id, [FromBody] uint mileage)
         {
+            // forbid if not admin
+            if (!HasAccess())
+                return Forbid();
+
+            // validate user input
             if (!ModelState.IsValid)
                 return BadRequest(new Error(400, GetModelStateErrorString(),
                     "An error occured. Please check the message for further information."));
 
+            // find the requested car
             DbCar car = Context.Cars.Find(id);
 
+            // return error if car was not found
             if (car == null)
                 return NotFound(new Error(201, "Car with requested id does not exist.",
                     $"There is no car that has the id {id}."));
 
+            // update the car's mileage
             car.Milage = mileage;
+
             Context.SaveChanges();
 
             return Ok(new PostReference(id, $"{BasePath}/cars/{id}"));
@@ -124,17 +163,26 @@ namespace ecruise.Api.Controllers
         [HttpPatch("{id}/chargelevel")]
         public IActionResult PatchChargelevel(ulong id, [FromBody] double chargelevel)
         {
+            // forbid if not admin
+            if (!HasAccess())
+                return Forbid();
+
+            // validate user input
             if (!ModelState.IsValid)
                 return BadRequest(new Error(400, GetModelStateErrorString(),
                     "An error occured. Please check the message for further information."));
 
+            // find the requested car
             DbCar car = Context.Cars.Find(id);
 
+            // return error if car was not found
             if (car == null)
                 return NotFound(new Error(201, "Car with requested id does not exist.",
                     $"There is no car that has the id {id}."));
 
+            // update the car's charge level
             car.ChargeLevel = chargelevel;
+
             Context.SaveChanges();
 
             return Ok(new PostReference(id, $"{BasePath}/cars/{id}"));
@@ -144,20 +192,33 @@ namespace ecruise.Api.Controllers
         [HttpPatch("{id}/position/{latitude}/{longitude}")]
         public IActionResult PatchPosition(ulong id, double latitude, double longitude)
         {
+            // forbid if not admin
+            if (!HasAccess())
+                return Forbid();
+
+            // validate user input
             if (!ModelState.IsValid)
                 return BadRequest(new Error(400, GetModelStateErrorString(),
                     "An error occured. Please check the message for further information."));
 
+            // find the requested car
             DbCar car = Context.Cars.Find(id);
 
+            // return error if car was not found
             if (car == null)
                 return NotFound(new Error(201, "Car with requested id does not exist.",
                     $"There is no car that has the id {id}."));
 
-            car.LastKnownPositionLatitude = latitude;
-            car.LastKnownPositionLongitude = longitude;
-            car.LastKnownPositionDate = DateTime.UtcNow;
-            Context.SaveChanges();
+            // update the car's last known position and the associated date
+            using (var transaction = Context.Database.BeginTransaction())
+            { 
+                car.LastKnownPositionLatitude = latitude;
+                car.LastKnownPositionLongitude = longitude;
+                car.LastKnownPositionDate = DateTime.UtcNow;
+
+                transaction.Commit();
+                Context.SaveChanges();
+            }
 
             return Ok(new PostReference(id, $"{BasePath}/cars/{id}"));
         }
@@ -165,12 +226,14 @@ namespace ecruise.Api.Controllers
         // GET: /Cars/closest-to/58/8?radius=100
         // ReSharper disable PossibleInvalidOperationException
         [HttpGet(@"closest-to/{latitude}/{longitude}", Name = "GetClosestCar")]
-        public IActionResult GetClosestCarChargingStation(double latitude, double longitude, [FromQuery]int radius)
+        public IActionResult GetClosestCarChargingStation(double latitude, double longitude, [FromQuery] int radius)
         {
+            // validate user input
             if (!ModelState.IsValid)
                 return BadRequest(new Error(400, GetModelStateErrorString(),
                     "An error occured. Please check the message for further information."));
 
+            // get a list of all cars with a known position
             ImmutableList<DbCar> dbcars = Context.Cars
                 .Where(c => c.LastKnownPositionLatitude != null && c.LastKnownPositionLongitude != null)
                 .ToImmutableList();
@@ -188,7 +251,7 @@ namespace ecruise.Api.Controllers
                         c.LastKnownPositionLongitude.Value)))
                     .ToImmutableList();
 
-            // check if there are any matching cars
+            // return 203 No Content if there are no matching cars
             if (dbcars.Count == 0)
                 return NoContent();
 
