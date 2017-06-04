@@ -88,6 +88,9 @@ namespace ecruise.Api.Controllers
                     // Construct entity from model
                     Database.Models.Booking bookingEntity = BookingAssembler.AssembleEntity(0, booking);
 
+                    // Set booking date to current time
+                    bookingEntity.BookingDate = DateTime.UtcNow;
+
                     // Save to database
                     Context.Bookings.Add(bookingEntity);
                     Context.SaveChanges();
