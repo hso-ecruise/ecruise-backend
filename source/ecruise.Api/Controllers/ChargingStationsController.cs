@@ -15,8 +15,10 @@ namespace ecruise.Api.Controllers
         [HttpGet(Name = "GetAllChargingStations")]
         public IActionResult GetAll()
         {
+            // create a list of all charging stations
             ImmutableList<DbChargingStation> chargingStations = Context.ChargingStations.ToImmutableList();
 
+            // return 203 No Content if there are no charging stations
             if (chargingStations.Count == 0)
                 return NoContent();
 
@@ -27,13 +29,21 @@ namespace ecruise.Api.Controllers
         [HttpPost(Name = "CreateChargingStation")]
         public IActionResult Post([FromBody] ChargingStation chargingStation)
         {
+            // forbid if not admin
+            if (!HasAccess())
+                return Forbid();
+
+            // validate user input
             if (!ModelState.IsValid)
                 return BadRequest(new Error(400, GetModelStateErrorString(),
                     "An error occured. Please check the message for further information."));
 
+            // create db charging station to be inserted
             DbChargingStation insertChargingStation = ChargingStationAssembler.AssembleEntity(0, chargingStation);
 
+            // insert charging station into db
             var inserted = Context.ChargingStations.Add(insertChargingStation);
+
             Context.SaveChanges();
 
             return Created($"{BasePath}/ChargingStations/{inserted.Entity.ChargingStationId}",
@@ -45,34 +55,42 @@ namespace ecruise.Api.Controllers
         [HttpGet("{id}", Name = "GetChargingStation")]
         public IActionResult Get(ulong id)
         {
+            // validate user input
             if (!ModelState.IsValid)
                 return BadRequest(new Error(400, GetModelStateErrorString(),
                     "An error occured. Please check the message for further information."));
 
+            // find the requested charging station
             DbChargingStation chargingStation = Context.ChargingStations.Find(id);
 
+            // return error if charging station was not found
             if (chargingStation == null)
                 return NotFound(new Error(201, "ChargingStation with requested id does not exist.",
                     $"There is no maintenance that has the id {id}."));
-            else
-                return Ok(chargingStation);
+
+            return Ok(chargingStation);
         }
 
         // GET: /ChargingStations/closest-to/58/8
         [HttpGet("closest-to/{latitude}/{longitude}", Name = "GetClosestChargingStation")]
         public IActionResult GetClosestChargingStation(double latitude, double longitude)
         {
+            // validate user input
             if (!ModelState.IsValid)
                 return BadRequest(new Error(400, GetModelStateErrorString(),
                     "An error occured. Please check the message for further information."));
 
+            // get a list of all charging stations
             ImmutableList<DbChargingStation> dbcs = Context.ChargingStations.ToImmutableList();
 
             // check if there are any charging stations
             if (dbcs.Count == 0)
                 return NoContent();
 
+            // create a location object of the requested location
             GeoCoordinate destination = new GeoCoordinate(latitude, longitude);
+
+            // find the closest charging station
             DbChargingStation closest =
                 dbcs.OrderBy(cs => destination.GetDistanceTo(new GeoCoordinate(cs.Latitude, cs.Longitude)))
                     .FirstOrDefault();
