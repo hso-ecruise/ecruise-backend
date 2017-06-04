@@ -1,10 +1,11 @@
 using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 using Microsoft.AspNetCore.Mvc;
-
+using Microsoft.AspNetCore.Authorization;
 using ecruise.Models;
 using ecruise.Models.Assemblers;
 using DbCustomer = ecruise.Database.Models.Customer;
@@ -18,6 +19,10 @@ namespace ecruise.Api.Controllers
         [HttpGet(Name = "GetAllCustomers")]
         public IActionResult GetAll()
         {
+            // forbid if not admin
+            if (!HasAccess())
+                return Forbid();
+
             List<DbCustomer> customers = Context.Customers.ToList();
             if (customers.Count == 0)
                 return NoContent();
@@ -31,6 +36,10 @@ namespace ecruise.Api.Controllers
         [HttpGet("{id}", Name = "GetCustomer")]
         public IActionResult GetOne(ulong id)
         {
+            // forbid if user is accessing different user's ressources
+            if (!HasAccess(id))
+                return Forbid();
+
             if (!ModelState.IsValid)
                 return BadRequest(new Error(400, GetModelStateErrorString(),
                     "An error occured. Please check the message for further information."));
@@ -47,6 +56,10 @@ namespace ecruise.Api.Controllers
         [HttpPatch("{id}/password", Name = "UpdateCustomerPassword")]
         public IActionResult UpdatePassword(ulong id, [FromBody] string password)
         {
+            // forbid if user is accessing different user's ressources
+            if (!HasAccess(id))
+                return Forbid();
+
             // TODO(Lyrex): Implement proper update password method
 
             if (!ModelState.IsValid)
@@ -87,6 +100,10 @@ namespace ecruise.Api.Controllers
         [HttpPatch("{id}/email", Name = "UpdateCustomerEmail")]
         public IActionResult UpdateEmail(ulong id, [FromBody] string email)
         {
+            // forbid if user is accessing different user's ressources
+            if (!HasAccess(id))
+                return Forbid();
+
             // TODO(Lyrex): Implement proper update email method
 
             if (!ModelState.IsValid)
@@ -120,6 +137,10 @@ namespace ecruise.Api.Controllers
         [HttpPatch("{id}/phone-number", Name = "UpdateCustomerPhoneNumber")]
         public IActionResult UpdatePhoneNumber(ulong id, [FromBody] string phoneNumber)
         {
+            // forbid if user is accessing different user's ressources
+            if (!HasAccess(id))
+                return Forbid();
+
             if (!ModelState.IsValid)
                 return BadRequest(new Error(400, GetModelStateErrorString(),
                     "An error occured. Please check the message for further information."));
@@ -139,6 +160,10 @@ namespace ecruise.Api.Controllers
         [HttpPatch("{id}/address", Name = "UpdateCustomerAddress")]
         public IActionResult UpdateAddress(ulong id, [FromBody] Address address)
         {
+            // forbid if user is accessing different user's ressources
+            if (!HasAccess(id))
+                return Forbid();
+
             if (!ModelState.IsValid)
                 return BadRequest(new Error(400, GetModelStateErrorString(),
                     "An error occured. Please check the message for further information."));
@@ -167,6 +192,10 @@ namespace ecruise.Api.Controllers
         [HttpPatch("{id}/verified", Name = "UpdateCustomerVerified")]
         public IActionResult UpdateVerified(ulong id, [FromBody] bool verified)
         {
+            // forbid if user is accessing different user's ressources
+            if (!HasAccess(id))
+                return Forbid();
+
             if (!ModelState.IsValid)
                 return BadRequest(new Error(400, GetModelStateErrorString(),
                     "An error occured. Please check the message for further information."));
@@ -187,6 +216,10 @@ namespace ecruise.Api.Controllers
         [HttpPatch("{id}/chipcarduid", Name = "UpdateCustomerChipCardUid")]
         public IActionResult UpdateChipCardUid(ulong id, [FromBody] string chipCardUid)
         {
+            // forbid if user is accessing different user's ressources
+            if (!HasAccess(id))
+                return Forbid();
+
             if (!ModelState.IsValid)
                 return BadRequest(new Error(400, GetModelStateErrorString(),
                     "An error occured. Please check the message for further information."));
@@ -210,7 +243,13 @@ namespace ecruise.Api.Controllers
                 return BadRequest(new Error(400, GetModelStateErrorString(),
                     "An error occured. Please check the message for further information."));
 
-            List<DbCustomer> customers = Context.Customers.Where(c => c.LastName == name).ToList();
+            ImmutableList<DbCustomer> customers = Context.Customers
+                // only query customers, the current customer has access to
+                .Where(c => c.CustomerId == AuthentificatedCustomerId || AuthentificatedCustomerId == 1)
+                // query customers by last name
+                .Where(c => c.LastName == name)
+                .ToImmutableList();
+
             if (customers.Count == 0)
                 return NoContent();
 
