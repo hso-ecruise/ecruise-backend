@@ -15,6 +15,10 @@ namespace ecruise.Api.Controllers
         [HttpGet(Name = "GetAllStatistics")]
         public IActionResult Get()
         {
+            // forbid if not admin
+            if (!HasAccess())
+                return Forbid();
+
             try
             {
                 List<Statistic> list = new List<Statistic>()
@@ -36,6 +40,10 @@ namespace ecruise.Api.Controllers
         [HttpGet("{date}", Name = "GetStatisticByDate")]
         public IActionResult Get(string date)
         {
+            // forbid if not admin
+            if (!HasAccess())
+                return Forbid();
+
             // Transform string to date
             DateTime requestedDateTime;
             if (DateTime.TryParseExact(date, @"yyyy-MM-dd\THH:mm:ss.fff\Z", CultureInfo.InvariantCulture,
