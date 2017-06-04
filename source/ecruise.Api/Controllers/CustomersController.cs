@@ -5,11 +5,10 @@ using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
 using ecruise.Models;
 using ecruise.Models.Assemblers;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-
 using DbCustomer = ecruise.Database.Models.Customer;
 
 namespace ecruise.Api.Controllers
@@ -46,7 +45,7 @@ namespace ecruise.Api.Controllers
             if (!ModelState.IsValid)
                 return BadRequest(new Error(400, GetModelStateErrorString(),
                     "An error occured. Please check the message for further information."));
-            
+
             // find the requested customer
             DbCustomer customer = Context.Customers.Find(id);
 
@@ -249,7 +248,7 @@ namespace ecruise.Api.Controllers
             // forbid if user is accessing different user's ressources
             if (!HasAccess(id))
                 return new ForbidResult();
-            
+
             // validate user input
             if (!ModelState.IsValid)
                 return BadRequest(new Error(400, GetModelStateErrorString(),
@@ -273,19 +272,19 @@ namespace ecruise.Api.Controllers
 
         // GET: /Customers/by-lastname/5
         [HttpGet("by-lastname/{name}", Name = "GetCustomerByLastName")]
-        public IActionResult GetCustomerByLastName(string name)
+        public async Task<IActionResult> GetCustomerByLastName(string name)
         {
             // validate user input
             if (!ModelState.IsValid)
                 return BadRequest(new Error(400, GetModelStateErrorString(),
                     "An error occured. Please check the message for further information."));
 
-            ImmutableList<DbCustomer> customers = Context.Customers
+            List<DbCustomer> customers = await Context.Customers
                 // only query customers, the current customer has access to
                 .Where(c => c.CustomerId == AuthenticatedCustomerId || AuthenticatedCustomerId == 1)
                 // query customers by last name
                 .Where(c => c.LastName == name)
-                .ToImmutableList();
+                .ToListAsync();
 
             // return 203 No Content if there are no matching customers
             if (customers.Count == 0)
