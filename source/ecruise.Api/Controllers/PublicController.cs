@@ -5,11 +5,14 @@ using System.Text;
 using Microsoft.AspNetCore.Mvc;
 using ecruise.Models;
 using ecruise.Models.Assemblers;
+using Microsoft.AspNetCore.Authorization;
+
 using DbCustomer = ecruise.Database.Models.Customer;
 using DbCustomerToken = ecruise.Database.Models.CustomerToken;
 
 namespace ecruise.Api.Controllers
 {
+    [AllowAnonymous]
     public class PublicController : BaseController
     {
         // POST: /public/login/login@ecruise.me
