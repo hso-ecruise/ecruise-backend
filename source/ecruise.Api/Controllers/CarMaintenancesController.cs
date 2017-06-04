@@ -5,6 +5,7 @@ using ecruise.Models.Assemblers;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
+using System.Linq;
 
 namespace ecruise.Api.Controllers
 {
@@ -56,7 +57,7 @@ namespace ecruise.Api.Controllers
                     return Ok(CarMaintenanceAssembler.AssembleModel(carMaintenance));
 
                 else
-                    return NotFound(new Error(201, "A car maintenance with requested booking id does not exist.",
+                    return NotFound(new Error(201, "A car maintenance with requested id does not exist.",
                         "An error occured. Please check the message for further information."));
             }
             catch(Exception e)
@@ -133,33 +134,34 @@ namespace ecruise.Api.Controllers
         [HttpPatch("{id}/completed-date")]
         public IActionResult Patch(ulong id, [FromBody] string date)
         {
-            if (ModelState.IsValid && id < 3 && id > 0)
+            // Transform string to date
+            DateTime newCompletedDateTime;
+            if (DateTime.TryParseExact(date, @"yyyy-MM-dd\THH:mm:ss.fff\Z", CultureInfo.InvariantCulture,
+                DateTimeStyles.AssumeUniversal, out newCompletedDateTime))
             {
-                DateTime plannedDate;
+                // Check given date for logical validity
+                if(newCompletedDateTime.ToUniversalTime() > DateTime.UtcNow)
+                    return BadRequest(new Error(302, "Completed date must be in the past.",
+                        "The given date wasn't set properly. Please check the message for further information."));
 
-                if (DateTime.TryParseExact(date, @"yyyy-MM-dd\THH:mm:ss.fff\Z", CultureInfo.InvariantCulture, 
-                    DateTimeStyles.AssumeUniversal, out plannedDate))
-                {
-                    CarMaintenance cm = new CarMaintenance(2, 1, 2, null, plannedDate, null);
+                // Get the specified car maintenance
+                var carMaintenance = Context.CarMaintenances.Find(id);
 
-                    return Ok(new PostReference(cm.CarMaintenanceId, $"{BasePath}/CarMaintenances"));
-                }
-                else
-                {
-                    return BadRequest(new Error(1, "The date given was not formatted correctly. Date must be in following format: 'yyyy-MM-ddTHH:mm:ss.zzzZ'",
+                if(carMaintenance == null)
+                    return NotFound(new Error(201, "A car maintenance with requested id does not exist.",
                         "An error occured. Please check the message for further information."));
-                }
-                 
-            }
-            else if (ModelState.IsValid && id >= 3)
-            {
-                return NotFound(new Error(1, "CarMaintenance with requested id does not exist.",
-                    "An error occured. Please check the message for further information."));
+
+                // Patch completed date and save the change
+                carMaintenance.CompletedDate = newCompletedDateTime;
+                Context.SaveChangesAsync();
+
+                // Return a reference to the patch object
+                return Ok(new PostReference(id, $"{BasePath}/carmaintenances/{id}"));
             }
             else
             {
-                return BadRequest(new Error(1, "The id given was not formatted correctly. Id must be unsigned int",
-                    "An error occured. Please check the message for further information."));
+                return BadRequest(new Error(301, "The date given was not formatted correctly.",
+                    "Date must always be in following format: 'yyyy-MM-ddTHH:mm:ss.zzzZ'"));
             }
         }
 
@@ -167,26 +169,28 @@ namespace ecruise.Api.Controllers
         [HttpGet("by-car/{id}", Name = "GetCarMaintenancesByCar")]
         public IActionResult GetByCarId(ulong id)
         {
-            if (ModelState.IsValid && id < 3 && id > 0)
+            try
             {
-                CarMaintenance cm1 = new CarMaintenance(1, 1, 1, null, null, null);
-                CarMaintenance cm2 = new CarMaintenance(2, 1, 1, null, null, null);
+                if (ModelState.IsValid)
+                {
+                    // Get all entities with the given car id
+                    var carMaintenanceEntities = Context.CarMaintenances.Where(cm => cm.CarId == id).ToImmutableList();
 
-                return Ok(new List<CarMaintenance> { cm1, cm2 });
+                    if (carMaintenanceEntities.Count < 1)
+                        return NoContent();
+
+                    // Convert them to models and return OK
+                    return Ok(CarMaintenanceAssembler.AssembleModelList(carMaintenanceEntities));
+                }
+                else
+                    return BadRequest(new Error(301, GetModelStateErrorString(),
+                        "The given id could not be converted. Please check the message for further information."));
             }
-            else if (ModelState.IsValid && id >= 3 && id < 6)
+            catch (Exception e)
             {
-                return NoContent();
-            }
-            else if (ModelState.IsValid && id >= 6)
-            {
-                return NotFound(new Error(1, "CarMaintenance with requested id does not exist.",
-                    "An error occured. Please check the message for further information."));
-            }
-            else
-            {
-                return BadRequest(new Error(1, "The id given was not formatted correctly. Id must be unsigned int",
-                    "An error occured. Please check the message for further information."));
+                // return Internal Server Error (500)
+                return StatusCode(StatusCodes.Status500InternalServerError,
+                    new Error(101, e.Message, "An error occured.Please check the message for further information."));
             }
         }
 
@@ -194,26 +198,28 @@ namespace ecruise.Api.Controllers
         [HttpGet("by-maintenance/{id}", Name = "GetCarMaintenancesByMaintenance")]
         public IActionResult GetByMaintenanceId(ulong id)
         {
-            if (ModelState.IsValid && id < 3 && id > 0)
+            try
             {
-                CarMaintenance cm1 = new CarMaintenance(1, 1, 1, null, null, null);
-                CarMaintenance cm2 = new CarMaintenance(2, 1, 1, null, null, null);
+                if (ModelState.IsValid)
+                {
+                    // Get all entities with the given car id
+                    var carMaintenanceEntities = Context.CarMaintenances.Where(cm => cm.MaintenanceId == id).ToImmutableList();
 
-                return Ok(new List<CarMaintenance> {cm1, cm2});
+                    if (carMaintenanceEntities.Count < 1)
+                        return NoContent();
+
+                    // Convert them to models and return OK
+                    return Ok(CarMaintenanceAssembler.AssembleModelList(carMaintenanceEntities));
+                }
+                else
+                    return BadRequest(new Error(301, GetModelStateErrorString(),
+                        "The given id could not be converted. Please check the message for further information."));
             }
-            else if (ModelState.IsValid && id >= 3 && id < 6)
+            catch (Exception e)
             {
-                return NoContent();
-            }
-            else if (ModelState.IsValid && id >= 6)
-            {
-                return NotFound(new Error(1, "Maintenance with requested id does not exist.",
-                    "An error occured. Please check the message for further information."));
-            }
-            else
-            {
-                return BadRequest(new Error(1, "The id given was not formatted correctly. Id must be unsigned int",
-                    "An error occured. Please check the message for further information."));
+                // return Internal Server Error (500)
+                return StatusCode(StatusCodes.Status500InternalServerError,
+                    new Error(101, e.Message, "An error occured.Please check the message for further information."));
             }
         }
 
@@ -221,23 +227,29 @@ namespace ecruise.Api.Controllers
         [HttpGet("by-invoice-item/{id}", Name = "GetCarMaintenanceByInvoiceItem")]
         public IActionResult GetByInvoiceItemId(ulong id)
         {
-            if (ModelState.IsValid && id < 3 && id > 0)
+            try
             {
-                return Ok(new CarMaintenance(1, 1, 1, 1, null, null));
+                if (ModelState.IsValid)
+                {
+                    // Get all entities with the given car id
+                    var carMaintenanceEntities = Context.CarMaintenances
+                        .Where(cm => cm.InvoiceItemId.HasValue && cm.InvoiceItemId.Value == id).ToImmutableList();
+
+                    if (carMaintenanceEntities.Count < 1)
+                        return NoContent();
+
+                    // Convert them to models and return OK
+                    return Ok(CarMaintenanceAssembler.AssembleModelList(carMaintenanceEntities));
+                }
+                else
+                    return BadRequest(new Error(301, GetModelStateErrorString(),
+                        "The given id could not be converted. Please check the message for further information."));
             }
-            else if (ModelState.IsValid && id >= 3 && id < 6)
+            catch (Exception e)
             {
-                return NoContent();
-            }
-            else if (ModelState.IsValid && id >= 6)
-            {
-                return NotFound(new Error(1, "InvoiceItem with requested id does not exist.",
-                    "An error occured. Please check the message for further information."));
-            }
-            else
-            {
-                return BadRequest(new Error(1, "The id given was not formatted correctly. Id must be unsigned int",
-                    "An error occured. Please check the message for further information."));
+                // return Internal Server Error (500)
+                return StatusCode(StatusCodes.Status500InternalServerError,
+                    new Error(101, e.Message, "An error occured.Please check the message for further information."));
             }
         }
     }
