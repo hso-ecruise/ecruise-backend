@@ -19,12 +19,11 @@ namespace ecruise.Api.Controllers
         [HttpGet(Name = "GetAllCustomers")]
         public IActionResult GetAll()
         {
-            // forbid if not admin
-            if (!HasAccess())
-                return Forbid();
-
             // create a list of all customers
-            List<DbCustomer> customers = Context.Customers.ToList();
+            List<DbCustomer> customers = Context.Customers
+                // query only customers the current customer has access to
+                .Where(c => HasAccess(c.CustomerId))
+                .ToList();
 
             // return 203 No Content if there are no customers
             if (customers.Count == 0)
@@ -281,7 +280,7 @@ namespace ecruise.Api.Controllers
 
             List<DbCustomer> customers = await Context.Customers
                 // only query customers, the current customer has access to
-                .Where(c => c.CustomerId == AuthenticatedCustomerId || AuthenticatedCustomerId == 1)
+                .Where(c => HasAccess(c.CustomerId))
                 // query customers by last name
                 .Where(c => c.LastName == name)
                 .ToListAsync();

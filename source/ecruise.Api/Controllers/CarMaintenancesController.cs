@@ -16,6 +16,10 @@ namespace ecruise.Api.Controllers
         [HttpGet(Name = "GetAllCarMaintenances")]
         public IActionResult Get()
         {
+            // forbid if not admin
+            if (!HasAccess())
+                return Forbid();
+
             try
             {
                 // Get all entities from database
@@ -43,6 +47,10 @@ namespace ecruise.Api.Controllers
         [HttpGet("{id}", Name = "GetCarMaintenance")]
         public IActionResult Get(ulong id)
         {
+            // forbid if not admin
+            if (!HasAccess())
+                return Forbid();
+
             try
             {
                 // Check for correct value
@@ -72,6 +80,10 @@ namespace ecruise.Api.Controllers
         [HttpPost]
         public IActionResult Post([FromBody]CarMaintenance carMaintenance)
         {
+            // forbid if not admin
+            if (!HasAccess())
+                return Forbid();
+
             try
             {
                 if (ModelState.IsValid)
@@ -134,6 +146,10 @@ namespace ecruise.Api.Controllers
         [HttpPatch("{id}/completed-date")]
         public IActionResult Patch(ulong id, [FromBody] string date)
         {
+            // forbid if not admin
+            if (!HasAccess())
+                return Forbid();
+
             // Transform string to date
             DateTime newCompletedDateTime;
             if (DateTime.TryParseExact(date, @"yyyy-MM-dd\THH:mm:ss.fff\Z", CultureInfo.InvariantCulture,
@@ -169,6 +185,10 @@ namespace ecruise.Api.Controllers
         [HttpGet("by-car/{id}", Name = "GetCarMaintenancesByCar")]
         public IActionResult GetByCarId(ulong id)
         {
+            // forbid if not admin
+            if (!HasAccess())
+                return Forbid();
+
             try
             {
                 if (ModelState.IsValid)
@@ -198,6 +218,10 @@ namespace ecruise.Api.Controllers
         [HttpGet("by-maintenance/{id}", Name = "GetCarMaintenancesByMaintenance")]
         public IActionResult GetByMaintenanceId(ulong id)
         {
+            // forbid if not admin
+            if (!HasAccess())
+                return Forbid();
+
             try
             {
                 if (ModelState.IsValid)
@@ -227,6 +251,10 @@ namespace ecruise.Api.Controllers
         [HttpGet("by-invoice-item/{id}", Name = "GetCarMaintenanceByInvoiceItem")]
         public IActionResult GetByInvoiceItemId(ulong id)
         {
+            // forbid if not admin
+            if (!HasAccess())
+                return Forbid();
+
             try
             {
                 if (ModelState.IsValid)

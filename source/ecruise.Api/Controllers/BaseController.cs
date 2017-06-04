@@ -44,7 +44,7 @@ namespace ecruise.Api.Controllers
             return (AuthenticatedCustomerId == customerId);
         }
 
-        protected bool HasAccess(uint customerId = 0)
+        protected bool HasAccess(uint customerId)
         {
             return HasAccess((ulong)customerId);
         }

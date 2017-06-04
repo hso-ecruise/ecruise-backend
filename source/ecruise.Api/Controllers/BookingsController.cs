@@ -12,7 +12,6 @@ namespace ecruise.Api.Controllers
 {
     public class BookingsController : BaseController
     {
-
         // GET: /Bookings
         [HttpGet(Name = "GetAllBookings")]
         public IActionResult GetAll()
@@ -20,17 +19,17 @@ namespace ecruise.Api.Controllers
             try
             {
                 // Get all bookings from database
-                var bookings = Context.Bookings.ToImmutableList();
+                var bookings = Context.Bookings
+                    // query only bookings the current customer has access to
+                    .Where(b => HasAccess(b.CustomerId))
+                    .ToImmutableList();
 
                 if (bookings.Count < 1)
                     // Return that there are no results
                     return NoContent();
 
-                else
-                {
-                    // Return found bookings
-                    return Ok(BookingAssembler.AssembleModelList(bookings));
-                }   
+                // Return found bookings
+                return Ok(BookingAssembler.AssembleModelList(bookings));
             }
             catch (Exception e)
             {
@@ -50,18 +49,22 @@ namespace ecruise.Api.Controllers
                     "An error occured. Please check the message for further information."));
 
             // Get booking from database
-            var booking = Context.Bookings.Find(id);    // DEBUG Check for return when no booking found
+            var booking = Context.Bookings.Find(id); // DEBUG Check for return when no booking found
 
-            if (booking != null)
-                return Ok(BookingAssembler.AssembleModel(booking));
+            if (booking == null)
+                return NotFound(new Error(201, "Booking with requested booking id does not exist.",
+                    "An error occured. Please check the message for further information."));
 
-            else
-                return NotFound(new Error(201, "Booking with requested booking id does not exist.", "An error occured. Please check the message for further information."));
+            // forbid if current customer is accessing a different user's booking
+            if (!HasAccess(booking.CustomerId))
+                return Forbid();
+
+            return Ok(BookingAssembler.AssembleModel(booking));
         }
 
         // POST: /Bookings
         [HttpPost(Name = "PostBooking")]
-        public IActionResult Post([FromBody]Booking booking)
+        public IActionResult Post([FromBody] Booking booking)
         {
             try
             {
@@ -72,6 +75,10 @@ namespace ecruise.Api.Controllers
                     if (Context.Customers.Find((ulong)booking.CustomerId) == null)
                         return NotFound(new Error(202, "The customer id referenced in the booking does not exist.",
                             "An error occured. Please check the message for further information."));
+
+                    // forbid if current customer is accessing a different user's booking
+                    if (!HasAccess(booking.CustomerId))
+                        return Forbid();
 
                     // Check planned date if set
                     if (booking.PlannedDate != null && booking.PlannedDate < DateTime.UtcNow.AddMinutes(-5))
@@ -96,7 +103,7 @@ namespace ecruise.Api.Controllers
                     Context.SaveChanges();
 
                     // Get the reference to the newly created entity
-                    PostReference pr = new PostReference((uint) bookingEntity.BookingId,
+                    PostReference pr = new PostReference((uint)bookingEntity.BookingId,
                         $"{BasePath}/bookings/{bookingEntity.BookingId}");
 
                     // Return reference to the new object including the path to it
@@ -123,7 +130,11 @@ namespace ecruise.Api.Controllers
                 if (ModelState.IsValid)
                 {
                     // Get all bookings with the given trip id
-                    var bookingEntities = Context.Bookings.Where(b => b.TripId.HasValue && b.TripId.Value == tripId).ToImmutableList();
+                    var bookingEntities = Context.Bookings
+                        .Where(b => b.TripId.HasValue && b.TripId.Value == tripId)
+                        // query only bookings the current customer has access to
+                        .Where(b => HasAccess(b.CustomerId))
+                        .ToImmutableList();
 
                     if (bookingEntities.Count < 1)
                         return NoContent();
@@ -135,7 +146,7 @@ namespace ecruise.Api.Controllers
                     return BadRequest(new Error(301, GetModelStateErrorString(),
                         "The given id could not be converted. Please check the message for further information."));
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 // return Internal Server Error (500)
                 return StatusCode(StatusCodes.Status500InternalServerError,
@@ -151,6 +162,10 @@ namespace ecruise.Api.Controllers
             {
                 if (ModelState.IsValid)
                 {
+                    // forbid if current customer is accessing a different user's booking
+                    if (!HasAccess(customerId))
+                        return Forbid();
+
                     // Get all bookings with the given trip id
                     var bookingEntities = Context.Bookings.Where(b => b.CustomerId == customerId).ToImmutableList();
 
@@ -183,6 +198,9 @@ namespace ecruise.Api.Controllers
             {
                 // Get all bookings booked at the specified day
                 var matchingbookings = Context.Bookings
+                    // query only bookings the current customer has access to
+                    .Where(b => HasAccess(b.CustomerId))
+                    // filter by date
                     .Where(b => b.BookingDate.ToUniversalTime() == requestedDateTime.ToUniversalTime())
                     .ToImmutableList();
 
@@ -211,7 +229,11 @@ namespace ecruise.Api.Controllers
             {
                 // Get all bookings booked at the specified day
                 var matchingbookings = Context.Bookings
-                    .Where(b => b.PlannedDate.HasValue && b.PlannedDate.Value.ToUniversalTime() == requestedDateTime.ToUniversalTime())
+                    // query only bookings the current customer has access to
+                    .Where(b => HasAccess(b.CustomerId))
+                    // filter by planned date
+                    .Where(b => b.PlannedDate.HasValue && b.PlannedDate.Value.ToUniversalTime() ==
+                                requestedDateTime.ToUniversalTime())
                     .ToImmutableList();
 
                 // Check if any matches were found

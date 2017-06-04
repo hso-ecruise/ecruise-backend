@@ -13,6 +13,10 @@ namespace ecruise.Api.Controllers
         [HttpGet(Name = "GetAllMaintenances")]
         public IActionResult Get()
         {
+            // forbid if not admin
+            if (!HasAccess())
+                return Forbid();
+
             ImmutableList<DbMaintenance> maintenances = Context.Maintenances.ToImmutableList();
 
             if (maintenances.Count == 0)
@@ -25,6 +29,10 @@ namespace ecruise.Api.Controllers
         [HttpGet("{id}", Name = "GetMaintenance")]
         public IActionResult Get(ulong id)
         {
+            // forbid if not admin
+            if (!HasAccess())
+                return Forbid();
+
             if (!ModelState.IsValid)
                 return BadRequest(new Error(400, GetModelStateErrorString(),
                     "An error occured. Please check the message for further information."));
@@ -42,6 +50,10 @@ namespace ecruise.Api.Controllers
         [HttpPost(Name = "CreateMaintenance")]
         public IActionResult Post([FromBody] Maintenance m)
         {
+            // forbid if not admin
+            if (!HasAccess())
+                return Forbid();
+
             if (!ModelState.IsValid)
                 return BadRequest(new Error(400, GetModelStateErrorString(),
                     "An error occured. Please check the message for further information."));

@@ -17,12 +17,11 @@ namespace ecruise.Api.Controllers
         [HttpGet(Name = "GetAllTrips")]
         public IActionResult GetAll()
         {
-            // forbid if not admin
-            if (!HasAccess())
-                return Forbid();
-
             // create a list of all trips
-            ImmutableList<DbTrip> trips = Context.Trips.ToImmutableList();
+            ImmutableList<DbTrip> trips = Context.Trips
+                // query only trips the current customer has access to
+                .Where(t => t.CustomerId == AuthenticatedCustomerId || AuthenticatedCustomerId == 1)
+                .ToImmutableList();
 
             // return 203 No Content if there are no trips
             if (trips.Count == 0)
