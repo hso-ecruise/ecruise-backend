@@ -282,7 +282,7 @@ namespace ecruise.Api.Controllers
 
             ImmutableList<DbCustomer> customers = Context.Customers
                 // only query customers, the current customer has access to
-                .Where(c => c.CustomerId == AuthentificatedCustomerId || AuthentificatedCustomerId == 1)
+                .Where(c => c.CustomerId == AuthenticatedCustomerId || AuthenticatedCustomerId == 1)
                 // query customers by last name
                 .Where(c => c.LastName == name)
                 .ToImmutableList();
