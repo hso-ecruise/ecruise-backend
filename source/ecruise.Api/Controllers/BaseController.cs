@@ -16,7 +16,7 @@ namespace ecruise.Api.Controllers
         protected readonly EcruiseContext Context = Startup.Context;
 
         // TODO: Check if it's persistent over requests or per-request instanciated
-        protected ulong AuthentificatedCustomerId { get; set; }
+        protected ulong AuthenticatedCustomerId { get; set; }
 
         protected string GetModelStateErrorString()
         {
@@ -27,7 +27,7 @@ namespace ecruise.Api.Controllers
 
         public override void OnActionExecuting(ActionExecutingContext context)
         {
-            AuthentificatedCustomerId = GetCustomerIdByToken(Request.Headers["access_token"]);
+            AuthenticatedCustomerId = GetCustomerIdByToken(Request.Headers["access_token"]);
 
             base.OnActionExecuting(context);
         }
@@ -35,14 +35,14 @@ namespace ecruise.Api.Controllers
         protected bool HasAccess(ulong customerId = 0)
         {
             // user is not authentificated
-            if (AuthentificatedCustomerId == 0)
+            if (AuthenticatedCustomerId == 0)
                 return false;
 
             // customerId 1 is admin account
-            if (AuthentificatedCustomerId == 1)
+            if (AuthenticatedCustomerId == 1)
                 return true;
 
-            return (AuthentificatedCustomerId == customerId);
+            return (AuthenticatedCustomerId == customerId);
         }
 
         //public override void OnActionExecuted(ActionExecutedContext context)

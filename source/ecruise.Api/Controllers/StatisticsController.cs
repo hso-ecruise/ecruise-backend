@@ -1,12 +1,9 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using ecruise.Database.Models;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using ecruise.Models;
 using System.Globalization;
+
 using Statistic = ecruise.Models.Statistic;
 
 namespace ecruise.Api.Controllers
