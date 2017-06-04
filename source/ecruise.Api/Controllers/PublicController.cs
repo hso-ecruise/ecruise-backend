@@ -116,8 +116,13 @@ namespace ecruise.Api.Controllers
             // TODO(Lyrex): Implement proper way to create a user (email activation mail, etc.)
 
             if (!ModelState.IsValid)
-                return BadRequest(new Error(401, GetModelStateErrorString(),
+                return BadRequest(new Error(301, GetModelStateErrorString(),
                     "An error occured. Please check the message for further information."));
+
+            // Check if username already in use
+            if(Context.Customers.Any(c => c.Email == r.Email))
+                return BadRequest(new Error(401, "Email address already in use",
+                    "The email you are trying to use to register is already in use."));
 
             // create customer password salt
             string passwordSalt = Guid.NewGuid().ToString().Replace("-", string.Empty).Substring(0, 16);
