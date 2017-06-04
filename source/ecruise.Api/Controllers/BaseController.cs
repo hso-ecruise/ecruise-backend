@@ -15,7 +15,6 @@ namespace ecruise.Api.Controllers
 
         protected readonly EcruiseContext Context = Startup.Context;
 
-        // TODO: Check if it's persistent over requests or per-request instanciated
         protected ulong AuthenticatedCustomerId { get; set; }
 
         protected string GetModelStateErrorString()
