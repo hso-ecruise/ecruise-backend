@@ -80,24 +80,24 @@ namespace ecruise.Api.Controllers
             return Ok(new PostReference(id, $"{BasePath}/cars/{id}"));
         }
 
-        // PATCH: /Cars/1/2
-        [HttpPatch("{id}/{bookingState}")]
+        // PATCH: /Cars/1/bookingState
+        [HttpPatch("{id}/bookingState")]
         public IActionResult PatchBookingState(ulong id, [FromBody] Car.BookingStateEnum bookingState)
         {
-            if (ModelState.IsValid && id < 3 && id > 0)
-            {
-                return Ok(new PostReference(id, $"{BasePath}/Cars/{id}"));
-            }
-            else if (ModelState.IsValid && id >= 3)
-            {
-                return NotFound(new Error(1, "Car with requested id does not exist.",
+            if (!ModelState.IsValid)
+                return BadRequest(new Error(400, GetModelStateErrorString(),
                     "An error occured. Please check the message for further information."));
-            }
-            else
-            {
-                return BadRequest(new Error(1, "The id given was not formatted correctly. Id has to be unsinged int",
-                    "An error occured. Please check the message for further information."));
-            }
+
+            DbCar car = Context.Cars.Find(id);
+
+            if (car == null)
+                return NotFound(new Error(201, "Car with requested id does not exist.",
+                    $"There is no car that has the id {id}."));
+
+            car.BookingState = CarAssembler.EnumToStringBookingState(bookingState);
+            Context.SaveChanges();
+
+            return Ok(new PostReference(id, $"{BasePath}/cars/{id}"));
         }
 
         // PATCH: /Cars/1/2
