@@ -1,13 +1,17 @@
 ﻿using System;
 using ecruise.Api.Middleware;
 using ecruise.Database.Models;
+using ecruise.Models;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 
 // ReSharper disable UnusedMember.Global
 // ReSharper disable ClassNeverInstantiated.Global
@@ -58,6 +62,26 @@ namespace ecruise.Api
             {
                 ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
             });
+
+            // global exception handler
+            #region Exception Handler
+            app.UseExceptionHandler(builder =>
+            {
+                builder.Use(async (context, next) =>
+                {
+                    var error = context.Features[typeof(IExceptionHandlerFeature)] as IExceptionHandlerFeature;
+
+                    if (error?.Error != null)
+                    {
+                        context.Response.StatusCode = 500;
+                        context.Response.ContentType = "application/json";
+                        await context.Response.WriteAsync(JsonConvert.SerializeObject(new Error(500,
+                            "An unexpected exception occured.", error.Error.Message)));
+                    }
+                    else await next();
+                });
+            });
+            #endregion
 
             app.UseCors(builder => builder.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
 
