@@ -144,20 +144,22 @@ namespace ecruise.Api.Controllers
         [HttpPatch("{id}/position/{latitude}/{longitude}")]
         public IActionResult PatchPosition(ulong id, double latitude, double longitude)
         {
-            if (ModelState.IsValid && id < 3 && id > 0)
-            {
-                return Ok(new PostReference(id, $"{BasePath}/Cars/{id}"));
-            }
-            else if (ModelState.IsValid && id >= 3)
-            {
-                return NotFound(new Error(1, "Car with requested id does not exist.",
+            if (!ModelState.IsValid)
+                return BadRequest(new Error(400, GetModelStateErrorString(),
                     "An error occured. Please check the message for further information."));
-            }
-            else
-            {
-                return BadRequest(new Error(1, "The id given was not formatted correctly. Id has to be unsinged int",
-                    "An error occured. Please check the message for further information."));
-            }
+
+            DbCar car = Context.Cars.Find(id);
+
+            if (car == null)
+                return NotFound(new Error(201, "Car with requested id does not exist.",
+                    $"There is no car that has the id {id}."));
+
+            car.LastKnownPositionLatitude = latitude;
+            car.LastKnownPositionLongitude = longitude;
+            car.LastKnownPositionDate = DateTime.UtcNow;
+            Context.SaveChanges();
+
+            return Ok(new PostReference(id, $"{BasePath}/cars/{id}"));
         }
 
         // GET: /Cars/closest-to/58/8?radius=100
