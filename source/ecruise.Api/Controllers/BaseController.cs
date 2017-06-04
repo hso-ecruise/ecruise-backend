@@ -8,7 +8,7 @@ namespace ecruise.Api.Controllers
 {
     [Produces("application/json")]
     [Route("v1/[controller]")]
-    public class BaseController 
+    public class BaseController
         : Controller
     {
         protected const string BasePath = "v1";
@@ -44,6 +44,11 @@ namespace ecruise.Api.Controllers
             return (AuthenticatedCustomerId == customerId);
         }
 
+        protected bool HasAccess(uint customerId = 0)
+        {
+            return HasAccess((ulong)customerId);
+        }
+
         //public override void OnActionExecuted(ActionExecutedContext context)
         //{
         //    if (Context.ChangeTracker.HasChanges())
@@ -60,6 +65,6 @@ namespace ecruise.Api.Controllers
                 .FirstOrDefault(t => t.Token == token);
 
             return customerToken?.CustomerId ?? 0;
-        } 
+        }
     }
 }
