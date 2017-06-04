@@ -27,7 +27,7 @@ namespace ecruise.Api.Controllers
             // create a list of all customers
             List<DbCustomer> customers = Context.Customers.ToList();
 
-            // return 203 NoContent if there are no customers
+            // return 203 No Content if there are no customers
             if (customers.Count == 0)
                 return NoContent();
 
@@ -153,16 +153,22 @@ namespace ecruise.Api.Controllers
             if (!HasAccess(id))
                 return Forbid();
 
+            // validate user input
             if (!ModelState.IsValid)
                 return BadRequest(new Error(400, GetModelStateErrorString(),
                     "An error occured. Please check the message for further information."));
 
+            // find the requested customer
             DbCustomer customer = Context.Customers.Find(id);
+
+            // return error if customer was not found
             if (customer == null)
                 return NotFound(new Error(201, "Customer with requested id does not exist.",
                     $"There is no customer that has the id {id}."));
 
+            // update customer phone number
             customer.PhoneNumber = phoneNumber;
+
             await Context.SaveChangesAsync();
 
             return Ok(new PostReference(id, $"{BasePath}/customer/{id}"));
@@ -176,15 +182,20 @@ namespace ecruise.Api.Controllers
             if (!HasAccess(id))
                 return Forbid();
 
+            // validate user input
             if (!ModelState.IsValid)
                 return BadRequest(new Error(400, GetModelStateErrorString(),
                     "An error occured. Please check the message for further information."));
 
+            // find the requested customer
             DbCustomer customer = Context.Customers.Find(id);
+
+            // return error if customer was not found
             if (customer == null)
                 return NotFound(new Error(201, "Customer with requested id does not exist.",
                     $"There is no customer that has the id {id}."));
 
+            // update the customer address data
             using (var transaction = Context.Database.BeginTransaction())
             {
                 customer.Country = address.Country;
@@ -195,6 +206,7 @@ namespace ecruise.Api.Controllers
                 customer.AddressExtraLine = address.AdressExtraLine;
 
                 transaction.Commit();
+
                 await Context.SaveChangesAsync();
             }
 
@@ -209,17 +221,22 @@ namespace ecruise.Api.Controllers
             if (!HasAccess(id))
                 return Forbid();
 
+            // validate user input
             if (!ModelState.IsValid)
                 return BadRequest(new Error(400, GetModelStateErrorString(),
                     "An error occured. Please check the message for further information."));
 
+            // find the requested customer
             DbCustomer customer = Context.Customers.Find(id);
 
+            // return error if customer was not found
             if (customer == null)
                 return NotFound(new Error(201, "Customer with requested id does not exist.",
                     $"There is no customer that has the id {id}."));
 
+            // update customer verified status
             customer.Verified = verified;
+
             await Context.SaveChangesAsync();
 
             return Ok(new PostReference(1, $"{BasePath}/customer/{customer.CustomerId}"));
@@ -232,17 +249,23 @@ namespace ecruise.Api.Controllers
             // forbid if user is accessing different user's ressources
             if (!HasAccess(id))
                 return new ForbidResult();
-
+            
+            // validate user input
             if (!ModelState.IsValid)
                 return BadRequest(new Error(400, GetModelStateErrorString(),
                     "An error occured. Please check the message for further information."));
 
+            // find the requested customer
             DbCustomer customer = Context.Customers.Find(id);
+
+            // return error if customer was not found
             if (customer == null)
                 return NotFound(new Error(201, "Customer with requested id does not exist.",
                     $"There is no customer that has the id {id}."));
 
+            // update customer chip card uid
             customer.ChipCardUid = chipCardUid;
+
             await Context.SaveChangesAsync();
 
             return Ok(new PostReference(1, $"{BasePath}/customer/{customer.CustomerId}"));
@@ -252,6 +275,7 @@ namespace ecruise.Api.Controllers
         [HttpGet("by-lastname/{name}", Name = "GetCustomerByLastName")]
         public IActionResult GetCustomerByLastName(string name)
         {
+            // validate user input
             if (!ModelState.IsValid)
                 return BadRequest(new Error(400, GetModelStateErrorString(),
                     "An error occured. Please check the message for further information."));
@@ -263,6 +287,7 @@ namespace ecruise.Api.Controllers
                 .Where(c => c.LastName == name)
                 .ToImmutableList();
 
+            // return 203 No Content if there are no matching customers
             if (customers.Count == 0)
                 return NoContent();
 
