@@ -17,6 +17,10 @@ namespace ecruise.Api.Controllers
         [HttpGet(Name = "GetAllCarChargingStations")]
         public IActionResult GetAllCharChargingStations()
         {
+            // forbid if not admin
+            if (!HasAccess())
+                return Forbid();
+
             try
             {
                 // Get all entities from database
@@ -44,19 +48,25 @@ namespace ecruise.Api.Controllers
         [HttpGet("by-car/{carId}", Name = "GetCarChargingStationsByCar")]
         public IActionResult GetByCarId(ulong carId)
         {
+            // forbid if not admin
+            if (!HasAccess())
+                return Forbid();
+
             try
             {
                 // Check for correct value
                 if (!ModelState.IsValid)
-                    return BadRequest(new Error(301, "The id given was not formatted correctly. Id must be unsigned int",
+                    return BadRequest(new Error(301,
+                        "The id given was not formatted correctly. Id must be unsigned int",
                         "An error occured. Please check the message for further information."));
 
                 // Get matching car chargingstation entities from database
-                var carChargingStations = Context.CarChargingStations.Where(ccs => ccs.CarId == carId).ToImmutableList();
+                var carChargingStations = Context.CarChargingStations.Where(ccs => ccs.CarId == carId)
+                    .ToImmutableList();
 
                 if (carChargingStations == null || carChargingStations.Count < 1)
                     return NoContent();
-                
+
                 return Ok(CarChargingStationAssembler.AssembleModelList(carChargingStations));
             }
             catch (Exception e)
@@ -71,15 +81,21 @@ namespace ecruise.Api.Controllers
         [HttpGet("by-charging-station/{chargingStationId}", Name = "GetCarChargingStationsByChargingStation")]
         public IActionResult GetByChargingStationId(ulong chargingStationId)
         {
+            // forbid if not admin
+            if (!HasAccess())
+                return Forbid();
+
             try
             {
                 // Check for correct value
                 if (!ModelState.IsValid)
-                    return BadRequest(new Error(301, "The id given was not formatted correctly. Id must be unsigned int",
+                    return BadRequest(new Error(301,
+                        "The id given was not formatted correctly. Id must be unsigned int",
                         "An error occured. Please check the message for further information."));
 
                 // Get matching car chargingstation entities from database
-                var carChargingStations = Context.CarChargingStations.Where(ccs => ccs.ChargingStationId == chargingStationId).ToImmutableList();
+                var carChargingStations = Context.CarChargingStations
+                    .Where(ccs => ccs.ChargingStationId == chargingStationId).ToImmutableList();
 
                 if (carChargingStations == null || carChargingStations.Count < 1)
                     return NoContent();
@@ -96,8 +112,12 @@ namespace ecruise.Api.Controllers
 
         // POST: /car-charging-stations
         [HttpPost]
-        public IActionResult Post([FromBody]CarChargingStation carChargingStation)
+        public IActionResult Post([FromBody] CarChargingStation carChargingStation)
         {
+            // forbid if not admin
+            if (!HasAccess())
+                return Forbid();
+
             try
             {
                 if (ModelState.IsValid)
@@ -110,7 +130,8 @@ namespace ecruise.Api.Controllers
 
                     // Check charging station
                     if (Context.Customers.Find((ulong)carChargingStation.ChargingStationId) == null)
-                        return NotFound(new Error(202, "The chargingstation referenced in the given object does not exist.",
+                        return NotFound(new Error(202,
+                            "The chargingstation referenced in the given object does not exist.",
                             "The referenced chargingstation must already exist to create a new car chargingstation."));
 
                     // Check the charge start to be in the past
@@ -134,7 +155,8 @@ namespace ecruise.Api.Controllers
                         $"{BasePath}/car-charging-stations/{carChargingStationEntity.CarChargingStationId}");
 
                     // Return reference to the new object including the path to it
-                    return Created($"{BasePath}/car-charging-stations/{carChargingStationEntity.CarChargingStationId}", pr);
+                    return Created($"{BasePath}/car-charging-stations/{carChargingStationEntity.CarChargingStationId}",
+                        pr);
                 }
                 else
                     return BadRequest(new Error(301, GetModelStateErrorString(),
@@ -150,8 +172,12 @@ namespace ecruise.Api.Controllers
 
         // Patch: /car-charging-stations/5/charge-end
         [HttpPatch("{id}/charge-end")]
-        public IActionResult Patch(ulong id, [FromBody]string chargeEnd)
+        public IActionResult Patch(ulong id, [FromBody] string chargeEnd)
         {
+            // forbid if not admin
+            if (!HasAccess())
+                return Forbid();
+
             // Transform string to date
             DateTime newChargeEndDateTime;
             if (DateTime.TryParseExact(chargeEnd, @"yyyy-MM-dd\THH:mm:ss.fff\Z", CultureInfo.InvariantCulture,
@@ -182,7 +208,5 @@ namespace ecruise.Api.Controllers
                     "Date must always be in following format: 'yyyy-MM-ddTHH:mm:ss.zzzZ'"));
             }
         }
-
-        
     }
 }
