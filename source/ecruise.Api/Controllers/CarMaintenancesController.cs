@@ -153,7 +153,7 @@ namespace ecruise.Api.Controllers
             // Transform string to date
             DateTime newCompletedDateTime;
             if (DateTime.TryParseExact(date, @"yyyy-MM-dd\THH:mm:ss.fff\Z", CultureInfo.InvariantCulture,
-                DateTimeStyles.AssumeUniversal, out newCompletedDateTime))
+                DateTimeStyles.AssumeUniversal | DateTimeStyles.AdjustToUniversal, out newCompletedDateTime))
             {
                 // Check given date for logical validity
                 if (newCompletedDateTime.ToUniversalTime() > DateTime.UtcNow)

@@ -178,7 +178,7 @@ namespace ecruise.Api.Controllers
             // Transform string to date
             DateTime newChargeEndDateTime;
             if (DateTime.TryParseExact(chargeEnd, @"yyyy-MM-dd\THH:mm:ss.fff\Z", CultureInfo.InvariantCulture,
-                DateTimeStyles.AssumeUniversal, out newChargeEndDateTime))
+                DateTimeStyles.AssumeUniversal | DateTimeStyles.AdjustToUniversal, out newChargeEndDateTime))
             {
                 // Check given date for logical validity
                 if (newChargeEndDateTime.ToUniversalTime() > DateTime.UtcNow)

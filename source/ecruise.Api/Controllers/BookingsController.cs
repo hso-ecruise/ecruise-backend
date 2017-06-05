@@ -193,7 +193,7 @@ namespace ecruise.Api.Controllers
             // Transform string to date
             DateTime requestedDateTime;
             if (DateTime.TryParseExact(date, @"yyyy-MM-dd\THH:mm:ss.fff\Z", CultureInfo.InvariantCulture,
-                DateTimeStyles.AssumeUniversal, out requestedDateTime))
+                DateTimeStyles.AssumeUniversal | DateTimeStyles.AdjustToUniversal, out requestedDateTime))
             {
                 // Get all bookings booked at the specified day
                 var matchingbookings = await Context.Bookings
@@ -221,7 +221,7 @@ namespace ecruise.Api.Controllers
             // Transform string to date
             DateTime requestedDateTime;
             if (DateTime.TryParseExact(date, @"yyyy-MM-dd\THH:mm:ss.fff\Z", CultureInfo.InvariantCulture,
-                DateTimeStyles.AssumeUniversal, out requestedDateTime))
+                DateTimeStyles.AssumeUniversal | DateTimeStyles.AdjustToUniversal, out requestedDateTime))
             {
                 // Get all bookings booked at the specified day
                 var matchingbookings = await Context.Bookings
