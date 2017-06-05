@@ -1,10 +1,8 @@
 using System;
 using System.Collections.Generic;
-using Microsoft.AspNetCore.Mvc;
-using ecruise.Models;
 using System.Globalization;
-
-using Statistic = ecruise.Models.Statistic;
+using ecruise.Models;
+using Microsoft.AspNetCore.Mvc;
 
 namespace ecruise.Api.Controllers
 {
@@ -21,7 +19,7 @@ namespace ecruise.Api.Controllers
 
             try
             {
-                List<Statistic> list = new List<Statistic>()
+                List<Statistic> list = new List<Statistic>
                 {
                     new Statistic(new DateTime(2017, 05, 30, 0, 0, 0), 28, 93, 15, 30),
                     new Statistic(new DateTime(2017, 05, 31, 0, 0, 0), 30, 89, 14, 31)
@@ -48,14 +46,11 @@ namespace ecruise.Api.Controllers
             DateTime requestedDateTime;
             if (DateTime.TryParseExact(date, @"yyyy-MM-dd\THH:mm:ss.fff\Z", CultureInfo.InvariantCulture,
                 DateTimeStyles.AssumeUniversal, out requestedDateTime))
-            {
                 return Ok(new Statistic(new DateTime(2017, 05, 30, 0, 0, 0), 42, 90, 16, 31));
-            }
-            else
-            {
-                return BadRequest(new Error(1, "The date given was not formatted correctly. Date must be in following format: 'yyyy-MM-ddTHH:mm:ss.zzzZ'",
-                    "An error occured. Please check the message for further information."));
-            }
+
+            return BadRequest(new Error(1,
+                "The date given was not formatted correctly. Date must be in following format: 'yyyy-MM-ddTHH:mm:ss.zzzZ'",
+                "An error occured. Please check the message for further information."));
         }
     }
 }

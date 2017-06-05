@@ -8,7 +8,6 @@ using ecruise.Models.Assemblers;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Booking = ecruise.Models.Booking;
 
 namespace ecruise.Api.Controllers
 {
@@ -84,11 +83,9 @@ namespace ecruise.Api.Controllers
 
                     // Check planned date if set
                     if (booking.PlannedDate != null && booking.PlannedDate < DateTime.UtcNow.AddMinutes(-5))
-                    {
                         // The booking must be planned for the future (subtracting 5 minutes e.g. if some latency issues occur)
                         return BadRequest(new Error(302, "PlannedDate must be in the future.",
                             "The DateTime wasn't set properly. Please check the message for further information."));
-                    }
 
                     // Force null on items that cant already be set
                     booking.TripId = null;
@@ -111,9 +108,9 @@ namespace ecruise.Api.Controllers
                     // Return reference to the new object including the path to it
                     return Created($"{BasePath}/bookings/{bookingEntity.BookingId}", pr);
                 }
-                else
-                    return BadRequest(new Error(301, GetModelStateErrorString(),
-                        "The given data could not be converted to a booking. Please check the message for further information."));
+
+                return BadRequest(new Error(301, GetModelStateErrorString(),
+                    "The given data could not be converted to a booking. Please check the message for further information."));
             }
             catch (Exception e)
             {
@@ -144,9 +141,9 @@ namespace ecruise.Api.Controllers
                     // Convert them to models and return OK
                     return Ok(BookingAssembler.AssembleModelList(bookingEntities));
                 }
-                else
-                    return BadRequest(new Error(301, GetModelStateErrorString(),
-                        "The given id could not be converted. Please check the message for further information."));
+
+                return BadRequest(new Error(301, GetModelStateErrorString(),
+                    "The given id could not be converted. Please check the message for further information."));
             }
             catch (Exception e)
             {
@@ -177,9 +174,9 @@ namespace ecruise.Api.Controllers
                     // Convert them to models and return OK
                     return Ok(BookingAssembler.AssembleModelList(bookingEntities));
                 }
-                else
-                    return BadRequest(new Error(301, GetModelStateErrorString(),
-                        "The given id could not be converted. Please check the message for further information."));
+
+                return BadRequest(new Error(301, GetModelStateErrorString(),
+                    "The given id could not be converted. Please check the message for further information."));
             }
             catch (Exception e)
             {
@@ -213,11 +210,8 @@ namespace ecruise.Api.Controllers
                 // Return the found matches
                 return Ok(BookingAssembler.AssembleModelList(matchingbookings));
             }
-            else
-            {
-                return BadRequest(new Error(301, "The date given was not formatted correctly.",
-                    "Date must always be in following format: 'yyyy-MM-ddTHH:mm:ss.zzzZ'"));
-            }
+            return BadRequest(new Error(301, "The date given was not formatted correctly.",
+                "Date must always be in following format: 'yyyy-MM-ddTHH:mm:ss.zzzZ'"));
         }
 
         // GET: /Bookings/by-planned-date/<date>
@@ -245,11 +239,9 @@ namespace ecruise.Api.Controllers
                 // Return the found matches
                 return Ok(BookingAssembler.AssembleModelList(matchingbookings));
             }
-            else
-            {
-                return BadRequest(new Error(301, "The date given was not formatted correctly.",
-                    "Date must always be in following format: 'yyyy-MM-ddTHH:mm:ss.zzzZ'"));
-            }
+
+            return BadRequest(new Error(301, "The date given was not formatted correctly.",
+                "Date must always be in following format: 'yyyy-MM-ddTHH:mm:ss.zzzZ'"));
         }
     }
 }

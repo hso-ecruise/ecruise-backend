@@ -1,12 +1,12 @@
-using System.Collections.Immutable;
 using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
 using ecruise.Models;
 using ecruise.Models.Assemblers;
 using GeoCoordinatePortable;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using DbCar = ecruise.Database.Models.Car;
 
@@ -226,7 +226,7 @@ namespace ecruise.Api.Controllers
         }
 
         // GET: /Cars/closest-to/58/8?radius=100
-        // ReSharper disable PossibleInvalidOperationException
+// ReSharper disable PossibleInvalidOperationException
         [HttpGet(@"closest-to/{latitude}/{longitude}", Name = "GetClosestCar")]
         public async Task<IActionResult> GetClosestCarChargingStation(double latitude, double longitude,
             [FromQuery] int radius)
@@ -260,8 +260,8 @@ namespace ecruise.Api.Controllers
             // if radius is zero (or not set) get only first element
             if (radius == 0)
                 return Ok(CarAssembler.AssembleModelList(new List<DbCar> {closest.FirstOrDefault()}));
-            else
-                return Ok(CarAssembler.AssembleModelList(closest));
+
+            return Ok(CarAssembler.AssembleModelList(closest));
         }
     }
 }

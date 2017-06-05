@@ -1,10 +1,8 @@
 using System.Collections.Generic;
-using System.Collections.Immutable;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-
 using ecruise.Models;
 using ecruise.Models.Assemblers;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using DbMaintenance = ecruise.Database.Models.Maintenance;
 
@@ -45,8 +43,8 @@ namespace ecruise.Api.Controllers
             if (maintenance == null)
                 return NotFound(new Error(201, "Maintenance with requested id does not exist.",
                     $"There is no maintenance that has the id {id}."));
-            else
-                return Ok(MaintenanceAssembler.AssembleModel(maintenance));
+
+            return Ok(MaintenanceAssembler.AssembleModel(maintenance));
         }
 
         // POST: /Maintenances
@@ -67,7 +65,8 @@ namespace ecruise.Api.Controllers
             await Context.SaveChangesAsync();
 
             return Created($"{BasePath}/maintenances/{insert.Entity.MaintenanceId}",
-                new PostReference((uint)insert.Entity.MaintenanceId, $"{BasePath}/maintenances/{insert.Entity.MaintenanceId}"));
+                new PostReference((uint)insert.Entity.MaintenanceId,
+                    $"{BasePath}/maintenances/{insert.Entity.MaintenanceId}"));
         }
     }
 }

@@ -1,12 +1,11 @@
-using System.Collections.Immutable;
+using System;
 using System.Globalization;
+using System.Linq;
+using System.Threading.Tasks;
 using ecruise.Models;
 using ecruise.Models.Assemblers;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using System;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 
 namespace ecruise.Api.Controllers
@@ -31,11 +30,8 @@ namespace ecruise.Api.Controllers
                     // Return that there are no results
                     return NoContent();
 
-                else
-                {
-                    // Return found car maintenances
-                    return Ok(CarMaintenanceAssembler.AssembleModelList(carMaintenances));
-                }
+                // Return found car maintenances
+                return Ok(CarMaintenanceAssembler.AssembleModelList(carMaintenances));
             }
             catch (Exception e)
             {
@@ -57,7 +53,8 @@ namespace ecruise.Api.Controllers
             {
                 // Check for correct value
                 if (!ModelState.IsValid)
-                    return BadRequest(new Error(301, "The id given was not formatted correctly. Id must be unsigned int",
+                    return BadRequest(new Error(301,
+                        "The id given was not formatted correctly. Id must be unsigned int",
                         "An error occured. Please check the message for further information."));
 
                 // Get booking from database
@@ -66,11 +63,10 @@ namespace ecruise.Api.Controllers
                 if (carMaintenance != null)
                     return Ok(CarMaintenanceAssembler.AssembleModel(carMaintenance));
 
-                else
-                    return NotFound(new Error(201, "A car maintenance with requested id does not exist.",
-                        "An error occured. Please check the message for further information."));
+                return NotFound(new Error(201, "A car maintenance with requested id does not exist.",
+                    "An error occured. Please check the message for further information."));
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 // return Internal Server Error (500)
                 return StatusCode(StatusCodes.Status500InternalServerError,
@@ -80,7 +76,7 @@ namespace ecruise.Api.Controllers
 
         // POST: CarMaintenances
         [HttpPost]
-        public async Task<IActionResult> Post([FromBody]CarMaintenance carMaintenance)
+        public async Task<IActionResult> Post([FromBody] CarMaintenance carMaintenance)
         {
             // forbid if not admin
             if (!HasAccess())
@@ -102,14 +98,15 @@ namespace ecruise.Api.Controllers
                             "The referenced maintenace must already exist to create a new car maintenance."));
 
                     // Check invoice item if set
-                    if(carMaintenance.InvoiceItemId != null)
+                    if (carMaintenance.InvoiceItemId != null)
                         if (Context.Customers.Find((ulong)carMaintenance.MaintenanceId) == null)
-                            return NotFound(new Error(202, "The invoice item referenced in the given object does not exist.",
+                            return NotFound(new Error(202,
+                                "The invoice item referenced in the given object does not exist.",
                                 "The referenced invoice item does not have to exist to create a new car maintenance."));
 
                     // Check the dates if set
-                    if(carMaintenance.PlannedDate.HasValue)
-                        if(carMaintenance.PlannedDate.Value.ToUniversalTime() < DateTime.UtcNow)
+                    if (carMaintenance.PlannedDate.HasValue)
+                        if (carMaintenance.PlannedDate.Value.ToUniversalTime() < DateTime.UtcNow)
                             return BadRequest(new Error(302, "Planned date must be in the future",
                                 "Maintenances cannot be planned for the past."));
 
@@ -119,7 +116,8 @@ namespace ecruise.Api.Controllers
                                 "Maintenances can only be completed, when they are completed but not in advance"));
 
                     // Construct entity from model
-                    Database.Models.CarMaintenance carMaintenanceEntity = CarMaintenanceAssembler.AssembleEntity(0, carMaintenance);
+                    Database.Models.CarMaintenance carMaintenanceEntity =
+                        CarMaintenanceAssembler.AssembleEntity(0, carMaintenance);
 
                     // Save to database
                     await Context.CarMaintenances.AddAsync(carMaintenanceEntity);
@@ -132,9 +130,9 @@ namespace ecruise.Api.Controllers
                     // Return reference to the new object including the path to it
                     return Created($"{BasePath}/carmaintenances/{carMaintenanceEntity.CarMaintenanceId}", pr);
                 }
-                else
-                    return BadRequest(new Error(301, GetModelStateErrorString(),
-                        "The given data could not be converted to a car maintenance object. Please check the message for further information."));
+
+                return BadRequest(new Error(301, GetModelStateErrorString(),
+                    "The given data could not be converted to a car maintenance object. Please check the message for further information."));
             }
             catch (Exception e)
             {
@@ -143,7 +141,7 @@ namespace ecruise.Api.Controllers
                     new Error(101, e.Message, "An error occured.Please check the message for further information."));
             }
         }
-                
+
         // PATCH: /CarMaintenances/5/completed-date
         [HttpPatch("{id}/completed-date")]
         public async Task<IActionResult> Patch(ulong id, [FromBody] string date)
@@ -158,14 +156,14 @@ namespace ecruise.Api.Controllers
                 DateTimeStyles.AssumeUniversal, out newCompletedDateTime))
             {
                 // Check given date for logical validity
-                if(newCompletedDateTime.ToUniversalTime() > DateTime.UtcNow)
+                if (newCompletedDateTime.ToUniversalTime() > DateTime.UtcNow)
                     return BadRequest(new Error(302, "Completed date must be in the past.",
                         "The given date wasn't set properly. Please check the message for further information."));
 
                 // Get the specified car maintenance
                 var carMaintenance = await Context.CarMaintenances.FindAsync(id);
 
-                if(carMaintenance == null)
+                if (carMaintenance == null)
                     return NotFound(new Error(201, "A car maintenance with requested id does not exist.",
                         "An error occured. Please check the message for further information."));
 
@@ -176,11 +174,9 @@ namespace ecruise.Api.Controllers
                 // Return a reference to the patch object
                 return Ok(new PostReference(id, $"{BasePath}/carmaintenances/{id}"));
             }
-            else
-            {
-                return BadRequest(new Error(301, "The date given was not formatted correctly.",
-                    "Date must always be in following format: 'yyyy-MM-ddTHH:mm:ss.zzzZ'"));
-            }
+
+            return BadRequest(new Error(301, "The date given was not formatted correctly.",
+                "Date must always be in following format: 'yyyy-MM-ddTHH:mm:ss.zzzZ'"));
         }
 
         // GET: /CarMaintenances/by-car/5
@@ -196,7 +192,9 @@ namespace ecruise.Api.Controllers
                 if (ModelState.IsValid)
                 {
                     // Get all entities with the given car id
-                    var carMaintenanceEntities = await Context.CarMaintenances.Where(cm => cm.CarId == id).ToListAsync();
+                    var carMaintenanceEntities = await Context.CarMaintenances
+                        .Where(cm => cm.CarId == id)
+                        .ToListAsync();
 
                     if (carMaintenanceEntities.Count < 1)
                         return NoContent();
@@ -204,9 +202,9 @@ namespace ecruise.Api.Controllers
                     // Convert them to models and return OK
                     return Ok(CarMaintenanceAssembler.AssembleModelList(carMaintenanceEntities));
                 }
-                else
-                    return BadRequest(new Error(301, GetModelStateErrorString(),
-                        "The given id could not be converted. Please check the message for further information."));
+
+                return BadRequest(new Error(301, GetModelStateErrorString(),
+                    "The given id could not be converted. Please check the message for further information."));
             }
             catch (Exception e)
             {
@@ -229,7 +227,9 @@ namespace ecruise.Api.Controllers
                 if (ModelState.IsValid)
                 {
                     // Get all entities with the given car id
-                    var carMaintenanceEntities = await Context.CarMaintenances.Where(cm => cm.MaintenanceId == id).ToListAsync();
+                    var carMaintenanceEntities = await Context.CarMaintenances
+                        .Where(cm => cm.MaintenanceId == id)
+                        .ToListAsync();
 
                     if (carMaintenanceEntities.Count < 1)
                         return NoContent();
@@ -237,9 +237,9 @@ namespace ecruise.Api.Controllers
                     // Convert them to models and return OK
                     return Ok(CarMaintenanceAssembler.AssembleModelList(carMaintenanceEntities));
                 }
-                else
-                    return BadRequest(new Error(301, GetModelStateErrorString(),
-                        "The given id could not be converted. Please check the message for further information."));
+
+                return BadRequest(new Error(301, GetModelStateErrorString(),
+                    "The given id could not be converted. Please check the message for further information."));
             }
             catch (Exception e)
             {
@@ -271,9 +271,9 @@ namespace ecruise.Api.Controllers
                     // Convert them to models and return OK
                     return Ok(CarMaintenanceAssembler.AssembleModelList(carMaintenanceEntities));
                 }
-                else
-                    return BadRequest(new Error(301, GetModelStateErrorString(),
-                        "The given id could not be converted. Please check the message for further information."));
+
+                return BadRequest(new Error(301, GetModelStateErrorString(),
+                    "The given id could not be converted. Please check the message for further information."));
             }
             catch (Exception e)
             {
