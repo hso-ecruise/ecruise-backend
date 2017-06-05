@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Newtonsoft.Json;
 
 namespace ecruise.Database.Models
 {
@@ -19,10 +20,19 @@ namespace ecruise.Database.Models
         public ulong? EndChargingStationId { get; set; }
         public double? DistanceTravelled { get; set; }
 
+        [JsonIgnore]
         public virtual ICollection<Booking> Booking { get; set; }
+
+        [JsonIgnore]
         public virtual Car Car { get; set; }
+
+        [JsonIgnore]
         public virtual Customer Customer { get; set; }
+
+        [JsonIgnore]
         public virtual ChargingStation EndChargingStation { get; set; }
+
+        [JsonIgnore]
         public virtual ChargingStation StartChargingStation { get; set; }
     }
 }
