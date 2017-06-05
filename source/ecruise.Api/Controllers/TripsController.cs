@@ -115,11 +115,15 @@ namespace ecruise.Api.Controllers
                 // Get last invoice for the customer (means the invoice of the current month)
                 DbInvoice matchingInvoice = Context.Invoices.OrderBy(i => i.InvoiceId).LastOrDefault(i => i.CustomerId == AuthenticatedCustomerId);
 
+                // ReSharper disable once PossibleInvalidOperationException
+                double calculatedAmount = trip.DistanceTravelled * 0.15 +
+                                          2.40 * (dbtrip.EndDate.Value - dbtrip.StartDate.Value).TotalHours;
+
                 // Check if invoice found
                 if (matchingInvoice == null)
                 {
                     // Create new invoice
-                    DbInvoice newInvoice = new DbInvoice()
+                    DbInvoice newInvoice = new DbInvoice
                     {
                         CustomerId = AuthenticatedCustomerId,
                         Paid = false,
@@ -133,14 +137,16 @@ namespace ecruise.Api.Controllers
                     matchingInvoice = insert.Entity;
                 }
 
+                // Add the invoice item amount to the total amount of the invoice
+                matchingInvoice.TotalAmount += calculatedAmount;
+
                 // Create invoice item for finished booking
-                DbInvoiceItem newInvoiceItem = new DbInvoiceItem()
+                DbInvoiceItem newInvoiceItem = new DbInvoiceItem
                 {
                     Reason = "Trip",
                     Type = "DEBIT",
                     // € 0.15 per kilometer + € 2.40 per hour
-                    // ReSharper disable once PossibleInvalidOperationException
-                    Amount = trip.DistanceTravelled * 0.15 + 2.40 * (dbtrip.EndDate.Value - dbtrip.StartDate.Value).TotalHours,
+                    Amount = calculatedAmount,
                     InvoiceId = matchingInvoice.InvoiceId
                 };
 
