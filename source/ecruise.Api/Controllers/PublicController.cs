@@ -24,7 +24,10 @@ namespace ecruise.Api.Controllers
                 return BadRequest(new Error(401, GetModelStateErrorString(),
                     "An error occured. Please check the message for further information."));
 
-            DbCustomer customer = await Context.Customers.FirstAsync(c => c.Email == email);
+            DbCustomer customer = await Context.Customers
+                .Where(c => c.Activated)
+                .FirstAsync(c => c.Email == email);
+
             if (customer == null)
                 return Unauthorized();
 
