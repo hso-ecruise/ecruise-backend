@@ -1,8 +1,11 @@
+using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 
 using ecruise.Models;
 using ecruise.Models.Assemblers;
+using Microsoft.EntityFrameworkCore;
 using DbMaintenance = ecruise.Database.Models.Maintenance;
 
 namespace ecruise.Api.Controllers
@@ -11,13 +14,13 @@ namespace ecruise.Api.Controllers
     {
         // GET: /Maintenances
         [HttpGet(Name = "GetAllMaintenances")]
-        public IActionResult Get()
+        public async Task<IActionResult> Get()
         {
             // forbid if not admin
             if (!HasAccess())
                 return Forbid();
 
-            ImmutableList<DbMaintenance> maintenances = Context.Maintenances.ToImmutableList();
+            List<DbMaintenance> maintenances = await Context.Maintenances.ToListAsync();
 
             if (maintenances.Count == 0)
                 return NoContent();
@@ -27,7 +30,7 @@ namespace ecruise.Api.Controllers
 
         // GET: /Maintenances/5
         [HttpGet("{id}", Name = "GetMaintenance")]
-        public IActionResult Get(ulong id)
+        public async Task<IActionResult> Get(ulong id)
         {
             // forbid if not admin
             if (!HasAccess())
@@ -37,7 +40,7 @@ namespace ecruise.Api.Controllers
                 return BadRequest(new Error(400, GetModelStateErrorString(),
                     "An error occured. Please check the message for further information."));
 
-            DbMaintenance maintenance = Context.Maintenances.Find(id);
+            DbMaintenance maintenance = await Context.Maintenances.FindAsync(id);
 
             if (maintenance == null)
                 return NotFound(new Error(201, "Maintenance with requested id does not exist.",
@@ -48,7 +51,7 @@ namespace ecruise.Api.Controllers
 
         // POST: /Maintenances
         [HttpPost(Name = "CreateMaintenance")]
-        public IActionResult Post([FromBody] Maintenance m)
+        public async Task<IActionResult> Post([FromBody] Maintenance m)
         {
             // forbid if not admin
             if (!HasAccess())
@@ -60,8 +63,8 @@ namespace ecruise.Api.Controllers
 
             DbMaintenance insertMaintenance = MaintenanceAssembler.AssembleEntity(0, m);
 
-            var insert = Context.Maintenances.Add(insertMaintenance);
-            Context.SaveChanges();
+            var insert = await Context.Maintenances.AddAsync(insertMaintenance);
+            await Context.SaveChangesAsync();
 
             return Created($"{BasePath}/maintenances/{insert.Entity.MaintenanceId}",
                 new PostReference((uint)insert.Entity.MaintenanceId, $"{BasePath}/maintenances/{insert.Entity.MaintenanceId}"));

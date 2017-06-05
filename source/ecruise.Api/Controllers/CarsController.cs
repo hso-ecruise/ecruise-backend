@@ -2,10 +2,12 @@ using System.Collections.Immutable;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using ecruise.Models;
 using ecruise.Models.Assemblers;
 using GeoCoordinatePortable;
+using Microsoft.EntityFrameworkCore;
 using DbCar = ecruise.Database.Models.Car;
 
 namespace ecruise.Api.Controllers
@@ -14,10 +16,10 @@ namespace ecruise.Api.Controllers
     {
         // GET: /cars
         [HttpGet(Name = "GetAllCars")]
-        public IActionResult GetAll()
+        public async Task<IActionResult> GetAll()
         {
             // create a list of all cars
-            ImmutableList<DbCar> cars = Context.Cars.ToImmutableList();
+            List<DbCar> cars = await Context.Cars.ToListAsync();
 
             // return 203 No Content if there are no cars
             if (cars.Count == 0)
@@ -29,7 +31,7 @@ namespace ecruise.Api.Controllers
 
         // POST: /Cars
         [HttpPost(Name = "CreateCar")]
-        public IActionResult Post([FromBody] Car car)
+        public async Task<IActionResult> Post([FromBody] Car car)
         {
             // forbid if not admin
             if (!HasAccess())
@@ -44,9 +46,9 @@ namespace ecruise.Api.Controllers
             DbCar insertCar = CarAssembler.AssembleEntity(0, car);
 
             // insert db car into database
-            var inserted = Context.Cars.Add(insertCar);
+            var inserted = await Context.Cars.AddAsync(insertCar);
 
-            Context.SaveChanges();
+            await Context.SaveChangesAsync();
 
             return Created($"{BasePath}/cars/{inserted.Entity.CarId}",
                 new PostReference((uint)inserted.Entity.CarId, $"{BasePath}/cars/{inserted.Entity.CarId}"));
@@ -54,7 +56,7 @@ namespace ecruise.Api.Controllers
 
         // GET: /Cars/1
         [HttpGet("{id}", Name = "GetCar")]
-        public IActionResult Get(ulong id)
+        public async Task<IActionResult> Get(ulong id)
         {
             // validate user input
             if (!ModelState.IsValid)
@@ -62,7 +64,7 @@ namespace ecruise.Api.Controllers
                     "An error occured. Please check the message for further information."));
 
             // find the requested car
-            DbCar car = Context.Cars.Find(id);
+            DbCar car = await Context.Cars.FindAsync(id);
 
             // return error if car was not found
             if (car == null)
@@ -74,7 +76,7 @@ namespace ecruise.Api.Controllers
 
         // PATCH: /Cars/1/chargingState
         [HttpPatch("{id}/chargingState")]
-        public IActionResult PatchChargingState(ulong id, [FromBody] Car.ChargingStateEnum chargingState)
+        public async Task<IActionResult> PatchChargingState(ulong id, [FromBody] Car.ChargingStateEnum chargingState)
         {
             // forbid if not admin
             if (!HasAccess())
@@ -86,7 +88,7 @@ namespace ecruise.Api.Controllers
                     "An error occured. Please check the message for further information."));
 
             // find the requested car
-            DbCar car = Context.Cars.Find(id);
+            DbCar car = await Context.Cars.FindAsync(id);
 
             // return error if car was not found
             if (car == null)
@@ -96,14 +98,14 @@ namespace ecruise.Api.Controllers
             // update the car's charging state
             car.ChargingState = CarAssembler.EnumToStringChargingState(chargingState);
 
-            Context.SaveChanges();
+            await Context.SaveChangesAsync();
 
             return Ok(new PostReference(id, $"{BasePath}/cars/{id}"));
         }
 
         // PATCH: /Cars/1/bookingState
         [HttpPatch("{id}/bookingState")]
-        public IActionResult PatchBookingState(ulong id, [FromBody] Car.BookingStateEnum bookingState)
+        public async Task<IActionResult> PatchBookingState(ulong id, [FromBody] Car.BookingStateEnum bookingState)
         {
             // forbid if not admin
             if (!HasAccess())
@@ -115,7 +117,7 @@ namespace ecruise.Api.Controllers
                     "An error occured. Please check the message for further information."));
 
             // find the requested car
-            DbCar car = Context.Cars.Find(id);
+            DbCar car = await Context.Cars.FindAsync(id);
 
             // return error if car was not found
             if (car == null)
@@ -125,14 +127,14 @@ namespace ecruise.Api.Controllers
             // update the car's booking state
             car.BookingState = CarAssembler.EnumToStringBookingState(bookingState);
 
-            Context.SaveChanges();
+            await Context.SaveChangesAsync();
 
             return Ok(new PostReference(id, $"{BasePath}/cars/{id}"));
         }
 
         // PATCH: /Cars/1/mileage
         [HttpPatch("{id}/mileage")]
-        public IActionResult PatchMileage(ulong id, [FromBody] uint mileage)
+        public async Task<IActionResult> PatchMileage(ulong id, [FromBody] uint mileage)
         {
             // forbid if not admin
             if (!HasAccess())
@@ -144,7 +146,7 @@ namespace ecruise.Api.Controllers
                     "An error occured. Please check the message for further information."));
 
             // find the requested car
-            DbCar car = Context.Cars.Find(id);
+            DbCar car = await Context.Cars.FindAsync(id);
 
             // return error if car was not found
             if (car == null)
@@ -154,14 +156,14 @@ namespace ecruise.Api.Controllers
             // update the car's mileage
             car.Milage = mileage;
 
-            Context.SaveChanges();
+            await Context.SaveChangesAsync();
 
             return Ok(new PostReference(id, $"{BasePath}/cars/{id}"));
         }
 
         // PATCH: /Cars/1/chargelevel
         [HttpPatch("{id}/chargelevel")]
-        public IActionResult PatchChargelevel(ulong id, [FromBody] double chargelevel)
+        public async Task<IActionResult> PatchChargelevel(ulong id, [FromBody] double chargelevel)
         {
             // forbid if not admin
             if (!HasAccess())
@@ -173,7 +175,7 @@ namespace ecruise.Api.Controllers
                     "An error occured. Please check the message for further information."));
 
             // find the requested car
-            DbCar car = Context.Cars.Find(id);
+            DbCar car = await Context.Cars.FindAsync(id);
 
             // return error if car was not found
             if (car == null)
@@ -183,14 +185,14 @@ namespace ecruise.Api.Controllers
             // update the car's charge level
             car.ChargeLevel = chargelevel;
 
-            Context.SaveChanges();
+            await Context.SaveChangesAsync();
 
             return Ok(new PostReference(id, $"{BasePath}/cars/{id}"));
         }
 
         // PATCH: /Cars/1/position/2.512/-5.215
         [HttpPatch("{id}/position/{latitude}/{longitude}")]
-        public IActionResult PatchPosition(ulong id, double latitude, double longitude)
+        public async Task<IActionResult> PatchPosition(ulong id, double latitude, double longitude)
         {
             // forbid if not admin
             if (!HasAccess())
@@ -202,7 +204,7 @@ namespace ecruise.Api.Controllers
                     "An error occured. Please check the message for further information."));
 
             // find the requested car
-            DbCar car = Context.Cars.Find(id);
+            DbCar car = await Context.Cars.FindAsync(id);
 
             // return error if car was not found
             if (car == null)
@@ -210,14 +212,14 @@ namespace ecruise.Api.Controllers
                     $"There is no car that has the id {id}."));
 
             // update the car's last known position and the associated date
-            using (var transaction = Context.Database.BeginTransaction())
-            { 
+            using (var transaction = await Context.Database.BeginTransactionAsync())
+            {
                 car.LastKnownPositionLatitude = latitude;
                 car.LastKnownPositionLongitude = longitude;
                 car.LastKnownPositionDate = DateTime.UtcNow;
 
                 transaction.Commit();
-                Context.SaveChanges();
+                await Context.SaveChangesAsync();
             }
 
             return Ok(new PostReference(id, $"{BasePath}/cars/{id}"));
@@ -226,7 +228,8 @@ namespace ecruise.Api.Controllers
         // GET: /Cars/closest-to/58/8?radius=100
         // ReSharper disable PossibleInvalidOperationException
         [HttpGet(@"closest-to/{latitude}/{longitude}", Name = "GetClosestCar")]
-        public IActionResult GetClosestCarChargingStation(double latitude, double longitude, [FromQuery] int radius)
+        public async Task<IActionResult> GetClosestCarChargingStation(double latitude, double longitude,
+            [FromQuery] int radius)
         {
             // validate user input
             if (!ModelState.IsValid)
@@ -234,19 +237,18 @@ namespace ecruise.Api.Controllers
                     "An error occured. Please check the message for further information."));
 
             // get a list of all cars with a known position
-            ImmutableList<DbCar> dbcars = Context.Cars
+            List<DbCar> dbcars = await Context.Cars
                 .Where(c => c.LastKnownPositionLatitude != null && c.LastKnownPositionLongitude != null)
-                .ToImmutableList();
+                .ToListAsync();
 
             // render cars ordered by distance
             // if radius == 0: get only closest car
             // else if radius > 0: get all cars within radius
             GeoCoordinate destination = new GeoCoordinate(latitude, longitude);
             ImmutableList<DbCar> closest =
-                dbcars
-                    .Where(c => radius == 0 ||
-                                destination.GetDistanceTo(new GeoCoordinate(c.LastKnownPositionLatitude.Value,
-                                    c.LastKnownPositionLongitude.Value)) <= radius)
+                dbcars.Where(c => radius == 0 ||
+                                  destination.GetDistanceTo(new GeoCoordinate(c.LastKnownPositionLatitude.Value,
+                                      c.LastKnownPositionLongitude.Value)) <= radius)
                     .OrderBy(c => destination.GetDistanceTo(new GeoCoordinate(c.LastKnownPositionLatitude.Value,
                         c.LastKnownPositionLongitude.Value)))
                     .ToImmutableList();

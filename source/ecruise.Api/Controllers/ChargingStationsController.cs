@@ -1,9 +1,12 @@
+using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using ecruise.Models;
 using ecruise.Models.Assemblers;
 using GeoCoordinatePortable;
+using Microsoft.EntityFrameworkCore;
 using DbChargingStation = ecruise.Database.Models.ChargingStation;
 
 namespace ecruise.Api.Controllers
@@ -13,10 +16,10 @@ namespace ecruise.Api.Controllers
     {
         // GET: /ChargingStations
         [HttpGet(Name = "GetAllChargingStations")]
-        public IActionResult GetAll()
+        public async Task<IActionResult> GetAll()
         {
             // create a list of all charging stations
-            ImmutableList<DbChargingStation> chargingStations = Context.ChargingStations.ToImmutableList();
+            List<DbChargingStation> chargingStations = await Context.ChargingStations.ToListAsync();
 
             // return 203 No Content if there are no charging stations
             if (chargingStations.Count == 0)
@@ -27,7 +30,7 @@ namespace ecruise.Api.Controllers
 
         // POST: /ChargingStations
         [HttpPost(Name = "CreateChargingStation")]
-        public IActionResult Post([FromBody] ChargingStation chargingStation)
+        public async Task<IActionResult> Post([FromBody] ChargingStation chargingStation)
         {
             // forbid if not admin
             if (!HasAccess())
@@ -42,9 +45,9 @@ namespace ecruise.Api.Controllers
             DbChargingStation insertChargingStation = ChargingStationAssembler.AssembleEntity(0, chargingStation);
 
             // insert charging station into db
-            var inserted = Context.ChargingStations.Add(insertChargingStation);
+            var inserted = await Context.ChargingStations.AddAsync(insertChargingStation);
 
-            Context.SaveChanges();
+            await Context.SaveChangesAsync();
 
             return Created($"{BasePath}/ChargingStations/{inserted.Entity.ChargingStationId}",
                 new PostReference((uint)inserted.Entity.ChargingStationId,
@@ -53,7 +56,7 @@ namespace ecruise.Api.Controllers
 
         // GET: /ChargingStations/5
         [HttpGet("{id}", Name = "GetChargingStation")]
-        public IActionResult Get(ulong id)
+        public async Task<IActionResult> Get(ulong id)
         {
             // validate user input
             if (!ModelState.IsValid)
@@ -61,7 +64,7 @@ namespace ecruise.Api.Controllers
                     "An error occured. Please check the message for further information."));
 
             // find the requested charging station
-            DbChargingStation chargingStation = Context.ChargingStations.Find(id);
+            DbChargingStation chargingStation = await Context.ChargingStations.FindAsync(id);
 
             // return error if charging station was not found
             if (chargingStation == null)
@@ -73,7 +76,7 @@ namespace ecruise.Api.Controllers
 
         // GET: /ChargingStations/closest-to/58/8
         [HttpGet("closest-to/{latitude}/{longitude}", Name = "GetClosestChargingStation")]
-        public IActionResult GetClosestChargingStation(double latitude, double longitude)
+        public async Task<IActionResult> GetClosestChargingStation(double latitude, double longitude)
         {
             // validate user input
             if (!ModelState.IsValid)
@@ -81,7 +84,7 @@ namespace ecruise.Api.Controllers
                     "An error occured. Please check the message for further information."));
 
             // get a list of all charging stations
-            ImmutableList<DbChargingStation> dbcs = Context.ChargingStations.ToImmutableList();
+            List<DbChargingStation> dbcs = await Context.ChargingStations.ToListAsync();
 
             // check if there are any charging stations
             if (dbcs.Count == 0)

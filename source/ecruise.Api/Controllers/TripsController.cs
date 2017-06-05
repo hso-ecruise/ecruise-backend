@@ -15,13 +15,13 @@ namespace ecruise.Api.Controllers
     {
         // GET: /trips
         [HttpGet(Name = "GetAllTrips")]
-        public IActionResult GetAll()
+        public async Task<IActionResult> GetAll()
         {
             // create a list of all trips
-            ImmutableList<DbTrip> trips = Context.Trips
+            List<DbTrip> trips = await Context.Trips
                 // query only trips the current customer has access to
                 .Where(t => t.CustomerId == AuthenticatedCustomerId || AuthenticatedCustomerId == 1)
-                .ToImmutableList();
+                .ToListAsync();
 
             // return 203 No Content if there are no trips
             if (trips.Count == 0)
@@ -101,7 +101,7 @@ namespace ecruise.Api.Controllers
                 return Forbid();
 
             // update trip end data using a transaction
-            using (var transaction = Context.Database.BeginTransaction())
+            using (var transaction = await Context.Database.BeginTransactionAsync())
             {
                 dbtrip.EndDate = DateTime.UtcNow;
                 dbtrip.EndChargingStationId = trip.EndChargingStationId;
