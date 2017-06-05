@@ -54,6 +54,9 @@ namespace ecruise.Api
         {
             Context = ecruiseContext;
 
+            // Add CORS to every Request
+            app.UseCors(builder => builder.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
+
             // Schedule background tasks
             JobManager.Initialize(new BackgroundTasker(ecruiseContext).ScheduleAllTasks());
 
@@ -87,7 +90,6 @@ namespace ecruise.Api
             });
             #endregion
 
-            app.UseCors(builder => builder.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
 
             // use authentification middleware
             app.UseMiddleware<EcruiseAuthenticationMiddleware>(ecruiseContext);
