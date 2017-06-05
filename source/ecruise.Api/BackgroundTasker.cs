@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.Diagnostics;
 using System.Linq;
 using ecruise.Database.Models;
 using ecruise.Models.Assemblers;
@@ -32,7 +33,7 @@ namespace ecruise.Api
 
             // Add invoice mailing module
             // Setting every 0 month because it then already starts this month
-            registry.Schedule((Action)InvoiceCreator).ToRunEvery(0).Months().OnTheLastDay().At(23,59);
+            registry.Schedule((Action)InvoiceCreator).ToRunEvery(0).Months().OnTheLastDay().At(23, 59);
 
             return registry;
         }
@@ -43,8 +44,8 @@ namespace ecruise.Api
         private void CarReservator()
         {
             // Get all cars to start in the next 30 minutes and dont have started yet
-            var startingBookings = _context.Bookings.Where(b => b.TripId == 0 && b.PlannedDate.HasValue &&
-                                         b.PlannedDate.Value.ToUniversalTime() < DateTime.UtcNow.AddMinutes(30)).ToList();
+            var startingBookings = _context.Bookings.Where(b => b.TripId == null && b.PlannedDate != null &&
+                                                                b.PlannedDate.Value.ToUniversalTime() < DateTime.UtcNow.AddMinutes(30)).ToList();
 
             // Check null or empty
             if (startingBookings == null || startingBookings.Count < 1)
@@ -117,12 +118,14 @@ namespace ecruise.Api
                 // Save trip id to booking
                 _context.SaveChanges();
             }
+
+            Debug.WriteLine($"INFO: Car reservator ausgeführt");
         }
 
         /// <summary>
         /// Sends the invoice of the current month to a customer if there are entries
         /// </summary>
-        private void InvoiceCreator()
+        private async void InvoiceCreator()
         {
             DateTime checkLastMonth = DateTime.UtcNow.AddDays(-1);
 
@@ -132,12 +135,12 @@ namespace ecruise.Api
             // Find invoices in the range
             // Get all maintenances of the range
             var carMaintenances = _context.CarMaintenances.Where(cm => cm.CompletedDate.HasValue &&
-                                                 cm.CompletedDate.Value.ToUniversalTime() > monthStart &&
-                                                 cm.CompletedDate.Value.ToUniversalTime() < monthEnd)
+                                                                       cm.CompletedDate.Value.ToUniversalTime() > monthStart &&
+                                                                       cm.CompletedDate.Value.ToUniversalTime() < monthEnd)
                 .ToImmutableList();
 
             var bookings = _context.Bookings.Where(b => b.BookingDate.ToUniversalTime() > monthStart &&
-                                         b.BookingDate.ToUniversalTime() < monthEnd)
+                                                        b.BookingDate.ToUniversalTime() < monthEnd)
                 .ToImmutableList();
 
             List<ulong> invoiceIds = new List<ulong>();
@@ -145,21 +148,24 @@ namespace ecruise.Api
             // Collect all invoice item ids form the entities
             foreach (var entity in carMaintenances)
             {
-                if (entity.InvoiceItemId.HasValue && invoiceIds.Contains(entity.InvoiceItemId.Value))
+                if (entity.InvoiceItemId.HasValue && !invoiceIds.Contains(entity.InvoiceItemId.Value))
                 {
                     invoiceIds.Add(entity.InvoiceItemId.Value);
                 }
             }
             foreach (var entity in bookings)
             {
-                if(entity.InvoiceItemId.HasValue && invoiceIds.Contains(entity.InvoiceItemId.Value))
+                if (entity.InvoiceItemId.HasValue && !invoiceIds.Contains(entity.InvoiceItemId.Value))
                 {
                     invoiceIds.Add(entity.InvoiceItemId.Value);
                 }
             }
 
             // Get the all invoices for the invoice items
-            var invoices = _context.Invoices.Where(i => invoiceIds.Contains(i.InvoiceId)).ToImmutableList();
+            var invoices = _context.Invoices
+                .ToImmutableList()
+                .Where(i => invoiceIds.Contains(i.InvoiceId))
+                .ToImmutableList();
 
             // Get the matching Customers
             List<Tuple<Invoice, Customer>> invoicePairs = new List<Tuple<Invoice, Customer>>();
@@ -173,7 +179,7 @@ namespace ecruise.Api
                 // Check if found
                 if (customer == null)
                 {
-                    Console.Error.WriteLine($"ERROR: The customer with id {invoice.CustomerId} for the invoice with id {invoice.CustomerId} was not found");
+                    Debug.WriteLine($"ERROR: The customer with id {invoice.CustomerId} for the invoice with id {invoice.CustomerId} was not found");
                     continue;
                 }
 
@@ -185,9 +191,22 @@ namespace ecruise.Api
             {
                 var customerModel = CustomerAssembler.AssembleModel(tuple.Item2);
 
-                List<InvoiceItem> invoiceItemsOfCustomer = new List<InvoiceItem>();
+                try
+                {
+                    // Send invoice mail to customer
+                    await customerModel.SendMail($"Deine Rechnung für {monthStart:MMMM}",
+                        $"Hallo {customerModel.FirstName}!<br/><br/>" +
+                        $"Dein Rechnungsbetrag für {monthStart:MMMM} beläuft sich auf: €{tuple.Item1.TotalAmount}" +
+                        $"Bitte überwese den Betrag innerhalb von 2 Wochen.<br/>" +
+                        $"Freundliche Grüße<br/>" +
+                        $"Dein eCruise Team");
+                }
+                catch (MailKit.Net.Smtp.SmtpCommandException)
+                {
+                    // Catch exception if mail recipient is not reachable/existent
+                }
 
-                customerModel.SendMail($"Deine Rechnung für {monthStart:M}", $"Betrag: {tuple.Item1.TotalAmount}");
+                Debug.WriteLine($"INFO: Invoice creator ausgeführt");
             }
         }
     }
