@@ -2,14 +2,10 @@
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
-using System.Threading.Tasks;
-using ecruise.Api.Controllers;
 using ecruise.Database.Models;
-using ecruise.Models;
 using ecruise.Models.Assemblers;
 using FluentScheduler;
 using GeoCoordinatePortable;
-using Org.BouncyCastle.Crypto.Tls;
 using Customer = ecruise.Database.Models.Customer;
 using Invoice = ecruise.Database.Models.Invoice;
 using InvoiceItem = ecruise.Database.Models.InvoiceItem;
@@ -26,12 +22,19 @@ namespace ecruise.Api
             _context = context;
         }
 
-        public void RunAllTasks()
+        public Registry ScheduleAllTasks()
         {
             // Create registry
             Registry registry = new Registry();
 
-            
+            // Add car reservation module
+            registry.Schedule((Action)CarReservator).ToRunEvery(1).Minutes();
+
+            // Add invoice mailing module
+            // Setting every 0 month because it then already starts this month
+            registry.Schedule((Action)InvoiceCreator).ToRunEvery(0).Months().OnTheLastDay().At(23,59);
+
+            return registry;
         }
 
         /// <summary>
