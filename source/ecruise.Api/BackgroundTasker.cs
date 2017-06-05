@@ -144,8 +144,10 @@ namespace ecruise.Api
                                                                        cm.CompletedDate.Value.ToUniversalTime() < monthEnd)
                 .ToImmutableList();
 
-            var bookings = _context.Bookings.Where(b => b.BookingDate.ToUniversalTime() > monthStart &&
-                                                        b.BookingDate.ToUniversalTime() < monthEnd)
+            var bookings = _context.Bookings
+                .Where(b => b.BookingDate.ToUniversalTime() > monthStart.AddMonths(-1) &&
+                                                        b.BookingDate.ToUniversalTime() < monthEnd &&
+                                                        b.Trip.EndDate.HasValue)
                 .ToImmutableList();
 
             List<ulong> invoiceIds = new List<ulong>();
