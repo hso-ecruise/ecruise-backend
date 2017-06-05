@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
+using ecruise.Database.Models;
 using ecruise.Models;
 using ecruise.Models.Assemblers;
 using Microsoft.AspNetCore.Http;
@@ -9,11 +10,17 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using DbInvoice = ecruise.Database.Models.Invoice;
 using DbInvoiceItem = ecruise.Database.Models.InvoiceItem;
+using Invoice = ecruise.Models.Invoice;
+using InvoiceItem = ecruise.Models.InvoiceItem;
 
 namespace ecruise.Api.Controllers
 {
     public class InvoicesController : BaseController
     {
+        public InvoicesController(EcruiseContext context) : base(context)
+        {
+        }
+
         // GET: /Invoices
         [HttpGet(Name = "GetAllInvoices")]
         public async Task<IActionResult> Get()

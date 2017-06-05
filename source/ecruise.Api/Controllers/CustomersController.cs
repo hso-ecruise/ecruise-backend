@@ -4,6 +4,7 @@ using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
+using ecruise.Database.Models;
 using ecruise.Models;
 using ecruise.Models.Assemblers;
 using Microsoft.AspNetCore.Mvc;
@@ -14,6 +15,10 @@ namespace ecruise.Api.Controllers
 {
     public class CustomersController : BaseController
     {
+        public CustomersController(EcruiseContext context) : base(context)
+        {
+        }
+
         // GET: /Customers
         [HttpGet(Name = "GetAllCustomers")]
         public async Task<IActionResult> GetAll()

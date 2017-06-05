@@ -22,8 +22,6 @@ namespace ecruise.Api
 {
     public class Startup
     {
-        public static EcruiseContext Context;
-
         public Startup(IHostingEnvironment env)
         {
             var builder = new ConfigurationBuilder()
@@ -41,26 +39,24 @@ namespace ecruise.Api
         {
             // Add framework services.
             services.AddCors();
-            services.AddMvc();
 
             services.AddDbContext<EcruiseContext>(options =>
                 options.UseMySql(Environment.GetEnvironmentVariable("CONNECTION_STRING") ??
                                  Configuration.GetConnectionString("ecruiseMySQL")));
+            services.AddMvc();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory,
             EcruiseContext ecruiseContext)
         {
-            Context = ecruiseContext;
-
             // Add CORS to every Request
             app.UseCors(builder => builder.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
 
             // Schedule background tasks
-            JobManager.Initialize(new BackgroundTasker(ecruiseContext).ScheduleAllTasks());
+            JobManager.Initialize(new BackgroundTasker().ScheduleAllTasks());
 
-            // add logger
+            // Add logger
             loggerFactory.AddConsole(Configuration.GetSection("Logging"));
             loggerFactory.AddDebug(LogLevel.Debug);
 
@@ -90,9 +86,8 @@ namespace ecruise.Api
             });
             #endregion
 
-
             // use authentification middleware
-            app.UseMiddleware<EcruiseAuthenticationMiddleware>(ecruiseContext);
+            app.UseMiddleware<EcruiseAuthenticationMiddleware>();
 
             app.UseMvc();
         }

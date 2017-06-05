@@ -18,6 +18,10 @@ namespace ecruise.Api.Controllers
 {
     public class TripsController : BaseController
     {
+        public TripsController(EcruiseContext context) : base(context)
+        {
+        }
+
         // GET: /trips
         [HttpGet(Name = "GetAllTrips")]
         public async Task<IActionResult> GetAll()

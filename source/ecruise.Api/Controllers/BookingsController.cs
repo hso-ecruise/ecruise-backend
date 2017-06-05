@@ -3,16 +3,22 @@ using System.Collections.Immutable;
 using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
+using ecruise.Database.Models;
 using ecruise.Models;
 using ecruise.Models.Assemblers;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Booking = ecruise.Models.Booking;
 
 namespace ecruise.Api.Controllers
 {
     public class BookingsController : BaseController
     {
+        public BookingsController(EcruiseContext context) : base(context)
+        {
+        }
+
         // GET: /Bookings
         [HttpGet(Name = "GetAllBookings")]
         public async Task<IActionResult> GetAll()

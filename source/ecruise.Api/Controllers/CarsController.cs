@@ -3,17 +3,23 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using System.Threading.Tasks;
+using ecruise.Database.Models;
 using ecruise.Models;
 using ecruise.Models.Assemblers;
 using GeoCoordinatePortable;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Car = ecruise.Models.Car;
 using DbCar = ecruise.Database.Models.Car;
 
 namespace ecruise.Api.Controllers
 {
     public class CarsController : BaseController
     {
+        public CarsController(EcruiseContext context) : base(context)
+        {
+        }
+
         // GET: /cars
         [HttpGet(Name = "GetAllCars")]
         public async Task<IActionResult> GetAll()
@@ -259,7 +265,7 @@ namespace ecruise.Api.Controllers
         }
 
         // GET: /Cars/closest-to/58/8?radius=100
-// ReSharper disable PossibleInvalidOperationException
+        // ReSharper disable PossibleInvalidOperationException
         [HttpGet(@"closest-to/{latitude}/{longitude}", Name = "GetClosestCar")]
         public async Task<IActionResult> GetClosestCarChargingStation(double latitude, double longitude,
             [FromQuery] int radius)

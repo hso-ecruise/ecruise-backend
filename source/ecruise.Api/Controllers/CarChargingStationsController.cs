@@ -2,17 +2,23 @@ using System;
 using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
+using ecruise.Database.Models;
 using ecruise.Models;
 using ecruise.Models.Assemblers;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using CarChargingStation = ecruise.Models.CarChargingStation;
 
 namespace ecruise.Api.Controllers
 {
     [Route("v1/car-charging-stations")]
     public class CarChargingStationsController : BaseController
     {
+        public CarChargingStationsController(EcruiseContext context) : base(context)
+        {
+        }
+
         // GET: /car-charging-stations
         [HttpGet(Name = "GetAllCarChargingStations")]
         public async Task<IActionResult> GetAllCharChargingStations()

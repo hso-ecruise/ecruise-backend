@@ -3,11 +3,13 @@ using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
+using ecruise.Database.Models;
 using ecruise.Models;
 using ecruise.Models.Assemblers;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using CustomerToken = ecruise.Models.CustomerToken;
 using DbCustomer = ecruise.Database.Models.Customer;
 using DbCustomerToken = ecruise.Database.Models.CustomerToken;
 
@@ -16,6 +18,10 @@ namespace ecruise.Api.Controllers
     [AllowAnonymous]
     public class PublicController : BaseController
     {
+        public PublicController(EcruiseContext context) : base(context)
+        {
+        }
+
         // POST: /public/login/login@ecruise.me
         [HttpPost("Login/{email}", Name = "Login")]
         public async Task<IActionResult> Login([FromRoute] string email, [FromBody] string password)

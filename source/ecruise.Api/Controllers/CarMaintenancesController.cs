@@ -2,17 +2,23 @@ using System;
 using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
+using ecruise.Database.Models;
 using ecruise.Models;
 using ecruise.Models.Assemblers;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using CarMaintenance = ecruise.Models.CarMaintenance;
 
 namespace ecruise.Api.Controllers
 {
     [Route("v1/car-maintenances")]
     public class CarMaintenancesController : BaseController
-    {
+    { 
+        public CarMaintenancesController(EcruiseContext context) : base(context)
+        {
+        }
+
         // GET: CarMaintenances
         [HttpGet(Name = "GetAllCarMaintenances")]
         public async Task<IActionResult> Get()

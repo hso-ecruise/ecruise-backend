@@ -13,7 +13,12 @@ namespace ecruise.Api.Controllers
     {
         protected const string BasePath = "v1";
 
-        protected readonly EcruiseContext Context = Startup.Context;
+        protected readonly EcruiseContext Context;
+
+        public BaseController(EcruiseContext context)
+        {
+            Context = context;
+        }
 
         protected ulong AuthenticatedCustomerId { get; set; }
 

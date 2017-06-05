@@ -1,11 +1,13 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using ecruise.Database.Models;
 using ecruise.Models;
 using ecruise.Models.Assemblers;
 using GeoCoordinatePortable;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using ChargingStation = ecruise.Models.ChargingStation;
 using DbChargingStation = ecruise.Database.Models.ChargingStation;
 
 namespace ecruise.Api.Controllers
@@ -13,6 +15,10 @@ namespace ecruise.Api.Controllers
     [Route("v1/charging-stations")]
     public class ChargingStationsController : BaseController
     {
+        public ChargingStationsController(EcruiseContext context) : base(context)
+        {
+        }
+
         // GET: /ChargingStations
         [HttpGet(Name = "GetAllChargingStations")]
         public async Task<IActionResult> GetAll()
