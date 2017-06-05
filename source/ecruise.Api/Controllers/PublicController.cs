@@ -3,10 +3,10 @@ using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
 using ecruise.Models;
 using ecruise.Models.Assemblers;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using DbCustomer = ecruise.Database.Models.Customer;
 using DbCustomerToken = ecruise.Database.Models.CustomerToken;
@@ -69,7 +69,7 @@ namespace ecruise.Api.Controllers
             return Ok(new
             {
                 Id = customer.CustomerId,
-                Token = newCustomerToken.Token
+                newCustomerToken.Token
             });
         }
 
@@ -174,8 +174,9 @@ namespace ecruise.Api.Controllers
             );
             var save = Context.SaveChangesAsync();
 
-            await CustomerAssembler.AssembleModel(insert.Entity).SendMail("Deine Registrierung bei eCruise", string.Format(
-                @"Hallo {0},<br>
+            await CustomerAssembler.AssembleModel(insert.Entity).SendMail("Deine Registrierung bei eCruise",
+                string.Format(
+                    @"Hallo {0},<br>
 herzlich willkommen bei eCruise!<br>
 <br>
 Du bist noch nicht ganz fertig mit deiner Registrierung. Um sie abzuschlieﬂen, fehlt nur noch ein kleiner Schritt:<br>

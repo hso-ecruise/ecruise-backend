@@ -1,13 +1,11 @@
 using System;
-using System.Collections.Generic;
-using System.Collections.Immutable;
 using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
 using ecruise.Models;
 using ecruise.Models.Assemblers;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace ecruise.Api.Controllers
@@ -32,11 +30,8 @@ namespace ecruise.Api.Controllers
                     // Return that there are no results
                     return NoContent();
 
-                else
-                {
-                    // Return found car chargingstations
-                    return Ok(CarChargingStationAssembler.AssembleModelList(carChargingStationEntities));
-                }
+                // Return found car chargingstations
+                return Ok(CarChargingStationAssembler.AssembleModelList(carChargingStationEntities));
             }
             catch (Exception e)
             {
@@ -160,9 +155,9 @@ namespace ecruise.Api.Controllers
                     return Created($"{BasePath}/car-charging-stations/{carChargingStationEntity.CarChargingStationId}",
                         pr);
                 }
-                else
-                    return BadRequest(new Error(301, GetModelStateErrorString(),
-                        "The given data could not be converted to a car chargingstation object. Please check the message for further information."));
+
+                return BadRequest(new Error(301, GetModelStateErrorString(),
+                    "The given data could not be converted to a car chargingstation object. Please check the message for further information."));
             }
             catch (Exception e)
             {
@@ -204,11 +199,9 @@ namespace ecruise.Api.Controllers
                 // Return a reference to the patch object
                 return Ok(new PostReference(id, $"{BasePath}/car-charging-stations/{id}"));
             }
-            else
-            {
-                return BadRequest(new Error(301, "The date given was not formatted correctly.",
-                    "Date must always be in following format: 'yyyy-MM-ddTHH:mm:ss.zzzZ'"));
-            }
+
+            return BadRequest(new Error(301, "The date given was not formatted correctly.",
+                "Date must always be in following format: 'yyyy-MM-ddTHH:mm:ss.zzzZ'"));
         }
     }
 }

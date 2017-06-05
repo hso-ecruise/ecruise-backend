@@ -41,7 +41,7 @@ namespace ecruise.Api.Controllers
             if (AuthenticatedCustomerId == 1)
                 return true;
 
-            return (AuthenticatedCustomerId == customerId);
+            return AuthenticatedCustomerId == customerId;
         }
 
         protected bool HasAccess(uint customerId)
