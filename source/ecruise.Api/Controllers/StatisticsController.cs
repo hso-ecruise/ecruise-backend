@@ -19,17 +19,9 @@ namespace ecruise.Api.Controllers
             if (!HasAccess())
                 return Forbid();
 
-            try
-            {
-                var statistics = await Context.Statistics.ToListAsync();
+            var statistics = await Context.Statistics.ToListAsync();
 
-                return Ok(StatisticAssembler.AssembleModelList(statistics));
-            }
-            catch (Exception e)
-            {
-                return BadRequest(new Error(1, e.Message,
-                    "An error occured. Please check the message for further information."));
-            }
+            return Ok(StatisticAssembler.AssembleModelList(statistics));
         }
 
         // GET: api/Statistics/5
