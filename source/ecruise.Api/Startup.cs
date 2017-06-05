@@ -76,7 +76,7 @@ namespace ecruise.Api
                         context.Response.StatusCode = StatusCodes.Status500InternalServerError;
                         context.Response.ContentType = "application/json";
                         await context.Response.WriteAsync(JsonConvert.SerializeObject(new Error(101,
-                            "An unexpected exception occured.", error.Error.Message)));
+                            "An unexpected exception occured: " + error.Error.Message, error.Error.StackTrace)));
                     }
                     else await next();
                 });
