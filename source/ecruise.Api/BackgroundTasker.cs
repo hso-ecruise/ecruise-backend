@@ -104,7 +104,7 @@ namespace ecruise.Api
                 }
 
                 // Create trip model
-                Models.Trip trip = new Models.Trip(0, (uint)closestCar.CarId, (uint)booking.CustomerId, null, null, null, null, null);
+                Models.Trip trip = new Models.Trip(0, (uint)closestCar.CarId, (uint)booking.CustomerId, booking.PlannedDate ?? booking.BookingDate, null, (uint)matchingCarChargingStation.ChargingStationId, null, null);
 
                 var newtripEntity = TripAssembler.AssembleEntity(0, trip);
 
