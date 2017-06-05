@@ -35,10 +35,13 @@ namespace ecruise.Api
 
             // Add invoice mailing module
             // Setting every 0 month because it then already starts this month
-            registry.Schedule((Action)InvoiceCreator).ToRunEvery(0).Months().OnTheLastDay().At(23, 59);
+            registry.Schedule((Action)InvoiceMailer).ToRunEvery(0).Months().OnTheLastDay().At(23, 59);
 
             // Add statistc creation module
-            registry.Schedule((Action) StatisticCreator).ToRunEvery(0).Days().At(7, 0);
+            registry.Schedule((Action)StatisticCreator).ToRunEvery(0).Days().At(7, 0);
+
+            // Add invoice creation module
+            registry.Schedule((Action) InvoiceCreator).ToRunEvery(0).Months().On(1).At(0, 0);
 
             return registry;
         }
@@ -130,7 +133,7 @@ namespace ecruise.Api
         /// <summary>
         /// Sends the invoice of the current month to a customer if there are entries
         /// </summary>
-        private async void InvoiceCreator()
+        private async void InvoiceMailer()
         {
             DateTime checkLastMonth = DateTime.UtcNow.AddDays(-1);
 
@@ -259,6 +262,29 @@ namespace ecruise.Api
 
             await _context.Statistics.AddAsync(newStatistic);
             await _context.SaveChangesAsync();
+        }
+
+        /// <summary>
+        /// Creates a new empty invoice for every customer
+        /// </summary>
+        private async void InvoiceCreator()
+        {
+            var allCustomers = await _context.Customers.ToListAsync();
+
+            List<DbInvoice> newInvoices = new List<DbInvoice>();
+
+            foreach (var customer in allCustomers)
+            {
+                // Create a new invoice for each customer
+                newInvoices.Add(new DbInvoice
+                {
+                    CustomerId = customer.CustomerId,
+                    Paid = false,
+                    TotalAmount = 0.0
+                });
+            }
+
+            await _context.Invoices.AddRangeAsync(newInvoices);
         }
     }
 }
