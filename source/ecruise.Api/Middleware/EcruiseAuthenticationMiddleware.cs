@@ -1,17 +1,17 @@
 ﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
+using ecruise.Database.Models;
 using Microsoft.AspNetCore.Http;
-
-using EcruiseContext = ecruise.Database.Models.EcruiseContext;
+using Microsoft.EntityFrameworkCore;
 using DbCustomerToken = ecruise.Database.Models.CustomerToken;
 
 namespace ecruise.Api.Middleware
 {
     public class EcruiseAuthenticationMiddleware
     {
-        private readonly RequestDelegate _next;
         private readonly EcruiseContext _dbContext;
+        private readonly RequestDelegate _next;
 
         public EcruiseAuthenticationMiddleware(RequestDelegate next, EcruiseContext dbContext)
         {
@@ -36,10 +36,10 @@ namespace ecruise.Api.Middleware
                 _dbContext.Database.EnsureCreated();
 
                 DbCustomerToken customerToken =
-                    _dbContext.CustomerTokens
+                    await _dbContext.CustomerTokens
                         .Where(t => t.ExpireDate == null || t.ExpireDate > DateTime.UtcNow)
                         .Where(t => t.Type == "LOGIN")
-                        .FirstOrDefault(t => t.Token == authToken);
+                        .FirstOrDefaultAsync(t => t.Token == authToken);
 
                 // no valid customer token found
                 if (customerToken == null)
