@@ -50,7 +50,7 @@ namespace ecruise.Api.Controllers
                     "An error occured. Please check the message for further information."));
 
             // Get booking from database
-            var booking = await Context.Bookings.FindAsync(id); // DEBUG Check for return when no booking found
+            var booking = await Context.Bookings.FindAsync(id);
 
             if (booking == null)
                 return NotFound(new Error(201, "Booking with requested booking id does not exist.",
