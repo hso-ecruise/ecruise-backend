@@ -1,6 +1,7 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
 using System.Text;
+using System.Threading.Tasks;
 using Newtonsoft.Json;
 using MailKit.Net.Smtp;
 using MimeKit;
@@ -140,7 +141,7 @@ namespace ecruise.Models
         /// <param name="subject">The subject for the mail</param>
         /// <param name="body">The body for the mail</param>
         /// <returns>True if mail could be sent, else false</returns>
-        public bool SendMail(string subject, string body)
+        public async Task<bool> SendMail(string subject, string body)
         {
             // Create the message
             MimeMessage mail = new MimeMessage();
@@ -168,7 +169,7 @@ namespace ecruise.Models
                     Environment.GetEnvironmentVariable("EMAIL_PASSWORD"));
 
                 // Send the mail
-                smtpClient.Send(mail);
+                await smtpClient.SendAsync(mail);
 
                 // Disconnect and clean up
                 smtpClient.Disconnect(true);

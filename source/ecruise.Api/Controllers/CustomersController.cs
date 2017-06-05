@@ -17,13 +17,13 @@ namespace ecruise.Api.Controllers
     {
         // GET: /Customers
         [HttpGet(Name = "GetAllCustomers")]
-        public IActionResult GetAll()
+        public async Task<IActionResult> GetAll()
         {
             // create a list of all customers
-            List<DbCustomer> customers = Context.Customers
+            List<DbCustomer> customers = await Context.Customers
                 // query only customers the current customer has access to
                 .Where(c => HasAccess(c.CustomerId))
-                .ToList();
+                .ToListAsync();
 
             // return 203 No Content if there are no customers
             if (customers.Count == 0)
@@ -34,7 +34,7 @@ namespace ecruise.Api.Controllers
 
         // GET: /Customers/5
         [HttpGet("{id}", Name = "GetCustomer")]
-        public IActionResult GetOne(ulong id)
+        public async Task<IActionResult> GetOne(ulong id)
         {
             // forbid if user is accessing different user's ressources
             if (!HasAccess(id))
@@ -46,7 +46,7 @@ namespace ecruise.Api.Controllers
                     "An error occured. Please check the message for further information."));
 
             // find the requested customer
-            DbCustomer customer = Context.Customers.Find(id);
+            DbCustomer customer = await Context.Customers.FindAsync(id);
 
             // return error if customer was not found
             if (customer == null)
@@ -86,7 +86,7 @@ namespace ecruise.Api.Controllers
             string passwordHash = BitConverter.ToString(result).ToLowerInvariant().Replace("-", "");
 
             // update customer using a transaction
-            using (var transaction = Context.Database.BeginTransaction())
+            using (var transaction = await Context.Database.BeginTransactionAsync())
             {
                 // update customer hash
                 customer.PasswordHash = passwordHash;
@@ -121,7 +121,7 @@ namespace ecruise.Api.Controllers
                     "An error occured. Please check the message for further information."));
 
             // find the requested customer
-            DbCustomer customer = Context.Customers.Find(id);
+            DbCustomer customer = await Context.Customers.FindAsync(id);
 
             // return error if customer was not found
             if (customer == null)
@@ -157,7 +157,7 @@ namespace ecruise.Api.Controllers
                     "An error occured. Please check the message for further information."));
 
             // find the requested customer
-            DbCustomer customer = Context.Customers.Find(id);
+            DbCustomer customer = await Context.Customers.FindAsync(id);
 
             // return error if customer was not found
             if (customer == null)
@@ -186,7 +186,7 @@ namespace ecruise.Api.Controllers
                     "An error occured. Please check the message for further information."));
 
             // find the requested customer
-            DbCustomer customer = Context.Customers.Find(id);
+            DbCustomer customer = await Context.Customers.FindAsync(id);
 
             // return error if customer was not found
             if (customer == null)
@@ -225,7 +225,7 @@ namespace ecruise.Api.Controllers
                     "An error occured. Please check the message for further information."));
 
             // find the requested customer
-            DbCustomer customer = Context.Customers.Find(id);
+            DbCustomer customer = await Context.Customers.FindAsync(id);
 
             // return error if customer was not found
             if (customer == null)
@@ -254,7 +254,7 @@ namespace ecruise.Api.Controllers
                     "An error occured. Please check the message for further information."));
 
             // find the requested customer
-            DbCustomer customer = Context.Customers.Find(id);
+            DbCustomer customer = await Context.Customers.FindAsync(id);
 
             // return error if customer was not found
             if (customer == null)

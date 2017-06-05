@@ -1,10 +1,13 @@
+using System.Collections.Generic;
 using System.Collections.Immutable;
 using Microsoft.AspNetCore.Mvc;
 using ecruise.Models;
 using DbInvoice = ecruise.Database.Models.Invoice;
 using DbInvoiceItem = ecruise.Database.Models.InvoiceItem;
 using System.Linq;
+using System.Threading.Tasks;
 using ecruise.Models.Assemblers;
+using Microsoft.EntityFrameworkCore;
 
 namespace ecruise.Api.Controllers
 {
@@ -12,12 +15,12 @@ namespace ecruise.Api.Controllers
     {
         // GET: /Invoices
         [HttpGet(Name = "GetAllInvoices")]
-        public IActionResult Get()
+        public async Task<IActionResult> Get()
         {
-            ImmutableList<DbInvoice> invoices = Context.Invoices
+            List<DbInvoice> invoices = await Context.Invoices
                 // query only invoices the current customer has access to
                 .Where(i => HasAccess(i.CustomerId))
-                .ToImmutableList();
+                .ToListAsync();
 
             if (invoices.Count == 0)
                 return NoContent();
@@ -27,13 +30,13 @@ namespace ecruise.Api.Controllers
 
         // GET: /invoices/1
         [HttpGet("{id}", Name = "GetInvoiceByInvoiceId")]
-        public IActionResult Get(ulong id)
+        public async Task<IActionResult> Get(ulong id)
         {
             if (!ModelState.IsValid)
                 return BadRequest(new Error(400, GetModelStateErrorString(),
                     "An error occured. Please check the message for further information."));
 
-            DbInvoice invoice = Context.Invoices.Find(id);
+            DbInvoice invoice = await Context.Invoices.FindAsync(id);
 
             if (invoice == null)
                 return NotFound(new Error(201, "Invoice with requested id does not exist.",
@@ -48,13 +51,13 @@ namespace ecruise.Api.Controllers
 
         // GET: /invoices/by-invoice-item/1
         [HttpGet("by-invoice-item/{id}", Name = "GetInvoiceByInvoiceItemId")]
-        public IActionResult GetByInvoiceItemId(ulong id)
+        public async Task<IActionResult> GetByInvoiceItemId(ulong id)
         {
             if (!ModelState.IsValid)
                 return BadRequest(new Error(400, GetModelStateErrorString(),
                     "An error occured. Please check the message for further information."));
-            
-            DbInvoiceItem item = Context.InvoiceItems.Find(id);
+
+            DbInvoiceItem item = await Context.InvoiceItems.FindAsync(id);
 
             if (item == null)
                 return NotFound(new Error(201, "Invoice-Item with requested id does not exist.",
@@ -69,7 +72,7 @@ namespace ecruise.Api.Controllers
 
         // GET: /invoices/by-customer/{customerId}
         [HttpGet("by-customer/{customerId}", Name = "GetInvoiceByCustomerId")]
-        public IActionResult GetInvoiceByCustomerId(ulong customerId)
+        public async Task<IActionResult> GetInvoiceByCustomerId(ulong customerId)
         {
             if (!ModelState.IsValid)
                 return BadRequest(new Error(400, GetModelStateErrorString(),
@@ -79,9 +82,9 @@ namespace ecruise.Api.Controllers
             if (!HasAccess(customerId))
                 return Forbid();
 
-            ImmutableList<DbInvoice> invoices = Context.Invoices
+            List<DbInvoice> invoices = await Context.Invoices
                 .Where(t => t.CustomerId == customerId)
-                .ToImmutableList();
+                .ToListAsync();
 
             if (invoices.Count == 0)
                 return NoContent();
@@ -91,7 +94,7 @@ namespace ecruise.Api.Controllers
 
         // PATCH: /invoices/1/paid
         [HttpPatch("{id}/paid")]
-        public IActionResult Patch(ulong id, [FromBody] bool paid)
+        public async Task<IActionResult> Patch(ulong id, [FromBody] bool paid)
         {
             // forbid if not admin
             if (!HasAccess())
@@ -101,27 +104,27 @@ namespace ecruise.Api.Controllers
                 return BadRequest(new Error(400, GetModelStateErrorString(),
                     "An error occured. Please check the message for further information."));
 
-            DbInvoice invoice = Context.Invoices.Find(id);
+            DbInvoice invoice = await Context.Invoices.FindAsync(id);
 
             if (invoice == null)
                 return NotFound(new Error(201, "Invoice with requested id does not exist.",
                     $"There is no invoice that has the id {id}."));
 
             invoice.Paid = paid;
-            Context.SaveChanges();
+            await Context.SaveChangesAsync();
 
             return Ok(new PostReference(id, $"{BasePath}/invoices/{id}"));
         }
 
         // GET: /invoices/1/items
         [HttpGet("{id}/items", Name = "GetAllInvoiceItems")]
-        public IActionResult GetAllInvoiceItems(ulong id)
+        public async Task<IActionResult> GetAllInvoiceItems(ulong id)
         {
             if (!ModelState.IsValid)
                 return BadRequest(new Error(400, GetModelStateErrorString(),
                     "An error occured. Please check the message for further information."));
 
-            DbInvoice invoice = Context.Invoices.Find(id);
+            DbInvoice invoice = await Context.Invoices.FindAsync(id);
 
             if (invoice == null)
                 return NotFound(new Error(201, "Invoice with requested id does not exist.",
@@ -131,9 +134,9 @@ namespace ecruise.Api.Controllers
             if (!HasAccess(invoice.CustomerId))
                 return Forbid();
 
-            ImmutableList<DbInvoiceItem> items = Context.InvoiceItems
+            List<DbInvoiceItem> items = await Context.InvoiceItems
                 .Where(i => i.InvoiceId == id)
-                .ToImmutableList();
+                .ToListAsync();
 
             if (items.Count == 0)
                 return NoContent();
@@ -143,7 +146,7 @@ namespace ecruise.Api.Controllers
 
         // POST: /Invoices
         [HttpPost(Name = "CreateInvoice")]
-        public IActionResult PostInvoice([FromBody] Invoice invoice)
+        public async Task<IActionResult> PostInvoice([FromBody] Invoice invoice)
         {
             // forbid if not admin
             if (!HasAccess())
@@ -155,8 +158,8 @@ namespace ecruise.Api.Controllers
 
             DbInvoice insertInvoice = InvoiceAssembler.AssembleEntity(0, invoice);
 
-            var inserted = Context.Invoices.Add(insertInvoice);
-            Context.SaveChanges();
+            var inserted = await Context.Invoices.AddAsync(insertInvoice);
+            await Context.SaveChangesAsync();
 
             return Created($"{BasePath}/invoices/{inserted.Entity.InvoiceId}",
                 new PostReference((uint)inserted.Entity.InvoiceId, $"{BasePath}/invoices/{inserted.Entity.InvoiceId}"));
@@ -164,7 +167,7 @@ namespace ecruise.Api.Controllers
 
         // POST: /Invoices/1/items
         [HttpPost("{id}/items", Name = "CreateNewInvoiceItem")]
-        public IActionResult Post(ulong id, [FromBody] InvoiceItem invoiceItem)
+        public async Task<IActionResult> Post(ulong id, [FromBody] InvoiceItem invoiceItem)
         {
             // forbid if not admin
             if (!HasAccess())
@@ -174,7 +177,7 @@ namespace ecruise.Api.Controllers
                 return BadRequest(new Error(400, GetModelStateErrorString(),
                     "An error occured. Please check the message for further information."));
 
-            DbInvoice invoice = Context.Invoices.Find(id);
+            DbInvoice invoice = await Context.Invoices.FindAsync(id);
 
             if (invoice == null)
                 return NotFound(new Error(201, "Invoice with requested id does not exist.",
@@ -182,8 +185,8 @@ namespace ecruise.Api.Controllers
 
             DbInvoiceItem insertItem = InvoiceItemAssembler.AssembleEntity(0, invoiceItem);
 
-            var inserted = Context.InvoiceItems.Add(insertItem);
-            Context.SaveChanges();
+            var inserted = await Context.InvoiceItems.AddAsync(insertItem);
+            await Context.SaveChangesAsync();
 
             return Created($"{BasePath}/invoices/{inserted.Entity.InvoiceId}",
                 new PostReference((uint)inserted.Entity.InvoiceItemId,
@@ -192,13 +195,13 @@ namespace ecruise.Api.Controllers
 
         // GET: /invoices/items/1
         [HttpGet("items/{invoiceItemId}", Name = "GetInvoiceItem")]
-        public IActionResult GetInvoiceItem(ulong invoiceItemId)
+        public async Task<IActionResult> GetInvoiceItem(ulong invoiceItemId)
         {
             if (!ModelState.IsValid)
                 return BadRequest(new Error(400, GetModelStateErrorString(),
                     "An error occured. Please check the message for further information."));
-            
-            DbInvoiceItem invoiceItem = Context.InvoiceItems.Find(invoiceItemId);
+
+            DbInvoiceItem invoiceItem = await Context.InvoiceItems.FindAsync(invoiceItemId);
 
             if (invoiceItem == null)
                 return NotFound(new Error(201, "InvoiceItem with requested id does not exist.",

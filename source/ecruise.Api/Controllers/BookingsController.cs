@@ -2,10 +2,12 @@ using System;
 using System.Collections.Immutable;
 using System.Globalization;
 using System.Linq;
+using System.Threading.Tasks;
 using ecruise.Models;
 using ecruise.Models.Assemblers;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Booking = ecruise.Models.Booking;
 
 namespace ecruise.Api.Controllers
@@ -14,15 +16,15 @@ namespace ecruise.Api.Controllers
     {
         // GET: /Bookings
         [HttpGet(Name = "GetAllBookings")]
-        public IActionResult GetAll()
+        public async Task<IActionResult> GetAll()
         {
             try
             {
                 // Get all bookings from database
-                var bookings = Context.Bookings
+                var bookings = await Context.Bookings
                     // query only bookings the current customer has access to
                     .Where(b => HasAccess(b.CustomerId))
-                    .ToImmutableList();
+                    .ToListAsync();
 
                 if (bookings.Count < 1)
                     // Return that there are no results
@@ -41,7 +43,7 @@ namespace ecruise.Api.Controllers
 
         // GET: /Bookings/5
         [HttpGet("{id}", Name = "GetBooking")]
-        public IActionResult Get(ulong id)
+        public async Task<IActionResult> Get(ulong id)
         {
             // Check for correct value
             if (!ModelState.IsValid)
@@ -49,7 +51,7 @@ namespace ecruise.Api.Controllers
                     "An error occured. Please check the message for further information."));
 
             // Get booking from database
-            var booking = Context.Bookings.Find(id); // DEBUG Check for return when no booking found
+            var booking = await Context.Bookings.FindAsync(id); // DEBUG Check for return when no booking found
 
             if (booking == null)
                 return NotFound(new Error(201, "Booking with requested booking id does not exist.",
@@ -64,7 +66,7 @@ namespace ecruise.Api.Controllers
 
         // POST: /Bookings
         [HttpPost(Name = "PostBooking")]
-        public IActionResult Post([FromBody] Booking booking)
+        public async Task<IActionResult> Post([FromBody] Booking booking)
         {
             try
             {
@@ -99,8 +101,8 @@ namespace ecruise.Api.Controllers
                     bookingEntity.BookingDate = DateTime.UtcNow;
 
                     // Save to database
-                    Context.Bookings.Add(bookingEntity);
-                    Context.SaveChanges();
+                    await Context.Bookings.AddAsync(bookingEntity);
+                    await Context.SaveChangesAsync();
 
                     // Get the reference to the newly created entity
                     PostReference pr = new PostReference((uint)bookingEntity.BookingId,
@@ -123,18 +125,18 @@ namespace ecruise.Api.Controllers
 
         // GET: /Bookings/by-trip/5
         [HttpGet("by-trip/{tripId}", Name = "GetBookingsByTrip")]
-        public IActionResult GetByTripId(ulong tripId)
+        public async Task<IActionResult> GetByTripId(ulong tripId)
         {
             try
             {
                 if (ModelState.IsValid)
                 {
                     // Get all bookings with the given trip id
-                    var bookingEntities = Context.Bookings
+                    var bookingEntities = await Context.Bookings
                         .Where(b => b.TripId.HasValue && b.TripId.Value == tripId)
                         // query only bookings the current customer has access to
                         .Where(b => HasAccess(b.CustomerId))
-                        .ToImmutableList();
+                        .ToListAsync();
 
                     if (bookingEntities.Count < 1)
                         return NoContent();
@@ -189,7 +191,7 @@ namespace ecruise.Api.Controllers
 
         // GET: /Bookings/by-booking-date/<date>
         [HttpGet("by-booking-date/{date}", Name = "GetBookingsByBookingDate")]
-        public IActionResult GetByBookingDate(string date)
+        public async Task<IActionResult> GetByBookingDate(string date)
         {
             // Transform string to date
             DateTime requestedDateTime;
@@ -197,12 +199,12 @@ namespace ecruise.Api.Controllers
                 DateTimeStyles.AssumeUniversal, out requestedDateTime))
             {
                 // Get all bookings booked at the specified day
-                var matchingbookings = Context.Bookings
+                var matchingbookings = await Context.Bookings
                     // query only bookings the current customer has access to
                     .Where(b => HasAccess(b.CustomerId))
                     // filter by date
                     .Where(b => b.BookingDate.ToUniversalTime() == requestedDateTime.ToUniversalTime())
-                    .ToImmutableList();
+                    .ToListAsync();
 
                 // Check if any matches were found
                 if (matchingbookings.Count < 1)
@@ -220,7 +222,7 @@ namespace ecruise.Api.Controllers
 
         // GET: /Bookings/by-planned-date/<date>
         [HttpGet("by-planned-date/{date}", Name = "GetBookingsByPlannedDate")]
-        public IActionResult GetByPlannedDate(string date)
+        public async Task<IActionResult> GetByPlannedDate(string date)
         {
             // Transform string to date
             DateTime requestedDateTime;
@@ -228,13 +230,13 @@ namespace ecruise.Api.Controllers
                 DateTimeStyles.AssumeUniversal, out requestedDateTime))
             {
                 // Get all bookings booked at the specified day
-                var matchingbookings = Context.Bookings
+                var matchingbookings = await Context.Bookings
                     // query only bookings the current customer has access to
                     .Where(b => HasAccess(b.CustomerId))
                     // filter by planned date
                     .Where(b => b.PlannedDate.HasValue && b.PlannedDate.Value.ToUniversalTime() ==
                                 requestedDateTime.ToUniversalTime())
-                    .ToImmutableList();
+                    .ToListAsync();
 
                 // Check if any matches were found
                 if (matchingbookings.Count < 1)

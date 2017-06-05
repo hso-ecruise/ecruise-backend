@@ -3,10 +3,12 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Globalization;
 using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using ecruise.Models;
 using ecruise.Models.Assemblers;
 using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore;
 
 namespace ecruise.Api.Controllers
 {
@@ -15,7 +17,7 @@ namespace ecruise.Api.Controllers
     {
         // GET: /car-charging-stations
         [HttpGet(Name = "GetAllCarChargingStations")]
-        public IActionResult GetAllCharChargingStations()
+        public async Task<IActionResult> GetAllCharChargingStations()
         {
             // forbid if not admin
             if (!HasAccess())
@@ -24,7 +26,7 @@ namespace ecruise.Api.Controllers
             try
             {
                 // Get all entities from database
-                var carChargingStationEntities = Context.CarChargingStations.ToImmutableList();
+                var carChargingStationEntities = await Context.CarChargingStations.ToListAsync();
 
                 if (carChargingStationEntities.Count < 1)
                     // Return that there are no results
@@ -46,7 +48,7 @@ namespace ecruise.Api.Controllers
 
         // GET: /car-charging-stations/by-car/5
         [HttpGet("by-car/{carId}", Name = "GetCarChargingStationsByCar")]
-        public IActionResult GetByCarId(ulong carId)
+        public async Task<IActionResult> GetByCarId(ulong carId)
         {
             // forbid if not admin
             if (!HasAccess())
@@ -61,8 +63,8 @@ namespace ecruise.Api.Controllers
                         "An error occured. Please check the message for further information."));
 
                 // Get matching car chargingstation entities from database
-                var carChargingStations = Context.CarChargingStations.Where(ccs => ccs.CarId == carId)
-                    .ToImmutableList();
+                var carChargingStations = await Context.CarChargingStations.Where(ccs => ccs.CarId == carId)
+                    .ToListAsync();
 
                 if (carChargingStations == null || carChargingStations.Count < 1)
                     return NoContent();
@@ -79,7 +81,7 @@ namespace ecruise.Api.Controllers
 
         // GET: /car-charging-stations/by-charging-station/5
         [HttpGet("by-charging-station/{chargingStationId}", Name = "GetCarChargingStationsByChargingStation")]
-        public IActionResult GetByChargingStationId(ulong chargingStationId)
+        public async Task<IActionResult> GetByChargingStationId(ulong chargingStationId)
         {
             // forbid if not admin
             if (!HasAccess())
@@ -94,8 +96,8 @@ namespace ecruise.Api.Controllers
                         "An error occured. Please check the message for further information."));
 
                 // Get matching car chargingstation entities from database
-                var carChargingStations = Context.CarChargingStations
-                    .Where(ccs => ccs.ChargingStationId == chargingStationId).ToImmutableList();
+                var carChargingStations = await Context.CarChargingStations
+                    .Where(ccs => ccs.ChargingStationId == chargingStationId).ToListAsync();
 
                 if (carChargingStations == null || carChargingStations.Count < 1)
                     return NoContent();
@@ -112,7 +114,7 @@ namespace ecruise.Api.Controllers
 
         // POST: /car-charging-stations
         [HttpPost]
-        public IActionResult Post([FromBody] CarChargingStation carChargingStation)
+        public async Task<IActionResult> Post([FromBody] CarChargingStation carChargingStation)
         {
             // forbid if not admin
             if (!HasAccess())
@@ -147,8 +149,8 @@ namespace ecruise.Api.Controllers
                     var carChargingStationEntity = CarChargingStationAssembler.AssembleEntity(0, carChargingStation);
 
                     // Save to database
-                    Context.CarChargingStations.Add(carChargingStationEntity);
-                    Context.SaveChanges();
+                    await Context.CarChargingStations.AddAsync(carChargingStationEntity);
+                    await Context.SaveChangesAsync();
 
                     // Get the reference to the newly created entity
                     PostReference pr = new PostReference((uint)carChargingStationEntity.CarChargingStationId,
@@ -172,7 +174,7 @@ namespace ecruise.Api.Controllers
 
         // Patch: /car-charging-stations/5/charge-end
         [HttpPatch("{id}/charge-end")]
-        public IActionResult Patch(ulong id, [FromBody] string chargeEnd)
+        public async Task<IActionResult> Patch(ulong id, [FromBody] string chargeEnd)
         {
             // forbid if not admin
             if (!HasAccess())
@@ -197,7 +199,7 @@ namespace ecruise.Api.Controllers
 
                 // Patch completed date and save the change
                 carChargingStation.ChargeEnd = newChargeEndDateTime;
-                Context.SaveChangesAsync();
+                await Context.SaveChangesAsync();
 
                 // Return a reference to the patch object
                 return Ok(new PostReference(id, $"{BasePath}/car-charging-stations/{id}"));

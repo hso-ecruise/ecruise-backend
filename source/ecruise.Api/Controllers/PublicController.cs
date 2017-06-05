@@ -2,11 +2,12 @@ using System;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using ecruise.Models;
 using ecruise.Models.Assemblers;
 using Microsoft.AspNetCore.Authorization;
-
+using Microsoft.EntityFrameworkCore;
 using DbCustomer = ecruise.Database.Models.Customer;
 using DbCustomerToken = ecruise.Database.Models.CustomerToken;
 
@@ -17,13 +18,13 @@ namespace ecruise.Api.Controllers
     {
         // POST: /public/login/login@ecruise.me
         [HttpPost("Login/{email}", Name = "Login")]
-        public IActionResult Login([FromRoute] string email, [FromBody] string password)
+        public async Task<IActionResult> Login([FromRoute] string email, [FromBody] string password)
         {
             if (!ModelState.IsValid)
                 return BadRequest(new Error(401, GetModelStateErrorString(),
                     "An error occured. Please check the message for further information."));
 
-            DbCustomer customer = Context.Customers.First(c => c.Email == email);
+            DbCustomer customer = await Context.Customers.FirstAsync(c => c.Email == email);
             if (customer == null)
                 return Unauthorized();
 
@@ -62,8 +63,8 @@ namespace ecruise.Api.Controllers
                 new CustomerToken(0, (uint)customer.CustomerId, CustomerToken.TokenTypeEnum.Login, newToken,
                     DateTime.UtcNow, null));
 
-            Context.CustomerTokens.Add(newCustomerToken);
-            Context.SaveChangesAsync();
+            await Context.CustomerTokens.AddAsync(newCustomerToken);
+            await Context.SaveChangesAsync();
 
             return Ok(new
             {
@@ -74,29 +75,29 @@ namespace ecruise.Api.Controllers
 
         // GET: /public/activate/login@ecruise.me/F3E64113EAC3432FFE968942674E98C6B01987F69EADEA90EEA1F8C809AB3DEE
         [HttpGet("activate/{email}/{token}", Name = "ActivateAccount")]
-        public IActionResult Activate([FromRoute] string email, [FromRoute] string token)
+        public async Task<IActionResult> Activate([FromRoute] string email, [FromRoute] string token)
         {
             if (!ModelState.IsValid)
                 return BadRequest(new Error(401, GetModelStateErrorString(),
                     "An error occured. Please check the message for further information."));
 
             // find matching customer
-            DbCustomer customer = Context.Customers.First(c => c.Email == email);
+            DbCustomer customer = await Context.Customers.FirstAsync(c => c.Email == email);
             if (customer == null)
                 return Redirect("https://ecruise.me/nocustomer");
 
             DbCustomerToken activationToken =
-                Context.CustomerTokens
+                await Context.CustomerTokens
                     .Where(t => t.Type == "EMAIL_ACTIVATION")
                     .Where(t => t.ExpireDate == null || t.ExpireDate >= DateTime.UtcNow)
                     .Where(t => string.Equals(t.Token, token, StringComparison.OrdinalIgnoreCase))
-                    .FirstOrDefault(t => t.CustomerId == customer.CustomerId);
+                    .FirstOrDefaultAsync(t => t.CustomerId == customer.CustomerId);
 
             // there is no such activation token
             if (activationToken == null)
                 return Redirect("https://ecruise.me/notoken");
 
-            using (var transaction = Context.Database.BeginTransaction())
+            using (var transaction = await Context.Database.BeginTransactionAsync())
             {
                 // update customer, activate him
                 customer.Activated = true;
@@ -106,7 +107,7 @@ namespace ecruise.Api.Controllers
 
                 transaction.Commit();
 
-                Context.SaveChangesAsync();
+                await Context.SaveChangesAsync();
             }
 
             return Redirect("https://ecruise.me/start");
@@ -114,7 +115,7 @@ namespace ecruise.Api.Controllers
 
         // POST: /public/register
         [HttpPost("register", Name = "Register")]
-        public IActionResult Post([FromBody] Registration r)
+        public async Task<IActionResult> Post([FromBody] Registration r)
         {
             // TODO(Lyrex): Implement proper way to create a user (email activation mail, etc.)
 
@@ -123,7 +124,7 @@ namespace ecruise.Api.Controllers
                     "An error occured. Please check the message for further information."));
 
             // Check if username already in use
-            if(Context.Customers.Any(c => c.Email == r.Email))
+            if (await Context.Customers.AnyAsync(c => c.Email == r.Email))
                 return BadRequest(new Error(401, "Email address already in use",
                     "The email you are trying to use to register is already in use."));
 
@@ -154,8 +155,8 @@ namespace ecruise.Api.Controllers
                 };
 
             // save customer to database
-            var insert = Context.Customers.Add(insertCustomer);
-            Context.SaveChanges();
+            var insert = await Context.Customers.AddAsync(insertCustomer);
+            await Context.SaveChangesAsync();
 
             // generate customer authentification token for email activation
             var crypt = RandomNumberGenerator.Create();
@@ -165,7 +166,7 @@ namespace ecruise.Api.Controllers
             string activationToken = BitConverter.ToString(randBytes).ToLowerInvariant().Replace("-", "");
             crypt.Dispose();
 
-            Context.CustomerTokens.Add(
+            await Context.CustomerTokens.AddAsync(
                 CustomerTokenAssembler.AssembleEntity(0,
                     new CustomerToken(0, (uint)insert.Entity.CustomerId, CustomerToken.TokenTypeEnum.EmailActivation,
                         activationToken, DateTime.UtcNow, null)
@@ -173,7 +174,8 @@ namespace ecruise.Api.Controllers
             );
             var save = Context.SaveChangesAsync();
 
-            CustomerAssembler.AssembleModel(insert.Entity).SendMail("Deine Registrierung bei eCruise", string.Format(@"Hallo {0},<br>
+            await CustomerAssembler.AssembleModel(insert.Entity).SendMail("Deine Registrierung bei eCruise", string.Format(
+                @"Hallo {0},<br>
 herzlich willkommen bei eCruise!<br>
 <br>
 Du bist noch nicht ganz fertig mit deiner Registrierung. Um sie abzuschlieﬂen, fehlt nur noch ein kleiner Schritt:<br>
@@ -184,7 +186,7 @@ Mit einem Klick auf den folgenden Link best‰tigst du deine Anmeldung:<br>
 Wir freuen uns auf dich!<br>
 Dein eCruise-Team", r.FirstName, r.Email, activationToken));
 
-            save.Wait();
+            await save;
             return Created($"{BasePath}/customers/{insert.Entity.CustomerId}",
                 new PostReference((uint)insert.Entity.CustomerId, $"{BasePath}/customers/{insert.Entity.CustomerId}"));
         }
