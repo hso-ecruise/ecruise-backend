@@ -205,7 +205,7 @@ namespace ecruise.Api.Controllers
                 customer.ZipCode = address.ZipCode;
                 customer.Street = address.Street;
                 customer.HouseNumber = address.HouseNumber;
-                customer.AddressExtraLine = address.AdressExtraLine;
+                customer.AddressExtraLine = address.AddressExtraLine;
 
                 transaction.Commit();
 
