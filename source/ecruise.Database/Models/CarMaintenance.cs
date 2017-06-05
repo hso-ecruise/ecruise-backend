@@ -1,4 +1,5 @@
 ﻿using System;
+using Newtonsoft.Json;
 
 namespace ecruise.Database.Models
 {
@@ -11,8 +12,13 @@ namespace ecruise.Database.Models
         public DateTime? PlannedDate { get; set; }
         public DateTime? CompletedDate { get; set; }
 
+        [JsonIgnore]
         public virtual Car Car { get; set; }
+
+        [JsonIgnore]
         public virtual Maintenance Maintenance { get; set; }
+
+        [JsonIgnore]
         public virtual InvoiceItem InvoiceItem { get; set; }
     }
 }

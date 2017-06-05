@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Newtonsoft.Json;
 
 namespace ecruise.Database.Models
 {
@@ -15,6 +16,7 @@ namespace ecruise.Database.Models
         public uint? AtMileage { get; set; }
         public DateTime? AtDate { get; set; }
 
+        [JsonIgnore]
         public virtual ICollection<CarMaintenance> CarMaintenance { get; set; }
     }
 }

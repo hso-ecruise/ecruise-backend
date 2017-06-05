@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Newtonsoft.Json;
 
 namespace ecruise.Database.Models
 {
@@ -29,9 +30,16 @@ namespace ecruise.Database.Models
         public bool Activated { get; set; }
         public bool Verified { get; set; }
 
+        [JsonIgnore]
         public virtual ICollection<Booking> Booking { get; set; }
+
+        [JsonIgnore]
         public virtual ICollection<CustomerToken> CustomerToken { get; set; }
+
+        [JsonIgnore]
         public virtual ICollection<Trip> Trip { get; set; }
+
+        [JsonIgnore]
         public virtual ICollection<Invoice> Invoice { get; set; }
     }
 }

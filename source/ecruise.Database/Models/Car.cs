@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Newtonsoft.Json;
 
 namespace ecruise.Database.Models
 {
@@ -26,8 +27,13 @@ namespace ecruise.Database.Models
         public double? LastKnownPositionLongitude { get; set; }
         public DateTime? LastKnownPositionDate { get; set; }
 
+        [JsonIgnore]
         public virtual ICollection<CarChargingStation> CarChargingStation { get; set; }
+
+        [JsonIgnore]
         public virtual ICollection<CarMaintenance> CarMaintenance { get; set; }
+
+        [JsonIgnore]
         public virtual ICollection<Trip> Trip { get; set; }
     }
 

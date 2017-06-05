@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Runtime.Serialization;
 using Newtonsoft.Json;
 
 namespace ecruise.Database.Models
@@ -15,8 +14,13 @@ namespace ecruise.Database.Models
         public DateTime BookingDate { get; set; }
         public DateTime? PlannedDate { get; set; }
 
+        [JsonIgnore]
         public virtual Customer Customer { get; set; }
+
+        [JsonIgnore]
         public virtual Trip Trip { get; set; }
+
+        [JsonIgnore]
         public virtual InvoiceItem InvoiceItem { get; set; }
     }
 }
