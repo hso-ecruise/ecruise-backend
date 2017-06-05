@@ -144,17 +144,10 @@ namespace ecruise.Api.Controllers
                 new DbCustomer
                 {
                     Email = r.Email,
-                    PhoneNumber = r.PhoneNumber,
                     PasswordHash = passwordHash,
                     PasswordSalt = passwordSalt,
                     FirstName = r.FirstName,
                     LastName = r.LastName,
-                    Country = r.Country,
-                    City = r.City,
-                    ZipCode = r.ZipCode,
-                    Street = r.Street,
-                    HouseNumber = r.HouseNumber,
-                    AddressExtraLine = r.AddressExtraLine
                 };
 
             // save customer to database
