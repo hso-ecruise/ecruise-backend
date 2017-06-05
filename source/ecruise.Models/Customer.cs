@@ -143,42 +143,47 @@ namespace ecruise.Models
         /// <returns>True if mail could be sent, else false</returns>
         public async Task<bool> SendMail(string subject, string body)
         {
+            // return false if no mail server configured
+            if (Environment.GetEnvironmentVariable("EMAIL_SERVER") == null)
+                return false;
+
             // Create the message
             MimeMessage mail = new MimeMessage();
 
+            // set mail header fields
             mail.From.Add(new MailboxAddress("eCruise Information", "info@ecruise.me"));
             mail.To.Add(new MailboxAddress($"{FirstName} {LastName}", $"{Email}"));
             mail.Subject = subject;
-            mail.Body = new TextPart("plain")
+            mail.Body = new TextPart("html")
             {
                 Text = body
             };
 
-            SmtpClient smtpClient = new SmtpClient();
-            if (Environment.GetEnvironmentVariable("EMAIL_SERVER") != null)
+            // create the smtp client
+            using (var smtpClient = new SmtpClient())
             {
+                // connect to the server
                 smtpClient.Connect(
                     Environment.GetEnvironmentVariable("EMAIL_SERVER"),
-                    int.Parse(Environment.GetEnvironmentVariable("EMAIL_PORT")),
+                    ushort.Parse(Environment.GetEnvironmentVariable("EMAIL_PORT")),
                     false
                 );
 
+                // don't use oauth2 authentification
                 smtpClient.AuthenticationMechanisms.Remove("XOAUTH2");
 
+                // login using user and password
                 smtpClient.Authenticate(Environment.GetEnvironmentVariable("EMAIL_USER"),
                     Environment.GetEnvironmentVariable("EMAIL_PASSWORD"));
 
                 // Send the mail
                 await smtpClient.SendAsync(mail);
 
-                // Disconnect and clean up
+                // Gracefully disconnect from mail server
                 smtpClient.Disconnect(true);
-                smtpClient.Dispose();
-
-                return true;
             }
 
-            return false;
+            return true;
         }
 
         /// <summary>
