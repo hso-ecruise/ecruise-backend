@@ -196,7 +196,7 @@ namespace ecruise.Database.Models
 
             modelBuilder.Entity<CarMaintenance>(entity =>
             {
-                entity.HasKey(e => e.CarId);
+                entity.HasKey(e => e.CarMaintenanceId);
 
                 entity.ToTable("car_maintenance");
 
