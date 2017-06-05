@@ -1,8 +1,10 @@
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
 using ecruise.Models;
 using ecruise.Models.Assemblers;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using DbInvoice = ecruise.Database.Models.Invoice;
@@ -182,14 +184,26 @@ namespace ecruise.Api.Controllers
                 return NotFound(new Error(201, "Invoice with requested id does not exist.",
                     $"There is no invoice that has the id {id}."));
 
+            if (invoice.Paid)
+                return StatusCode(StatusCodes.Status409Conflict);
+
             DbInvoiceItem insertItem = InvoiceItemAssembler.AssembleEntity(0, invoiceItem);
 
-            var inserted = await Context.InvoiceItems.AddAsync(insertItem);
-            await Context.SaveChangesAsync();
+            using (var transaction = await Context.Database.BeginTransactionAsync())
+            {
+                // insert invoice item
+                var inserted = await Context.InvoiceItems.AddAsync(insertItem);
 
-            return Created($"{BasePath}/invoices/{inserted.Entity.InvoiceId}",
-                new PostReference((uint)inserted.Entity.InvoiceItemId,
-                    $"{BasePath}/invoices/{inserted.Entity.InvoiceId}"));
+                // update invoice total amount
+                Context.Invoices.Find(insertItem.InvoiceId).TotalAmount += insertItem.Amount;
+
+                transaction.Commit();
+                await Context.SaveChangesAsync();
+
+                return Created($"{BasePath}/invoices/{inserted.Entity.InvoiceId}",
+                    new PostReference((uint)inserted.Entity.InvoiceItemId,
+                        $"{BasePath}/invoices/{inserted.Entity.InvoiceId}"));
+            }
         }
 
         // GET: /invoices/items/1
