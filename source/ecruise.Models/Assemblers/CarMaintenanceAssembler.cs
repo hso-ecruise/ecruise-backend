@@ -12,12 +12,12 @@ namespace ecruise.Models.Assemblers
         {
             return new DbCarMaintenance
             {
-                CarId = carMaintenanceId != 0 ? carMaintenanceId : carMaintenanceModel.CarId,
-                CarMaintenanceId = carMaintenanceModel.CarMaintenanceId,
-                CompletedDate = carMaintenanceModel.CompletedDate,
-                InvoiceItemId = carMaintenanceModel.InvoiceItemId,
+                CarMaintenanceId = carMaintenanceId != 0 ? carMaintenanceId : carMaintenanceModel.CarMaintenanceId,
+                CarId = carMaintenanceModel.CarId,
                 MaintenanceId = carMaintenanceModel.MaintenanceId,
-                PlannedDate = carMaintenanceModel.PlannedDate
+                InvoiceItemId = carMaintenanceModel.InvoiceItemId,
+                PlannedDate = carMaintenanceModel.PlannedDate,
+                CompletedDate = carMaintenanceModel.CompletedDate
             };
         }
 
