@@ -2,6 +2,7 @@
 using ecruise.Api.Middleware;
 using ecruise.Database.Models;
 using ecruise.Models;
+using FluentScheduler;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Hosting;
@@ -52,6 +53,9 @@ namespace ecruise.Api
             EcruiseContext ecruiseContext)
         {
             Context = ecruiseContext;
+
+            // Schedule background tasks
+            JobManager.Initialize(new BackgroundTasker(ecruiseContext).ScheduleAllTasks());
 
             // add logger
             loggerFactory.AddConsole(Configuration.GetSection("Logging"));
