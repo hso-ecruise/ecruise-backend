@@ -1,12 +1,18 @@
 using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 using System.Threading.Tasks;
+using ecruise.Database.Models;
 using ecruise.Models;
 using ecruise.Models.Assemblers;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Internal;
 using DbTrip = ecruise.Database.Models.Trip;
+using DbInvoice = ecruise.Database.Models.Invoice;
+using DbInvoiceItem = ecruise.Database.Models.InvoiceItem;
+using Trip = ecruise.Models.Trip;
 
 namespace ecruise.Api.Controllers
 {
@@ -105,6 +111,54 @@ namespace ecruise.Api.Controllers
                 dbtrip.EndDate = DateTime.UtcNow;
                 dbtrip.EndChargingStationId = trip.EndChargingStationId;
                 dbtrip.DistanceTravelled = trip.DistanceTravelled;
+
+                // Get last invoice for the customer (means the invoice of the current month)
+                DbInvoice matchingInvoice = Context.Invoices.OrderBy(i => i.InvoiceId).LastOrDefault(i => i.CustomerId == AuthenticatedCustomerId);
+
+                // Check if invoice found
+                if (matchingInvoice == null)
+                {
+                    // Create new invoice
+                    DbInvoice newInvoice = new DbInvoice()
+                    {
+                        CustomerId = AuthenticatedCustomerId,
+                        Paid = false,
+                        TotalAmount = 0.0
+                    };
+
+                    var insert = await Context.Invoices.AddAsync(newInvoice);
+
+                    await Context.SaveChangesAsync();
+
+                    matchingInvoice = insert.Entity;
+                }
+
+                // Create invoice item for finished booking
+                DbInvoiceItem newInvoiceItem = new DbInvoiceItem()
+                {
+                    Reason = "Trip",
+                    Type = "DEBIT",
+                    // € 0.15 per kilometer + € 2.40 per hour
+                    // ReSharper disable once PossibleInvalidOperationException
+                    Amount = trip.DistanceTravelled * 0.15 + 2.40 * (dbtrip.EndDate.Value - dbtrip.StartDate.Value).TotalHours,
+                    InvoiceId = matchingInvoice.InvoiceId
+                };
+
+                // Add invoice item to database
+                var insertedInvoiceItem = await Context.InvoiceItems.AddAsync(newInvoiceItem);
+                await Context.SaveChangesAsync();
+                
+                // Get booking for trip
+                var matchingBooking = await Context.Bookings.Where(b => b.TripId == dbtrip.TripId).ToListAsync();
+                var booking = matchingBooking.FirstOrDefault();
+
+                if (matchingBooking.Count == 0 || booking == null)
+                {
+                    return NotFound(new Error(201, "The matching booking of the trip was not found.",
+                        $"There is no booking that has the trip id {dbtrip.TripId}."));
+                }
+
+                booking.InvoiceItemId = insertedInvoiceItem.Entity.InvoiceItemId;                
 
                 transaction.Commit();
                 await Context.SaveChangesAsync();
