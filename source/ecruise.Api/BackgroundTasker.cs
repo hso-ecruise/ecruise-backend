@@ -7,9 +7,11 @@ using ecruise.Database.Models;
 using ecruise.Models.Assemblers;
 using FluentScheduler;
 using GeoCoordinatePortable;
-using Customer = ecruise.Database.Models.Customer;
-using Invoice = ecruise.Database.Models.Invoice;
-using InvoiceItem = ecruise.Database.Models.InvoiceItem;
+using Microsoft.EntityFrameworkCore;
+using DbCustomer = ecruise.Database.Models.Customer;
+using DbInvoice = ecruise.Database.Models.Invoice;
+
+using DbStatistic = ecruise.Database.Models.Statistic;
 
 namespace ecruise.Api
 {
@@ -34,6 +36,9 @@ namespace ecruise.Api
             // Add invoice mailing module
             // Setting every 0 month because it then already starts this month
             registry.Schedule((Action)InvoiceCreator).ToRunEvery(0).Months().OnTheLastDay().At(23, 59);
+
+            // Add statistc creation module
+            registry.Schedule((Action) StatisticCreator).ToRunEvery(0).Days().At(7, 0);
 
             return registry;
         }
@@ -208,6 +213,50 @@ namespace ecruise.Api
 
                 Debug.WriteLine($"INFO: Invoice creator ausgeführt");
             }
+        }
+
+        /// <summary>
+        /// Creates the statistic for the current day
+        /// </summary>
+        private async void StatisticCreator()
+        {
+            // Get the current date
+            DateTime today = DateTime.UtcNow.Date;
+
+            // Get values for statistic
+            // Get number of bookings
+            var bookingsPlannedToday = await _context.Bookings.Where(b => b.PlannedDate.HasValue && b.PlannedDate.Value > today &&
+                                         b.PlannedDate.Value < today.AddDays(1).AddMilliseconds(-1))
+                .ToListAsync();
+
+            uint countBookingPlannedForToday = (uint)bookingsPlannedToday.Count;
+
+            // Get all cars
+            var allCars = await _context.Cars.ToListAsync();
+
+            // Calculate avarage charge level
+            double averageChargeLevel = allCars
+                .Where(c => c.ChargingState != "DISCHARGING")
+                .Select(c => c.ChargeLevel)
+                .Average();
+
+            // Calculate cars in use
+            uint carsInUse = (uint)allCars.Count(c => c.ChargingState == "DISCHARGING");
+
+            // Calculate cars charging
+            uint carsCharging = (uint)allCars.Count(c => c.ChargingState == "CHARGING");
+
+            // Create Statistic
+            DbStatistic newStatistic = new DbStatistic(){
+                Date = today,
+                Bookings = countBookingPlannedForToday,
+                AverageChargeLevel = averageChargeLevel,
+                CarsInUse = carsInUse,
+                CarsCharging = carsCharging
+            };
+
+            await _context.Statistics.AddAsync(newStatistic);
+            await _context.SaveChangesAsync();
         }
     }
 }
