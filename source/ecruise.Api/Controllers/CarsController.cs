@@ -74,6 +74,39 @@ namespace ecruise.Api.Controllers
             return Ok(CarAssembler.AssembleModel(car));
         }
 
+        // GET: /Cars/1/find
+        [HttpGet("{id}/find", Name = "FindCar")]
+        public async Task<IActionResult> FindCar(ulong id)
+        {
+            // Validate user input
+            if (!ModelState.IsValid)
+                return BadRequest(new Error(400, GetModelStateErrorString(),
+                    "An error occured. Please check the message for further information."));
+
+            // Find the requested car
+            DbCar car = await Context.Cars.FindAsync(id);
+
+            // Return error if car was not found
+            if (car == null)
+                return NotFound(new Error(201, "Car with requested id does not exist.",
+                    $"There is no maintenance that has the id {id}."));
+
+            // Check if the user is allowed to get the data
+            var trips = await Context.Trips.Where(t => t.CustomerId == AuthenticatedCustomerId && t.EndDate == null).ToListAsync();
+
+            if (trips.Count > 0)
+            {
+                // Search for car id
+                if (trips.FirstOrDefault(t => t.CarId.HasValue && t.CarId == id) != null)
+                {
+                    // Ask the car for its current location
+                    // TODO Ask car for current location and update on database
+                }
+            }
+
+            return Ok(CarAssembler.AssembleModel(car));
+        }
+
         // PATCH: /Cars/1/chargingState
         [HttpPatch("{id}/chargingState")]
         public async Task<IActionResult> PatchChargingState(ulong id, [FromBody] Car.ChargingStateEnum chargingState)
