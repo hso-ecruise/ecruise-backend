@@ -176,7 +176,7 @@ namespace ecruise.Api.Controllers
             var save = Context.SaveChangesAsync();
 
             await CustomerAssembler.AssembleModel(insert.Entity).SendMail("Deine Registrierung bei eCruise",
-                _razorEngine.Parse("CustomerRegistration.cshtml", new
+                _razorEngine.Parse("CustomerRegistered.cshtml", new
                 {
                     r.FirstName,
                     r.Email,
