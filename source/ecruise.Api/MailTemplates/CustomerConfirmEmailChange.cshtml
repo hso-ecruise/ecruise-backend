@@ -1,0 +1,12 @@
+﻿@{Layout = "/_Layout.cshtml";}
+Hallo @Model.firstName!
+
+Wie es scheint, hast du vor kurzem deine eMail-Adresse geändert.
+
+Damit wir wissen, dass das auch wirklich du warst, musst du das auf deiner alten und deiner neuen eMail-Adresse bestätigen.
+Klicke dazu einfach auf folgenden Link:
+
+<a href="https://api.ecruise.me/v1/customer/{@Model.customerId}/confirm-email/{@Model.newMail}/{@Model.confirmationToken}">https://api.ecruise.me/v1/customer/{@Model.customerId}/confirm-email/{@Model.newMail}/{@Model.confirmationToken}</a>
+
+Danke für dein Verständnis,
+dein eCruise-Team!

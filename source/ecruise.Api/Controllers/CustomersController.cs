@@ -7,16 +7,23 @@ using System.Threading.Tasks;
 using ecruise.Database.Models;
 using ecruise.Models;
 using ecruise.Models.Assemblers;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using RazorLight;
+using Customer = ecruise.Models.Customer;
 using DbCustomer = ecruise.Database.Models.Customer;
+using DbCustomerToken = ecruise.Database.Models.CustomerToken;
 
 namespace ecruise.Api.Controllers
 {
     public class CustomersController : BaseController
     {
-        public CustomersController(EcruiseContext context) : base(context)
+        private readonly IRazorLightEngine _razorEngine;
+
+        public CustomersController(EcruiseContext context, IRazorLightEngine razorEngine) : base(context)
         {
+            _razorEngine = razorEngine;
         }
 
         // GET: /Customers
@@ -132,17 +139,29 @@ namespace ecruise.Api.Controllers
                 return NotFound(new Error(201, "Customer with requested id does not exist.",
                     $"There is no customer that has the id {id}."));
 
-            // update customer email
-            customer.Email = email;
+            // craft customer model
+            Customer c = CustomerAssembler.AssembleModel(customer);
 
-            // invalidate all old login tokens
-            await Context.CustomerTokens
-                .Where(t => t.Type == "LOGIN")
-                .Where(t => t.ExpireDate == null || t.ExpireDate >= DateTime.UtcNow)
-                .Where(t => t.CustomerId == customer.CustomerId)
-                .ForEachAsync(t => t.ExpireDate = DateTime.UtcNow);
+            // generate new phase 1 confirmation token
+            string newToken;
+            using (var crypt = RandomNumberGenerator.Create())
+            {
+                var randBytes = new byte[64];
+                crypt.GetBytes(randBytes);
 
-            await Context.SaveChangesAsync();
+                newToken = BitConverter.ToString(randBytes).ToLowerInvariant().Replace("-", "");
+            }
+
+            // send confirmation email
+            await c.SendMail("Bestätige deine eMail-Änderung",
+                _razorEngine.Parse("CustomerConfirmEmailChange.cshtml", new
+                {
+                    customerId = c.CustomerId,
+                    firstName = c.FirstName,
+                    email,
+                    confirmationToken = newToken
+                })
+            );
 
             return Ok(new PostReference(id, $"{BasePath}/customer/{id}"));
         }
@@ -250,7 +269,7 @@ namespace ecruise.Api.Controllers
         {
             // forbid if user is accessing different user's ressources
             if (!HasAccess(id))
-                return new ForbidResult();
+                return Unauthorized();
 
             // validate user input
             if (!ModelState.IsValid)
@@ -294,6 +313,90 @@ namespace ecruise.Api.Controllers
                 return NoContent();
 
             return Ok(CustomerAssembler.AssembleModelList(customers));
+        }
+
+        // GET /customer/{customerId}/confirm-email/{newMail}/{token}
+        [HttpGet("{id}/confirm-email/{newMail}/{token}", Name = "CustomerConfirmEmailChange")]
+        public async Task<IActionResult> ConfirmEmailChange(ulong id, string newMail, string token)
+        {
+            // validate user input
+            if (!ModelState.IsValid)
+                return BadRequest(new Error(400, GetModelStateErrorString(),
+                    "An error occured. Please check the message for further information."));
+
+            // forbid if user is accessing different user's ressources
+            if (!HasAccess(id))
+                return Unauthorized();
+
+            // find requested token in database
+            DbCustomerToken dbToken = await Context.CustomerTokens
+                .Where(t => t.ExpireDate == null || t.ExpireDate >= DateTime.UtcNow)
+                .FirstOrDefaultAsync(ct => string.Equals(ct.Token, token, StringComparison.OrdinalIgnoreCase));
+
+            // the requested db token does not exist
+            if (dbToken == null)
+                return NotFound(new Error(202, "Token does not exist.",
+                    $"There is such token: {token}."));
+
+            // the associated token does not belong to that customer
+            if (dbToken.CustomerId != id)
+                return StatusCode(StatusCodes.Status409Conflict);
+
+            // find the requested customer
+            DbCustomer dbCustomer = await Context.Customers.FindAsync(id);
+
+            if (dbToken.Type == "EMAIL_CHANGE_PHASE_1")
+            {
+                // craft customer model
+                Customer c = CustomerAssembler.AssembleModel(dbCustomer);
+
+                // generate new phase 2confirmation token
+                string newToken;
+                using (var crypt = RandomNumberGenerator.Create())
+                {
+                    var randBytes = new byte[64];
+                    crypt.GetBytes(randBytes);
+
+                    newToken = BitConverter.ToString(randBytes).ToLowerInvariant().Replace("-", "");
+                }
+
+                // Send second confirmation mail 
+                await c.SendMail("Bestätige deine eMail-Änderung",
+                    _razorEngine.Parse("CustomerConfirmEmailChange.cshtml", new
+                    {
+                        customerId = c.CustomerId,
+                        firstName = c.FirstName,
+                        newMail,
+                        confirmationToken = newToken
+                    })
+                );
+            }
+            else if (dbToken.Type == "EMAIL_CHANGE_PHASE_2")
+            {
+                // Change eMail
+                dbCustomer.Email = newMail;
+
+                // craft customer model
+                Customer c = CustomerAssembler.AssembleModel(dbCustomer);
+
+                // invalidate all old login tokens
+                await Context.CustomerTokens
+                    .Where(t => t.Type == "LOGIN")
+                    .Where(t => t.ExpireDate == null || t.ExpireDate >= DateTime.UtcNow)
+                    .Where(t => t.CustomerId == c.CustomerId)
+                    .ForEachAsync(t => t.ExpireDate = DateTime.UtcNow);
+
+                // Send data change email
+                await c.SendMail("Deine eMail-Änderung war erfolgreich",
+                    _razorEngine.Parse("CustomerDataChanged.cshtml", c)
+                );
+            }
+
+            // Expire Token
+            dbToken.ExpireDate = DateTime.UtcNow;
+            await Context.SaveChangesAsync();
+
+            return NoContent();
         }
     }
 }
