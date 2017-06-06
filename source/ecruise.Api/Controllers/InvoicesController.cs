@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
+using ecruise.Database.Models;
 using ecruise.Models;
 using ecruise.Models.Assemblers;
 using Microsoft.AspNetCore.Http;
@@ -9,11 +10,17 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using DbInvoice = ecruise.Database.Models.Invoice;
 using DbInvoiceItem = ecruise.Database.Models.InvoiceItem;
+using Invoice = ecruise.Models.Invoice;
+using InvoiceItem = ecruise.Models.InvoiceItem;
 
 namespace ecruise.Api.Controllers
 {
     public class InvoicesController : BaseController
     {
+        public InvoicesController(EcruiseContext context) : base(context)
+        {
+        }
+
         // GET: /Invoices
         [HttpGet(Name = "GetAllInvoices")]
         public async Task<IActionResult> Get()
@@ -45,7 +52,7 @@ namespace ecruise.Api.Controllers
 
             // forbid if current customer is accessing a different user's invoice
             if (!HasAccess(invoice.CustomerId))
-                return Forbid();
+                return Unauthorized();
 
             return Ok(InvoiceAssembler.AssembleModel(invoice));
         }
@@ -66,7 +73,7 @@ namespace ecruise.Api.Controllers
 
             // forbid if current customer is accessing a different user's invoice
             if (!HasAccess(item.Invoice.CustomerId))
-                return Forbid();
+                return Unauthorized();
 
             return Ok(InvoiceAssembler.AssembleModel(item.Invoice));
         }
@@ -81,7 +88,7 @@ namespace ecruise.Api.Controllers
 
             // forbid if current customer is accessing a different user's invoices
             if (!HasAccess(customerId))
-                return Forbid();
+                return Unauthorized();
 
             List<DbInvoice> invoices = await Context.Invoices
                 .Where(t => t.CustomerId == customerId)
@@ -99,7 +106,7 @@ namespace ecruise.Api.Controllers
         {
             // forbid if not admin
             if (!HasAccess())
-                return Forbid();
+                return Unauthorized();
 
             if (!ModelState.IsValid)
                 return BadRequest(new Error(400, GetModelStateErrorString(),
@@ -133,7 +140,7 @@ namespace ecruise.Api.Controllers
 
             // forbid if current customer is accessing a different user's invoices
             if (!HasAccess(invoice.CustomerId))
-                return Forbid();
+                return Unauthorized();
 
             List<DbInvoiceItem> items = await Context.InvoiceItems
                 .Where(i => i.InvoiceId == id)
@@ -151,7 +158,7 @@ namespace ecruise.Api.Controllers
         {
             // forbid if not admin
             if (!HasAccess())
-                return Forbid();
+                return Unauthorized();
 
             if (!ModelState.IsValid)
                 return BadRequest(new Error(400, GetModelStateErrorString(),
@@ -172,7 +179,7 @@ namespace ecruise.Api.Controllers
         {
             // forbid if not admin
             if (!HasAccess())
-                return Forbid();
+                return Unauthorized();
 
             if (!ModelState.IsValid)
                 return BadRequest(new Error(400, GetModelStateErrorString(),
@@ -222,7 +229,7 @@ namespace ecruise.Api.Controllers
 
             // forbid if current customer is accessing a different user's invoice item
             if (!HasAccess(invoiceItem.Invoice.CustomerId))
-                return Forbid();
+                return Unauthorized();
 
             return Ok(InvoiceItemAssembler.AssembleModel(invoiceItem));
         }

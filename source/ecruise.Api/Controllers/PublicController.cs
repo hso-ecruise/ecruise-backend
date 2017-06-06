@@ -3,23 +3,24 @@ using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
+using ecruise.Database.Models;
 using ecruise.Models;
 using ecruise.Models.Assemblers;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using RazorLight;
+using CustomerToken = ecruise.Models.CustomerToken;
 using DbCustomer = ecruise.Database.Models.Customer;
 using DbCustomerToken = ecruise.Database.Models.CustomerToken;
 
 namespace ecruise.Api.Controllers
 {
-    [AllowAnonymous]
     public class PublicController : BaseController
     {
         private readonly IRazorLightEngine _razorEngine;
-
-        public PublicController(IRazorLightEngine razorEngine)
+        
+        public PublicController(EcruiseContext context, IRazorLightEngine razorEngine) : base(context)
         {
             _razorEngine = razorEngine;
         }
@@ -50,7 +51,7 @@ namespace ecruise.Api.Controllers
                 return Unauthorized();
 
             //// invalidate all old login tokens
-            // List<DbCustomerToken> tokens =
+            // List<Db> tokens =
             //     Context.CustomerTokens
             //         .Where(t => t.Type == TokenType.Login)
             //         .Where(t => t.CustomerId == customer.CustomerId)
@@ -148,22 +149,9 @@ namespace ecruise.Api.Controllers
             string passwordHash = BitConverter.ToString(result).ToLowerInvariant().Replace("-", "");
 
             // create database user model
-            DbCustomer insertCustomer =
-                new DbCustomer
-                {
-                    Email = r.Email,
-                    PhoneNumber = r.PhoneNumber,
-                    PasswordHash = passwordHash,
-                    PasswordSalt = passwordSalt,
-                    FirstName = r.FirstName,
-                    LastName = r.LastName,
-                    Country = r.Country,
-                    City = r.City,
-                    ZipCode = r.ZipCode,
-                    Street = r.Street,
-                    HouseNumber = r.HouseNumber,
-                    AddressExtraLine = r.AddressExtraLine
-                };
+            DbCustomer insertCustomer = CustomerAssembler.AssembleEntity(0, r);
+            insertCustomer.PasswordSalt = passwordSalt;
+            insertCustomer.PasswordHash = passwordHash;
 
             // save customer to database
             var insert = await Context.Customers.AddAsync(insertCustomer);

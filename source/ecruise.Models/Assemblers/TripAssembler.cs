@@ -26,11 +26,11 @@ namespace ecruise.Models.Assemblers
         {
             return new Trip(
                 (uint)tripEntity.TripId,
-                (uint?)tripEntity.CarId,
+                (uint)tripEntity.CarId,
                 (uint)tripEntity.CustomerId,
                 tripEntity.StartDate,
                 tripEntity.EndDate,
-                (uint?)tripEntity.StartChargingStationId,
+                (uint)tripEntity.StartChargingStationId,
                 (uint?)tripEntity.EndChargingStationId,
                 tripEntity.DistanceTravelled);
         }

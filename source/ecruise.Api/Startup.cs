@@ -23,8 +23,6 @@ namespace ecruise.Api
 {
     public class Startup
     {
-        public static EcruiseContext Context;
-
         public Startup(IHostingEnvironment env)
         {
             var builder = new ConfigurationBuilder()
@@ -33,6 +31,9 @@ namespace ecruise.Api
                 .AddJsonFile($"appsettings.{env.EnvironmentName}.json", true)
                 .AddEnvironmentVariables();
             Configuration = builder.Build();
+
+            // Schedule background tasks
+            JobManager.Initialize(new BackgroundTasker().ScheduleAllTasks());
         }
 
         private IConfigurationRoot Configuration { get; }
@@ -40,15 +41,18 @@ namespace ecruise.Api
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            // Add framework services.
+            services.AddCors();
+
+            // Add DbContext via DI
             services.AddDbContext<EcruiseContext>(options =>
                 options.UseMySql(Environment.GetEnvironmentVariable("CONNECTION_STRING") ??
                                  Configuration.GetConnectionString("ecruiseMySQL")));
-
+          
             // Add Razor Light Engine
             services.AddRazorLight("/MailTemplates");
-
-            // Add framework services.
-            services.AddCors();
+          
+            // Add MVC Service
             services.AddMvc();
         }
 
@@ -56,15 +60,7 @@ namespace ecruise.Api
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory,
             EcruiseContext ecruiseContext)
         {
-            Context = ecruiseContext;
-
-            // Add CORS to every Request
-            app.UseCors(builder => builder.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
-
-            // Schedule background tasks
-            JobManager.Initialize(new BackgroundTasker(ecruiseContext).ScheduleAllTasks());
-
-            // add logger
+            // Add logger
             loggerFactory.AddConsole(Configuration.GetSection("Logging"));
             loggerFactory.AddDebug(LogLevel.Debug);
 
@@ -73,6 +69,9 @@ namespace ecruise.Api
             {
                 ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
             });
+
+            // Add CORS to every Request
+            app.UseCors(builder => builder.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
 
             // global exception handler
             #region Exception Handler
@@ -94,10 +93,10 @@ namespace ecruise.Api
             });
             #endregion
 
-
             // use authentification middleware
-            app.UseMiddleware<EcruiseAuthenticationMiddleware>(ecruiseContext);
+            app.UseMiddleware<EcruiseAuthenticationMiddleware>();
 
+            // use MVC
             app.UseMvc();
         }
     }

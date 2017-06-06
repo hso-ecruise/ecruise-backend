@@ -3,17 +3,23 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using System.Threading.Tasks;
+using ecruise.Database.Models;
 using ecruise.Models;
 using ecruise.Models.Assemblers;
 using GeoCoordinatePortable;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Car = ecruise.Models.Car;
 using DbCar = ecruise.Database.Models.Car;
 
 namespace ecruise.Api.Controllers
 {
     public class CarsController : BaseController
     {
+        public CarsController(EcruiseContext context) : base(context)
+        {
+        }
+
         // GET: /cars
         [HttpGet(Name = "GetAllCars")]
         public async Task<IActionResult> GetAll()
@@ -35,7 +41,7 @@ namespace ecruise.Api.Controllers
         {
             // forbid if not admin
             if (!HasAccess())
-                return Forbid();
+                return Unauthorized();
 
             // validate user input
             if (!ModelState.IsValid)
@@ -74,6 +80,13 @@ namespace ecruise.Api.Controllers
             return Ok(CarAssembler.AssembleModel(car));
         }
 
+        // GET: /Cars/charge-level-per-minute
+        [HttpGet("charge-level-per-minute",Name = "GetChargeLevelPerMinute")]
+        public IActionResult GetChargeLevelPerMinute()
+        {
+            return Ok(1.0);
+        }
+
         // GET: /Cars/1/find
         [HttpGet("{id}/find", Name = "FindCar")]
         public async Task<IActionResult> FindCar(ulong id)
@@ -97,7 +110,7 @@ namespace ecruise.Api.Controllers
             if (trips.Count > 0)
             {
                 // Search for car id
-                if (trips.FirstOrDefault(t => t.CarId.HasValue && t.CarId == id) != null)
+                if (trips.FirstOrDefault(t => t.CarId == id) != null)
                 {
                     // Ask the car for its current location
                     // TODO Ask car for current location and update on database
@@ -113,7 +126,7 @@ namespace ecruise.Api.Controllers
         {
             // forbid if not admin
             if (!HasAccess())
-                return Forbid();
+                return Unauthorized();
 
             // validate user input
             if (!ModelState.IsValid)
@@ -142,7 +155,7 @@ namespace ecruise.Api.Controllers
         {
             // forbid if not admin
             if (!HasAccess())
-                return Forbid();
+                return Unauthorized();
 
             // validate user input
             if (!ModelState.IsValid)
@@ -171,7 +184,7 @@ namespace ecruise.Api.Controllers
         {
             // forbid if not admin
             if (!HasAccess())
-                return Forbid();
+                return Unauthorized();
 
             // validate user input
             if (!ModelState.IsValid)
@@ -200,7 +213,7 @@ namespace ecruise.Api.Controllers
         {
             // forbid if not admin
             if (!HasAccess())
-                return Forbid();
+                return Unauthorized();
 
             // validate user input
             if (!ModelState.IsValid)
@@ -229,7 +242,7 @@ namespace ecruise.Api.Controllers
         {
             // forbid if not admin
             if (!HasAccess())
-                return Forbid();
+                return Unauthorized();
 
             // validate user input
             if (!ModelState.IsValid)
@@ -259,7 +272,7 @@ namespace ecruise.Api.Controllers
         }
 
         // GET: /Cars/closest-to/58/8?radius=100
-// ReSharper disable PossibleInvalidOperationException
+        // ReSharper disable PossibleInvalidOperationException
         [HttpGet(@"closest-to/{latitude}/{longitude}", Name = "GetClosestCar")]
         public async Task<IActionResult> GetClosestCarChargingStation(double latitude, double longitude,
             [FromQuery] int radius)

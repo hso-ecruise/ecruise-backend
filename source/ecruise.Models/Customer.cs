@@ -21,16 +21,16 @@ namespace ecruise.Models
         /// <param name="phoneNumber">PhoneNumber (required)</param>
         /// <param name="firstName">FirstName (required)</param>
         /// <param name="lastName">LastName (required)</param>
-        /// <param name="country">Country (required)</param>
-        /// <param name="city">City (required)</param>
-        /// <param name="zipCode">ZipCode (required)</param>
-        /// <param name="street">Street (required)</param>
-        /// <param name="houseNumber">HouseNumber (required)</param>
+        /// <param name="country">Country</param>
+        /// <param name="city">City</param>
+        /// <param name="zipCode">ZipCode</param>
+        /// <param name="street">Street</param>
+        /// <param name="houseNumber">HouseNumber</param>
         /// <param name="addressExtraLine">Extra line for the user's address. Can contain various detail information about the user's address. (required)</param>
         /// <param name="activated">True if the user has activated his account by clicking on the link in the activation email.</param>
         /// <param name="verified">True if the user has verified his account at our head-quarter by bringing us his driver's license.</param>
         public Customer(uint customerId, string email, string phoneNumber, string chipCardUid, string firstName,
-            string lastName, string country, string city, uint zipCode, string street, string houseNumber,
+            string lastName, string country, string city, uint? zipCode, string street, string houseNumber,
             string addressExtraLine, bool activated = false, bool verified = false)
         {
             CustomerId = customerId;
@@ -71,7 +71,7 @@ namespace ecruise.Models
         /// <summary>
         /// Gets or Sets PhoneNumber
         /// </summary>
-        [Required, StringLength(32)]
+        [StringLength(32)]
         public string PhoneNumber { get; set; }
 
         /// <summary>
@@ -89,31 +89,31 @@ namespace ecruise.Models
         /// <summary>
         /// Gets or Sets Country
         /// </summary>
-        [Required, StringLength(2, MinimumLength = 2)]
+        [StringLength(2, MinimumLength = 2)]
         public string Country { get; set; }
 
         /// <summary>
         /// Gets or Sets City
         /// </summary>
-        [Required, StringLength(64)]
+        [StringLength(64)]
         public string City { get; set; }
 
         /// <summary>
         /// Gets or Sets ZipCode
         /// </summary>
-        [Required, Range(1001, 99999)]
-        public uint ZipCode { get; set; }
+        [Range(1001, 99999)]
+        public uint? ZipCode { get; set; }
 
         /// <summary>
         /// Gets or Sets Street
         /// </summary>
-        [Required, StringLength(128)]
+        [StringLength(128)]
         public string Street { get; set; }
 
         /// <summary>
         /// Gets or Sets HouseNumber
         /// </summary>
-        [Required, StringLength(8)]
+        [StringLength(8)]
         public string HouseNumber { get; set; }
 
         /// <summary>
@@ -302,16 +302,16 @@ namespace ecruise.Models
         /// <param name="zipCode">ZipCode (required)</param>
         /// <param name="street">Street (required)</param>
         /// <param name="houseNumber">HouseNumber (required)</param>
-        /// <param name="adressExtraLine">AdressExtraLine</param>
+        /// <param name="addressExtraLine">AdressExtraLine</param>
         public Address(string country, string city, uint zipCode, string street, string houseNumber,
-            string adressExtraLine)
+            string addressExtraLine)
         {
             Country = country;
             City = city;
             ZipCode = zipCode;
             Street = street;
             HouseNumber = houseNumber;
-            AdressExtraLine = adressExtraLine;
+            AddressExtraLine = addressExtraLine;
         }
 
         [Required, StringLength(2, MinimumLength = 2)]
@@ -329,7 +329,7 @@ namespace ecruise.Models
         [Required, StringLength(8)]
         public string HouseNumber { get; }
 
-        public string AdressExtraLine { get; }
+        public string AddressExtraLine { get; }
 
         /// <summary>
         /// Returns the string presentation of the object
@@ -344,7 +344,7 @@ namespace ecruise.Models
             sb.Append("  ZipCode: ").Append(ZipCode).Append("\n");
             sb.Append("  Street: ").Append(Street).Append("\n");
             sb.Append("  HouseNumber: ").Append(HouseNumber).Append("\n");
-            sb.Append("  AdressExtraLine: ").Append(AdressExtraLine).Append("\n");
+            sb.Append("  AdressExtraLine: ").Append(AddressExtraLine).Append("\n");
             sb.Append("}\n");
             return sb.ToString();
         }
@@ -387,7 +387,7 @@ namespace ecruise.Models
                 (ZipCode == other.ZipCode || ZipCode.Equals(other.ZipCode)) &&
                 (Street == other.Street || Street.Equals(other.Street)) &&
                 (HouseNumber == other.HouseNumber || HouseNumber.Equals(other.HouseNumber)) &&
-                (AdressExtraLine == other.AdressExtraLine || AdressExtraLine.Equals(other.AdressExtraLine));
+                (AddressExtraLine == other.AddressExtraLine || AddressExtraLine.Equals(other.AddressExtraLine));
         }
 
         /// <summary>
@@ -405,7 +405,7 @@ namespace ecruise.Models
                 hash = hash * 59 + ZipCode.GetHashCode();
                 hash = hash * 59 + Street.GetHashCode();
                 hash = hash * 59 + HouseNumber.GetHashCode();
-                hash = hash * 59 + AdressExtraLine.GetHashCode();
+                hash = hash * 59 + AddressExtraLine.GetHashCode();
 
                 return hash;
             }

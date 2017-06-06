@@ -10,13 +10,17 @@ namespace ecruise.Api.Middleware
 {
     public class EcruiseAuthenticationMiddleware
     {
-        private readonly EcruiseContext _dbContext;
+        private readonly DbContextOptions _dbContextOptions;
         private readonly RequestDelegate _next;
 
         public EcruiseAuthenticationMiddleware(RequestDelegate next, EcruiseContext dbContext)
         {
             _next = next;
-            _dbContext = dbContext;
+
+            var optionsBuilder = new DbContextOptionsBuilder<EcruiseContext>();
+            optionsBuilder.UseMySql(Environment.GetEnvironmentVariable("CONNECTION_STRING"));
+
+            _dbContextOptions = optionsBuilder.Options;
         }
 
         public async Task Invoke(HttpContext context)
@@ -33,16 +37,17 @@ namespace ecruise.Api.Middleware
                     return;
                 }
 
-                _dbContext.Database.EnsureCreated();
-
-                DbCustomerToken customerToken =
-                    await _dbContext.CustomerTokens
+                bool hasValidToken;
+                using (var dbContext = new EcruiseContext(_dbContextOptions))
+                {
+                    hasValidToken = await dbContext.CustomerTokens
                         .Where(t => t.ExpireDate == null || t.ExpireDate > DateTime.UtcNow)
                         .Where(t => t.Type == "LOGIN")
-                        .FirstOrDefaultAsync(t => t.Token == authToken);
+                        .AnyAsync(t => t.Token == authToken);
+                }
 
                 // no valid customer token found
-                if (customerToken == null)
+                if (!hasValidToken)
                 {
                     context.Response.StatusCode = 401; //Unauthorized
                     return;

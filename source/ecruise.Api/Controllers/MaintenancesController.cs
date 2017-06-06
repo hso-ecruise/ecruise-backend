@@ -1,22 +1,28 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using ecruise.Database.Models;
 using ecruise.Models;
 using ecruise.Models.Assemblers;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using DbMaintenance = ecruise.Database.Models.Maintenance;
+using Maintenance = ecruise.Models.Maintenance;
 
 namespace ecruise.Api.Controllers
 {
     public class MaintenancesController : BaseController
     {
+        public MaintenancesController(EcruiseContext context) : base(context)
+        {
+        }
+
         // GET: /Maintenances
         [HttpGet(Name = "GetAllMaintenances")]
         public async Task<IActionResult> Get()
         {
             // forbid if not admin
             if (!HasAccess())
-                return Forbid();
+                return Unauthorized();
 
             List<DbMaintenance> maintenances = await Context.Maintenances.ToListAsync();
 
@@ -32,7 +38,7 @@ namespace ecruise.Api.Controllers
         {
             // forbid if not admin
             if (!HasAccess())
-                return Forbid();
+                return Unauthorized();
 
             if (!ModelState.IsValid)
                 return BadRequest(new Error(400, GetModelStateErrorString(),
@@ -53,7 +59,7 @@ namespace ecruise.Api.Controllers
         {
             // forbid if not admin
             if (!HasAccess())
-                return Forbid();
+                return Unauthorized();
 
             if (!ModelState.IsValid)
                 return BadRequest(new Error(400, GetModelStateErrorString(),

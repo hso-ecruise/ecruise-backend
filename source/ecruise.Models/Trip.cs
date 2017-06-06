@@ -19,8 +19,8 @@ namespace ecruise.Models
         /// <param name="startChargingStationId">StartChargingStationId</param>
         /// <param name="endChargingStationId">EndChargingStationId</param>
         /// <param name="distanceTravelled">DistanceTravelled</param>
-        public Trip(uint tripId, uint? carId, uint customerId, DateTime? startDate, DateTime? endDate,
-            uint? startChargingStationId, uint? endChargingStationId, double? distanceTravelled)
+        public Trip(uint tripId, uint carId, uint customerId, DateTime startDate, DateTime? endDate,
+            uint startChargingStationId, uint? endChargingStationId, double? distanceTravelled)
         {
             TripId = tripId;
             CarId = carId;
@@ -42,8 +42,8 @@ namespace ecruise.Models
         /// See #/definitions/Car
         /// </summary>
         /// <value>See '#/definitions/Car'</value>
-        [Range(1, uint.MaxValue)]
-        public uint? CarId { get; set; }
+        [Required, Range(1, uint.MaxValue)]
+        public uint CarId { get; }
 
         /// <summary>
         /// See '#/definitions/Customer'
@@ -56,8 +56,8 @@ namespace ecruise.Models
         /// Date and time when the trip started
         /// </summary>
         /// <value>Date and time when the trip started</value>
-        [DataType(DataType.DateTime)]
-        public DateTime? StartDate { get; }
+        [Required, DataType(DataType.DateTime)]
+        public DateTime StartDate { get; }
 
         /// <summary>
         /// Date and time when the trip ended
@@ -69,8 +69,8 @@ namespace ecruise.Models
         /// <summary>
         /// Gets StartPositionLatitude
         /// </summary>
-        [Range(1, uint.MaxValue)]
-        public uint? StartChargingStationId { get; set; }
+        [Required, Range(1, uint.MaxValue)]
+        public uint StartChargingStationId { get; }
 
         /// <summary>
         /// Gets StartPositionLongitude
@@ -167,6 +167,8 @@ namespace ecruise.Models
                 hash = hash * 59 + TripId.GetHashCode();
                 hash = hash * 59 + CustomerId.GetHashCode();
                 hash = hash * 59 + StartDate.GetHashCode();
+                hash = hash * 59 + CarId.GetHashCode();
+                hash = hash * 59 + StartChargingStationId.GetHashCode();
 
                 return hash;
             }

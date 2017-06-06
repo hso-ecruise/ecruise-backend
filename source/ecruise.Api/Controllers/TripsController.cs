@@ -1,23 +1,29 @@
 using System;
 using System.Collections.Generic;
-using System.Collections.Immutable;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Threading.Tasks;
 using ecruise.Database.Models;
 using ecruise.Models;
 using ecruise.Models.Assemblers;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Internal;
 using DbTrip = ecruise.Database.Models.Trip;
 using DbInvoice = ecruise.Database.Models.Invoice;
 using DbInvoiceItem = ecruise.Database.Models.InvoiceItem;
+using DbCarMaintenance = ecruise.Database.Models.CarMaintenance;
+using DbMaintenance = ecruise.Database.Models.Maintenance;
 using Trip = ecruise.Models.Trip;
 
 namespace ecruise.Api.Controllers
 {
     public class TripsController : BaseController
     {
+        public TripsController(EcruiseContext context) : base(context)
+        {
+        }
+
         // GET: /trips
         [HttpGet(Name = "GetAllTrips")]
         public async Task<IActionResult> GetAll()
@@ -54,7 +60,7 @@ namespace ecruise.Api.Controllers
 
             // forbid if current customer is accessing a different user's trip
             if (!HasAccess(trip.CustomerId))
-                return Forbid();
+                return Unauthorized();
 
             return Ok(TripAssembler.AssembleModel(trip));
         }
@@ -70,10 +76,23 @@ namespace ecruise.Api.Controllers
 
             // forbid if current customer is creating a different user's trip
             if (!HasAccess(trip.CustomerId))
-                return Forbid();
+                return Unauthorized();
 
             // create db trip to be inserted
             DbTrip insertTrip = TripAssembler.AssembleEntity(0, trip);
+
+
+            // Check if the car is found and fully loaded
+            var car = await Context.Cars.FindAsync(insertTrip.CarId);
+
+            if (car == null)
+                return NotFound(new Error(201, "Car with requested id does not exist.",
+                    $"There is no car that has the id {insertTrip.CarId}."));
+
+            if (car.ChargingState != "FULL")
+                return StatusCode(StatusCodes.Status409Conflict, new Error(303,
+                    "The action is not allowed with this resource",
+                    "You were trying to use a non fully loaded car for a trip. Cars must be fully loaded to use for a trip"));
 
             // insert trip into database
             var inserted = await Context.Trips.AddAsync(insertTrip);
@@ -85,7 +104,9 @@ namespace ecruise.Api.Controllers
         }
 
         // PATCH: /trips/1
+
         [HttpPatch("{id}")]
+        [SuppressMessage("ReSharper", "PossibleInvalidOperationException")]
         public async Task<IActionResult> Patch(ulong id, [FromBody] TripUpdate trip)
         {
             // validate user input
@@ -103,7 +124,7 @@ namespace ecruise.Api.Controllers
 
             // forbid if current customer is accessing a different user's trip
             if (!HasAccess(dbtrip.CustomerId))
-                return Forbid();
+                return Unauthorized();
 
             // update trip end data using a transaction
             using (var transaction = await Context.Database.BeginTransactionAsync())
@@ -113,11 +134,11 @@ namespace ecruise.Api.Controllers
                 dbtrip.DistanceTravelled = trip.DistanceTravelled;
 
                 // Get last invoice for the customer (means the invoice of the current month)
-                DbInvoice matchingInvoice = Context.Invoices.OrderBy(i => i.InvoiceId).LastOrDefault(i => i.CustomerId == AuthenticatedCustomerId);
+                DbInvoice matchingInvoice = Context.Invoices.OrderBy(i => i.InvoiceId)
+                    .LastOrDefault(i => i.CustomerId == dbtrip.CustomerId);
 
-                // ReSharper disable once PossibleInvalidOperationException
                 double calculatedAmount = trip.DistanceTravelled * 0.15 +
-                                          2.40 * (dbtrip.EndDate.Value - dbtrip.StartDate.Value).TotalHours;
+                                          2.40 * (dbtrip.EndDate.Value - dbtrip.StartDate).TotalHours;
 
                 // Check if invoice found
                 if (matchingInvoice == null)
@@ -153,18 +174,116 @@ namespace ecruise.Api.Controllers
                 // Add invoice item to database
                 var insertedInvoiceItem = await Context.InvoiceItems.AddAsync(newInvoiceItem);
                 await Context.SaveChangesAsync();
-                
+
                 // Get booking for trip
                 var matchingBooking = await Context.Bookings.Where(b => b.TripId == dbtrip.TripId).ToListAsync();
                 var booking = matchingBooking.FirstOrDefault();
 
                 if (matchingBooking.Count == 0 || booking == null)
-                {
                     return NotFound(new Error(201, "The matching booking of the trip was not found.",
                         $"There is no booking that has the trip id {dbtrip.TripId}."));
-                }
 
-                booking.InvoiceItemId = insertedInvoiceItem.Entity.InvoiceItemId;                
+                booking.InvoiceItemId = insertedInvoiceItem.Entity.InvoiceItemId;
+
+
+                // Check if the car must be locked due to a pending maintenance
+                // Check if there is a maintenance for the car
+                var carMaintenancesForCar = await Context.CarMaintenances
+                    .Where(cm => cm.CarId == dbtrip.CarId && !cm.CompletedDate.HasValue)
+                    .ToListAsync();
+
+                if (carMaintenancesForCar.Count > 0)
+                {
+                    // Get the car
+                    var car = await Context.Cars.FindAsync(dbtrip.CarId);
+
+                    // Get average time for a trip
+                    var allTrips = await Context.Trips.Where(t => t.EndDate.HasValue && t.DistanceTravelled.HasValue)
+                        .ToListAsync();
+
+                    var averageTripDuration = allTrips.Average(t => t.EndDate.Value.Ticks - t.StartDate.Ticks);
+
+                    // Get average mileage per trip
+                    var averageTripMileage = allTrips.Average(t => t.DistanceTravelled.Value);
+
+                    // Get all maintenances
+                    var allMaintenances = await Context.Maintenances.ToListAsync();
+
+                    // Sort the maintenances for the car into lists
+                    List<DbCarMaintenance> carMaintenancesWithDate = new List<DbCarMaintenance>();
+                    List<DbMaintenance> maintenancesWithDate = new List<DbMaintenance>();
+
+                    foreach (var carMaintenance in carMaintenancesForCar)
+                    {
+                        // Add the carMaintenance to the list if the car maintenance has a planned date
+                        if (carMaintenance.PlannedDate.HasValue)
+                            carMaintenancesWithDate.Add(carMaintenance);
+
+                        // Or the maintenance linked has a date
+                        if (allMaintenances.Any(m => m.MaintenanceId == carMaintenance.MaintenanceId &&
+                                                     m.AtDate.HasValue))
+                        {
+                            var maintenance = allMaintenances.FirstOrDefault(
+                                m => m.MaintenanceId == carMaintenance.MaintenanceId &&
+                                     m.AtDate.HasValue);
+
+                            if (maintenance != null)
+                                maintenancesWithDate.Add(maintenance);
+                        }
+                    }
+
+                    List<DbCarMaintenance> carMaintenancesWithMileage = new List<DbCarMaintenance>();
+
+                    foreach (var carMaintenance in carMaintenancesForCar)
+                    {
+                        // Get the maintenance from the car maintenance
+                        var matchingMaintenance =
+                            allMaintenances.FirstOrDefault(m => m.MaintenanceId == carMaintenance.MaintenanceId);
+
+                        // Can't be null normally
+                        // If it has a mileage set -> Add it to the list
+                        if (matchingMaintenance?.AtMileage != null)
+                            carMaintenancesWithMileage.Add(carMaintenance);
+                    }
+
+                    DateTime? maintenanceDate = null;
+
+                    // Get next maintenance with date 
+                    if (maintenancesWithDate.Count > 0)
+                    {
+                        var maintenance = maintenancesWithDate.OrderBy(m => m.AtDate.Value).FirstOrDefault();
+
+                        if (maintenance != null)
+                            maintenanceDate = maintenance.AtDate.Value;
+                    }
+
+                    if (carMaintenancesWithDate.Count > 0)
+                    {
+                        var maintenance = carMaintenancesWithDate.OrderBy(cm => cm.PlannedDate.Value).FirstOrDefault();
+
+                        // Check if the date is earlier than the set date
+                        if (maintenanceDate == null || maintenanceDate > maintenance.PlannedDate.Value)
+                            maintenanceDate = maintenance.PlannedDate;
+                    }
+
+                    // Check if there is a maintenance by date close
+                    if (maintenanceDate != null)
+                        if (DateTime.UtcNow + new TimeSpan((long)(averageTripDuration * 2)) > maintenanceDate)
+                            car.BookingState = "BLOCKED";
+
+                    // Find maintenance that relates to car maintenance
+                    List<DbMaintenance> maintenancesWithMileage =
+                        carMaintenancesWithMileage
+                            .Select(cm => allMaintenances.Find(m => m.MaintenanceId == cm.MaintenanceId))
+                            .ToList();
+
+                    // Walk through all saves carMaintenandesWithMileage
+                    var firstMaintenanceByMileage = maintenancesWithMileage.OrderBy(m => m.AtMileage).FirstOrDefault();
+
+                    // Check if the next trip would make the car have more mileage than needed for the maintenance (+ 0.5 averageMileage to be sure)
+                    if (car.Milage + averageTripMileage * 1.5 > firstMaintenanceByMileage?.AtMileage)
+                        car.BookingState = "BLOCKED";
+                }
 
                 transaction.Commit();
                 await Context.SaveChangesAsync();

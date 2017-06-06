@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Threading.Tasks;
+using ecruise.Database.Models;
 using ecruise.Models;
 using ecruise.Models.Assemblers;
 using Microsoft.AspNetCore.Mvc;
@@ -11,13 +12,17 @@ namespace ecruise.Api.Controllers
 {
     public class StatisticsController : BaseController
     {
+        public StatisticsController(EcruiseContext context) : base(context)
+        {
+        }
+
         // GET: api/Statistics
         [HttpGet(Name = "GetAllStatistics")]
         public async Task<IActionResult> Get()
         {
             // forbid if not admin
             if (!HasAccess())
-                return Forbid();
+                return Unauthorized();
 
             var statistics = await Context.Statistics.ToListAsync();
 
@@ -30,7 +35,7 @@ namespace ecruise.Api.Controllers
         {
             // forbid if not admin
             if (!HasAccess())
-                return Forbid();
+                return Unauthorized();
 
             // Transform string to date
             DateTime requestedDateTime;
