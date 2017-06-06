@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using ecruise.Database.Models;
 using ecruise.Models;
@@ -13,6 +14,7 @@ using Microsoft.EntityFrameworkCore.Internal;
 using DbTrip = ecruise.Database.Models.Trip;
 using DbInvoice = ecruise.Database.Models.Invoice;
 using DbInvoiceItem = ecruise.Database.Models.InvoiceItem;
+using DbCarMaintenance = ecruise.Database.Models.CarMaintenance;
 using Trip = ecruise.Models.Trip;
 
 namespace ecruise.Api.Controllers
@@ -80,11 +82,11 @@ namespace ecruise.Api.Controllers
             // create db trip to be inserted
             DbTrip insertTrip = TripAssembler.AssembleEntity(0, trip);
 
-            
+
             // Check if the car is found and fully loaded
             var car = await Context.Cars.FindAsync(insertTrip.CarId);
 
-            if(car == null)
+            if (car == null)
                 return NotFound(new Error(201, "Car with requested id does not exist.",
                     $"There is no car that has the id {insertTrip.CarId}."));
 
@@ -170,7 +172,7 @@ namespace ecruise.Api.Controllers
                 // Add invoice item to database
                 var insertedInvoiceItem = await Context.InvoiceItems.AddAsync(newInvoiceItem);
                 await Context.SaveChangesAsync();
-                
+
                 // Get booking for trip
                 var matchingBooking = await Context.Bookings.Where(b => b.TripId == dbtrip.TripId).ToListAsync();
                 var booking = matchingBooking.FirstOrDefault();
@@ -181,7 +183,76 @@ namespace ecruise.Api.Controllers
                         $"There is no booking that has the trip id {dbtrip.TripId}."));
                 }
 
-                booking.InvoiceItemId = insertedInvoiceItem.Entity.InvoiceItemId;                
+                booking.InvoiceItemId = insertedInvoiceItem.Entity.InvoiceItemId;
+
+
+                // Check if the car must be locked due to a pending maintenance
+                // Check if there is a maintenance for the car
+                var carMaintenancesForCar = await Context.CarMaintenances.Where(cm => cm.CarId == dbtrip.CarId && !cm.CompletedDate.HasValue)
+                    .ToListAsync();
+
+                if (carMaintenancesForCar.Count > 0)
+                {
+                    // Get the car
+                    var car = await Context.Cars.FindAsync(dbtrip.CarId);
+
+                    // Get average time for a trip
+                    var allTrips = await Context.Trips.Where(t => t.EndDate.HasValue && t.DistanceTravelled.HasValue).ToListAsync();
+                    // ReSharper disable once PossibleInvalidOperationException
+                    var averageTripDuration = allTrips.Average(t => t.EndDate.Value.Ticks - t.StartDate.Ticks);
+
+                    // Get average mileage per trip
+                    // ReSharper disable once PossibleInvalidOperationException
+                    var averageTripMileage = allTrips.Average(t => t.DistanceTravelled.Value);
+
+
+                    // Sort the maintenances for the car into lists
+                    List<DbCarMaintenance> carMaintenancesWithDate = new List<DbCarMaintenance>();
+                    carMaintenancesWithDate.AddRange(carMaintenancesForCar.Where(cm => cm.PlannedDate.HasValue || cm.Maintenance.AtDate.HasValue));
+
+                    List<DbCarMaintenance> carMaintenancesWithMileage = new List<DbCarMaintenance>();
+                    carMaintenancesWithMileage.AddRange(carMaintenancesForCar.Where(cm => cm.Maintenance.AtMileage.HasValue));
+
+                    var nextMaintenanceByDate = carMaintenancesWithDate.OrderBy(
+                        cm => cm.PlannedDate.HasValue && cm.Maintenance.AtDate.HasValue
+                            ? DateTime.Compare(cm.PlannedDate.Value, cm.Maintenance.AtDate.Value)
+                            : cm.PlannedDate?.Ticks ?? cm.Maintenance.AtDate.Value.Ticks).FirstOrDefault();
+
+                    // Check if there is a maintenance by date close
+                    if (nextMaintenanceByDate != null)
+                    {
+                        DateTime nextBookingDate = nextMaintenanceByDate.PlannedDate.HasValue &&
+                                                    nextMaintenanceByDate.Maintenance.AtDate.HasValue
+                            ? (nextMaintenanceByDate.PlannedDate.Value <
+                               nextMaintenanceByDate.Maintenance.AtDate.Value
+                                ? nextMaintenanceByDate.PlannedDate.Value
+                                : nextMaintenanceByDate.Maintenance.AtDate.Value)
+                            // ReSharper disable once PossibleInvalidOperationException
+                            : nextMaintenanceByDate.PlannedDate ?? nextMaintenanceByDate.Maintenance.AtDate.Value;
+
+                        // Check if the car if booked immediately would overdue the next maintenance (average time * 2 because the car would need to be charged first)
+                        if (DateTime.UtcNow + new TimeSpan((long)(averageTripDuration * 2)) > nextBookingDate)
+                        {
+                            // Set the booking state to be blocked
+                            car.BookingState = "BLOCKED";
+                        }
+                    }
+
+                    // Sort the list with mileage by milage due and get the first one
+                    var nextMaintenanceByMileage = carMaintenancesWithMileage
+                        // ReSharper disable once PossibleInvalidOperationException
+                        .OrderBy(cm => cm.Maintenance.AtMileage.Value)
+                        .FirstOrDefault();
+
+                    // Check if the next trip would make the car have more mileage than needed for the maintenance (+ 0.5 averageMileage to be sure)
+                    // ReSharper disable once PossibleInvalidOperationException
+                    if (car.Milage + averageTripMileage * 1.5 >
+                        nextMaintenanceByMileage?.Maintenance.AtMileage)
+                    {
+                        // Set the booking state to be blocked
+                        car.BookingState = "BLOCKED";
+                    }
+                }
 
                 transaction.Commit();
                 await Context.SaveChangesAsync();
