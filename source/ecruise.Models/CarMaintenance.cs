@@ -163,4 +163,116 @@ namespace ecruise.Models
 
         #endregion Operators
     }
+
+    public class CarMaintenanceUpdate
+        : IEquatable<CarMaintenanceUpdate>
+    {
+        /// <param name="invoiceItemId">InvoiceItemId</param>
+        /// <param name="completedDate">CompletedDate</param>
+        public CarMaintenanceUpdate(uint invoiceItemId, DateTime completedDate)
+        {
+            InvoiceItemId = invoiceItemId;
+            CompletedDate = completedDate;
+        }
+
+        /// <summary>
+        /// Gets InvoiceItemId
+        /// </summary>
+        [Required, Range(1, uint.MaxValue)]
+        public uint InvoiceItemId { get; }
+
+        /// <summary>
+        /// Gets CompletedDate
+        /// </summary>
+        [DataType(DataType.DateTime)]
+        public DateTime CompletedDate { get; }
+
+        /// <summary>
+        /// Returns the string presentation of the object
+        /// </summary>
+        /// <returns>String presentation of the object</returns>
+        public override string ToString()
+        {
+            var sb = new StringBuilder();
+            sb.Append("class CarMaintenanceUpdate {\n");
+            sb.Append("  InvoiceItemId: ").Append(InvoiceItemId).Append("\n");
+            sb.Append("  CompletedDate: ").Append(CompletedDate).Append("\n");
+            sb.Append("}\n");
+            return sb.ToString();
+        }
+
+        /// <summary>
+        /// Returns the JSON string presentation of the object
+        /// </summary>
+        /// <returns>JSON string presentation of the object</returns>
+        public string ToJson()
+        {
+            return JsonConvert.SerializeObject(this, Formatting.Indented);
+        }
+
+        /// <summary>
+        /// Returns true if objects are equal
+        /// </summary>
+        /// <param name="obj">Object to be compared</param>
+        /// <returns>Boolean</returns>
+        public override bool Equals(object obj)
+        {
+            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            if (obj.GetType() != GetType()) return false;
+            return Equals((Trip)obj);
+        }
+
+        /// <summary>
+        /// Returns true if Trip instances are equal
+        /// </summary>
+        /// <param name="other">Instance of Trip to be compared</param>
+        /// <returns>Boolean</returns>
+        public bool Equals(CarMaintenanceUpdate other)
+        {
+            if (ReferenceEquals(null, other)) return false;
+            if (ReferenceEquals(this, other)) return true;
+
+            return
+                (
+                    InvoiceItemId == other.InvoiceItemId ||
+                    InvoiceItemId.Equals(other.InvoiceItemId)
+                ) &&
+                (
+                    CompletedDate == other.CompletedDate ||
+                    CompletedDate.Equals(other.CompletedDate)
+                );
+        }
+
+        /// <summary>
+        /// Gets the hash code
+        /// </summary>
+        /// <returns>Hash code</returns>
+        public override int GetHashCode()
+        {
+            unchecked
+            {
+                int hash = 41;
+
+                hash = hash * 59 + InvoiceItemId.GetHashCode();
+                hash = hash * 59 + CompletedDate.GetHashCode();
+
+                return hash;
+            }
+        }
+
+        #region Operators
+
+        public static bool operator ==(CarMaintenanceUpdate left, CarMaintenanceUpdate right)
+        {
+            return Equals(left, right);
+        }
+
+        public static bool operator !=(CarMaintenanceUpdate left, CarMaintenanceUpdate right)
+        {
+            return !Equals(left, right);
+        }
+
+        #endregion Operators
+    }
 }
