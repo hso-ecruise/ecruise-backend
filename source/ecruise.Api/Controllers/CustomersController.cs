@@ -158,7 +158,7 @@ namespace ecruise.Api.Controllers
                 {
                     customerId = c.CustomerId,
                     firstName = c.FirstName,
-                    email,
+                    newMail = email,
                     confirmationToken = newToken
                 })
             );
