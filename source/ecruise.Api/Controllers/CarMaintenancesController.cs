@@ -121,23 +121,25 @@ namespace ecruise.Api.Controllers
                 "The given data could not be converted to a car maintenance object. Please check the message for further information."));
         }
 
-        // PATCH: /CarMaintenances/5/completed-date
-        [HttpPatch("{id}/completed-date")]
-        public async Task<IActionResult> Patch(ulong id, [FromBody] string date)
+        // PATCH: /CarMaintenances/5
+        [HttpPatch("{id}")]
+        public async Task<IActionResult> Patch(ulong id, [FromBody] CarMaintenanceUpdate carMaintenanceUpdate)
         {
             // forbid if not admin
             if (!HasAccess())
                 return Unauthorized();
 
-            // Transform string to date
-            DateTime newCompletedDateTime;
-            if (DateTime.TryParseExact(date, @"yyyy-MM-dd\THH:mm:ss.fff\Z", CultureInfo.InvariantCulture,
-                DateTimeStyles.AssumeUniversal | DateTimeStyles.AdjustToUniversal, out newCompletedDateTime))
+            if (ModelState.IsValid)
             {
                 // Check given date for logical validity
-                if (newCompletedDateTime.ToUniversalTime() > DateTime.UtcNow)
+                if (carMaintenanceUpdate.CompletedDate.ToUniversalTime() > DateTime.UtcNow)
                     return BadRequest(new Error(302, "Completed date must be in the past.",
                         "The given date wasn't set properly. Please check the message for further information."));
+
+                // Check if the invoice item exists
+                if(await Context.InvoiceItems.FindAsync((ulong)carMaintenanceUpdate.InvoiceItemId) == null)
+                    return NotFound(new Error(201, "A invoice item with requested id does not exist.",
+                        "An error occured. Please check the message for further information."));
 
                 // Get the specified car maintenance
                 var carMaintenance = await Context.CarMaintenances.FindAsync(id);
@@ -146,16 +148,19 @@ namespace ecruise.Api.Controllers
                     return NotFound(new Error(201, "A car maintenance with requested id does not exist.",
                         "An error occured. Please check the message for further information."));
 
-                // Patch completed date and save the change
-                carMaintenance.CompletedDate = newCompletedDateTime;
+                // Patch car maintenance object
+                carMaintenance.CompletedDate = carMaintenanceUpdate.CompletedDate;
+                carMaintenance.InvoiceItemId = carMaintenanceUpdate.InvoiceItemId;
+
+                // Save the changes
                 await Context.SaveChangesAsync();
 
                 // Return a reference to the patch object
                 return Ok(new PostReference(id, $"{BasePath}/carmaintenances/{id}"));
             }
 
-            return BadRequest(new Error(301, "The date given was not formatted correctly.",
-                "Date must always be in following format: 'yyyy-MM-ddTHH:mm:ss.zzzZ'"));
+            return BadRequest(new Error(301, GetModelStateErrorString(),
+                "The given data could not be converted to a car maintenance update object. Please check the message for further information."));
         }
 
         // GET: /CarMaintenances/by-car/5
