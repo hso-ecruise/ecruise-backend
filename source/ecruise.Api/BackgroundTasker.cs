@@ -33,8 +33,7 @@ namespace ecruise.Api
             Registry registry = new Registry();
 
             // Add car reservation module
-            // TODO Activate Again when problem with mutliple database context access is resolved
-            //registry.Schedule((Action)CarReservator).ToRunEvery(1).Minutes();
+            registry.Schedule((Action)CarReservator).ToRunEvery(1).Minutes();
 
             // Add invoice mailing module
             // Setting every 0 month because it then already starts this month
