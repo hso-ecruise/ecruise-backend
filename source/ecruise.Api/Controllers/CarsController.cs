@@ -80,6 +80,13 @@ namespace ecruise.Api.Controllers
             return Ok(CarAssembler.AssembleModel(car));
         }
 
+        // GET: /Cars/charge-level-per-minute
+        [HttpGet("charge-level-per-minute",Name = "GetChargeLevelPerMinute")]
+        public IActionResult GetChargeLevelPerMinute()
+        {
+            return Ok(1.0);
+        }
+
         // GET: /Cars/1/find
         [HttpGet("{id}/find", Name = "FindCar")]
         public async Task<IActionResult> FindCar(ulong id)
