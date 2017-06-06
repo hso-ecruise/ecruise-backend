@@ -1,8 +1,7 @@
 using System;
 using System.Collections.Generic;
-using System.Collections.Immutable;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
-using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using ecruise.Database.Models;
 using ecruise.Models;
@@ -10,7 +9,6 @@ using ecruise.Models.Assemblers;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Internal;
 using DbTrip = ecruise.Database.Models.Trip;
 using DbInvoice = ecruise.Database.Models.Invoice;
 using DbInvoiceItem = ecruise.Database.Models.InvoiceItem;
@@ -106,7 +104,9 @@ namespace ecruise.Api.Controllers
         }
 
         // PATCH: /trips/1
+
         [HttpPatch("{id}")]
+        [SuppressMessage("ReSharper", "PossibleInvalidOperationException")]
         public async Task<IActionResult> Patch(ulong id, [FromBody] TripUpdate trip)
         {
             // validate user input
@@ -134,7 +134,8 @@ namespace ecruise.Api.Controllers
                 dbtrip.DistanceTravelled = trip.DistanceTravelled;
 
                 // Get last invoice for the customer (means the invoice of the current month)
-                DbInvoice matchingInvoice = Context.Invoices.OrderBy(i => i.InvoiceId).LastOrDefault(i => i.CustomerId == dbtrip.CustomerId);
+                DbInvoice matchingInvoice = Context.Invoices.OrderBy(i => i.InvoiceId)
+                    .LastOrDefault(i => i.CustomerId == dbtrip.CustomerId);
 
                 double calculatedAmount = trip.DistanceTravelled * 0.15 +
                                           2.40 * (dbtrip.EndDate.Value - dbtrip.StartDate).TotalHours;
@@ -179,17 +180,16 @@ namespace ecruise.Api.Controllers
                 var booking = matchingBooking.FirstOrDefault();
 
                 if (matchingBooking.Count == 0 || booking == null)
-                {
                     return NotFound(new Error(201, "The matching booking of the trip was not found.",
                         $"There is no booking that has the trip id {dbtrip.TripId}."));
-                }
 
                 booking.InvoiceItemId = insertedInvoiceItem.Entity.InvoiceItemId;
 
 
                 // Check if the car must be locked due to a pending maintenance
                 // Check if there is a maintenance for the car
-                var carMaintenancesForCar = await Context.CarMaintenances.Where(cm => cm.CarId == dbtrip.CarId && !cm.CompletedDate.HasValue)
+                var carMaintenancesForCar = await Context.CarMaintenances
+                    .Where(cm => cm.CarId == dbtrip.CarId && !cm.CompletedDate.HasValue)
                     .ToListAsync();
 
                 if (carMaintenancesForCar.Count > 0)
@@ -198,12 +198,12 @@ namespace ecruise.Api.Controllers
                     var car = await Context.Cars.FindAsync(dbtrip.CarId);
 
                     // Get average time for a trip
-                    var allTrips = await Context.Trips.Where(t => t.EndDate.HasValue && t.DistanceTravelled.HasValue).ToListAsync();
-                    // ReSharper disable once PossibleInvalidOperationException
+                    var allTrips = await Context.Trips.Where(t => t.EndDate.HasValue && t.DistanceTravelled.HasValue)
+                        .ToListAsync();
+
                     var averageTripDuration = allTrips.Average(t => t.EndDate.Value.Ticks - t.StartDate.Ticks);
 
                     // Get average mileage per trip
-                    // ReSharper disable once PossibleInvalidOperationException
                     var averageTripMileage = allTrips.Average(t => t.DistanceTravelled.Value);
 
                     // Get all maintenances
@@ -221,13 +221,13 @@ namespace ecruise.Api.Controllers
 
                         // Or the maintenance linked has a date
                         if (allMaintenances.Any(m => m.MaintenanceId == carMaintenance.MaintenanceId &&
-                                                          m.AtDate.HasValue))
+                                                     m.AtDate.HasValue))
                         {
                             var maintenance = allMaintenances.FirstOrDefault(
                                 m => m.MaintenanceId == carMaintenance.MaintenanceId &&
                                      m.AtDate.HasValue);
 
-                            if(maintenance != null)
+                            if (maintenance != null)
                                 maintenancesWithDate.Add(maintenance);
                         }
                     }
@@ -241,12 +241,9 @@ namespace ecruise.Api.Controllers
                             allMaintenances.FirstOrDefault(m => m.MaintenanceId == carMaintenance.MaintenanceId);
 
                         // Can't be null normally
-                        if (matchingMaintenance != null)
-                        {
-                            // If it has a mileage set -> Add it to the list
-                            if(matchingMaintenance.AtMileage.HasValue)
-                                carMaintenancesWithMileage.Add(carMaintenance);
-                        }
+                        // If it has a mileage set -> Add it to the list
+                        if (matchingMaintenance?.AtMileage != null)
+                            carMaintenancesWithMileage.Add(carMaintenance);
                     }
 
                     DateTime? maintenanceDate = null;
@@ -254,56 +251,38 @@ namespace ecruise.Api.Controllers
                     // Get next maintenance with date 
                     if (maintenancesWithDate.Count > 0)
                     {
-                        // ReSharper disable once PossibleInvalidOperationException
                         var maintenance = maintenancesWithDate.OrderBy(m => m.AtDate.Value).FirstOrDefault();
 
                         if (maintenance != null)
-                            // ReSharper disable once PossibleInvalidOperationException
                             maintenanceDate = maintenance.AtDate.Value;
                     }
 
                     if (carMaintenancesWithDate.Count > 0)
                     {
-                        // ReSharper disable once PossibleInvalidOperationException
                         var maintenance = carMaintenancesWithDate.OrderBy(cm => cm.PlannedDate.Value).FirstOrDefault();
 
                         // Check if the date is earlier than the set date
-                        // ReSharper disable once PossibleInvalidOperationException
                         if (maintenanceDate == null || maintenanceDate > maintenance.PlannedDate.Value)
-                        {
                             maintenanceDate = maintenance.PlannedDate;
-                        }
                     }
 
                     // Check if there is a maintenance by date close
                     if (maintenanceDate != null)
-                    {
-                        // Check if the car if booked immediately would overdue the next maintenance (average time * 2 because the car would need to be charged first)
                         if (DateTime.UtcNow + new TimeSpan((long)(averageTripDuration * 2)) > maintenanceDate)
-                        {
-                            // Set the booking state to be blocked
                             car.BookingState = "BLOCKED";
-                        }
-                    }
 
-                    List<DbMaintenance> maintenancesWithMileage = new List<DbMaintenance>();
+                    // Find maintenance that relates to car maintenance
+                    List<DbMaintenance> maintenancesWithMileage =
+                        carMaintenancesWithMileage
+                            .Select(cm => allMaintenances.Find(m => m.MaintenanceId == cm.MaintenanceId))
+                            .ToList();
 
                     // Walk through all saves carMaintenandesWithMileage
-                    foreach (var cm in carMaintenancesWithMileage)
-                    {
-                        // Save the dependet maintenance
-                        maintenancesWithMileage.Add(allMaintenances.Find(m => m.MaintenanceId == cm.MaintenanceId));
-                    }
-
                     var firstMaintenanceByMileage = maintenancesWithMileage.OrderBy(m => m.AtMileage).FirstOrDefault();
 
                     // Check if the next trip would make the car have more mileage than needed for the maintenance (+ 0.5 averageMileage to be sure)
-                    if (car.Milage + averageTripMileage * 1.5 >
-                        firstMaintenanceByMileage?.AtMileage)
-                    {
-                        // Set the booking state to be blocked
+                    if (car.Milage + averageTripMileage * 1.5 > firstMaintenanceByMileage?.AtMileage)
                         car.BookingState = "BLOCKED";
-                    }
                 }
 
                 transaction.Commit();
