@@ -69,18 +69,17 @@ namespace ecruise.Api.Controllers
         [HttpPost(Name = "CreateTrip")]
         public async Task<IActionResult> Post([FromBody] Trip trip)
         {
-            // validate user input
+            // Validate user input
             if (!ModelState.IsValid)
                 return BadRequest(new Error(400, GetModelStateErrorString(),
                     "An error occured. Please check the message for further information."));
 
-            // forbid if current customer is creating a different user's trip
+            // Forbid if current customer is creating a different user's trip
             if (!HasAccess(trip.CustomerId))
                 return Unauthorized();
 
-            // create db trip to be inserted
+            // Create db trip to be inserted
             DbTrip insertTrip = TripAssembler.AssembleEntity(0, trip);
-
 
             // Check if the car is found and fully loaded
             var car = await Context.Cars.FindAsync(insertTrip.CarId);
@@ -94,6 +93,10 @@ namespace ecruise.Api.Controllers
                     "The action is not allowed with this resource",
                     "You were trying to use a non fully loaded car for a trip. Cars must be fully loaded to use for a trip"));
 
+            // Change the charging state to discharging
+            car.ChargingState = "DISCHARGING";
+            car.LastKnownPositionDate = DateTime.UtcNow;
+
             // insert trip into database
             var inserted = await Context.Trips.AddAsync(insertTrip);
 
@@ -104,7 +107,6 @@ namespace ecruise.Api.Controllers
         }
 
         // PATCH: /trips/1
-
         [HttpPatch("{id}")]
         [SuppressMessage("ReSharper", "PossibleInvalidOperationException")]
         public async Task<IActionResult> Patch(ulong id, [FromBody] TripUpdate trip)
