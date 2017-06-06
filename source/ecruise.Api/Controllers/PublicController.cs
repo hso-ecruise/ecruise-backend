@@ -15,7 +15,6 @@ using DbCustomerToken = ecruise.Database.Models.CustomerToken;
 
 namespace ecruise.Api.Controllers
 {
-    [AllowAnonymous]
     public class PublicController : BaseController
     {
         public PublicController(EcruiseContext context) : base(context)
