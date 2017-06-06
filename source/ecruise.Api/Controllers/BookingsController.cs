@@ -76,7 +76,7 @@ namespace ecruise.Api.Controllers
             try
             {
                 // Check if new bookings are allowed
-                var config = Context.Configurations.Find(1);
+                var config = Context.Configurations.Find((ulong)1);
                 if (!config.AllowNewBookings)
                     return StatusCode(StatusCodes.Status503ServiceUnavailable,
                         new Error(501, "Currently are no new bookings allowed", "An error occured.Please check the message for further information."));
