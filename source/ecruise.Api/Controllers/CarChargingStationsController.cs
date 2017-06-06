@@ -127,6 +127,9 @@ namespace ecruise.Api.Controllers
             car.LastKnownPositionLatitude = chargingStation.Latitude;
             car.LastKnownPositionLongitude = chargingStation.Longitude;
 
+            if (car.BookingState == "BOOKED")
+                car.BookingState = "AVAILABLE";
+
             // Construct entity from model
             var carChargingStationEntity = CarChargingStationAssembler.AssembleEntity(0, carChargingStation);
 
