@@ -13,6 +13,7 @@ using RazorLight;
 using CustomerToken = ecruise.Models.CustomerToken;
 using DbCustomer = ecruise.Database.Models.Customer;
 using DbCustomerToken = ecruise.Database.Models.CustomerToken;
+using DbInvoice = ecruise.Database.Models.Invoice;
 
 namespace ecruise.Api.Controllers
 {
@@ -171,6 +172,7 @@ namespace ecruise.Api.Controllers
                         activationToken, DateTime.UtcNow, null)
                 )
             );
+            
             var save = Context.SaveChangesAsync();
 
             await CustomerAssembler.AssembleModel(insert.Entity).SendMail("Deine Registrierung bei eCruise",
@@ -183,6 +185,18 @@ namespace ecruise.Api.Controllers
             );
 
             await save;
+
+            // Create blank invoice for customer
+            DbInvoice newInvoice = new DbInvoice
+            {
+                Paid = false,
+                TotalAmount = 0.0
+            };
+
+            // Change the new invoice to the database
+            await Context.Invoices.AddAsync(newInvoice);
+            await Context.SaveChangesAsync();
+
             return Created($"{BasePath}/customers/{insert.Entity.CustomerId}",
                 new PostReference((uint)insert.Entity.CustomerId, $"{BasePath}/customers/{insert.Entity.CustomerId}"));
         }
