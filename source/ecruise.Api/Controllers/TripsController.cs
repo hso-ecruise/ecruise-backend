@@ -93,6 +93,16 @@ namespace ecruise.Api.Controllers
                     "The action is not allowed with this resource",
                     "You were trying to use a non fully loaded car for a trip. Cars must be fully loaded to use for a trip"));
 
+            // Check if the charging station extists
+            var chargingStation = await Context.ChargingStations.FindAsync((ulong) trip.StartChargingStationId);
+
+            if (chargingStation == null)
+                return NotFound(new Error(201, "Charging station with requested id does not exist.",
+                    $"There is no car that has the id {insertTrip.StartChargingStationId}."));
+
+            // Decrement occupied slots of charging station
+            chargingStation.SlotsOccupied = chargingStation.SlotsOccupied == 0 ? 0 : chargingStation.SlotsOccupied - 1;
+
             // Change the charging state to discharging
             car.ChargingState = "DISCHARGING";
             car.LastKnownPositionDate = DateTime.UtcNow;
