@@ -103,7 +103,7 @@ namespace ecruise.Api.Controllers
             if (trips.Count > 0)
             {
                 // Search for car id
-                if (trips.FirstOrDefault(t => t.CarId.HasValue && t.CarId == id) != null)
+                if (trips.FirstOrDefault(t => t.CarId == id) != null)
                 {
                     // Ask the car for its current location
                     // TODO Ask car for current location and update on database

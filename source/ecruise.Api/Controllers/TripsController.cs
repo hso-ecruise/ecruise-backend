@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using ecruise.Database.Models;
 using ecruise.Models;
 using ecruise.Models.Assemblers;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Internal;
@@ -79,6 +80,19 @@ namespace ecruise.Api.Controllers
             // create db trip to be inserted
             DbTrip insertTrip = TripAssembler.AssembleEntity(0, trip);
 
+            
+            // Check if the car is found and fully loaded
+            var car = await Context.Cars.FindAsync(insertTrip.CarId);
+
+            if(car == null)
+                return NotFound(new Error(201, "Car with requested id does not exist.",
+                    $"There is no car that has the id {insertTrip.CarId}."));
+
+            if (car.ChargingState != "FULL")
+                return StatusCode(StatusCodes.Status409Conflict, new Error(303,
+                    "The action is not allowed with this resource",
+                    "You were trying to use a non fully loaded car for a trip. Cars must be fully loaded to use for a trip"));
+
             // insert trip into database
             var inserted = await Context.Trips.AddAsync(insertTrip);
 
@@ -119,9 +133,8 @@ namespace ecruise.Api.Controllers
                 // Get last invoice for the customer (means the invoice of the current month)
                 DbInvoice matchingInvoice = Context.Invoices.OrderBy(i => i.InvoiceId).LastOrDefault(i => i.CustomerId == AuthenticatedCustomerId);
 
-                // ReSharper disable once PossibleInvalidOperationException
                 double calculatedAmount = trip.DistanceTravelled * 0.15 +
-                                          2.40 * (dbtrip.EndDate.Value - dbtrip.StartDate.Value).TotalHours;
+                                          2.40 * (dbtrip.EndDate.Value - dbtrip.StartDate).TotalHours;
 
                 // Check if invoice found
                 if (matchingInvoice == null)
