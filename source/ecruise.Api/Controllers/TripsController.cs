@@ -15,6 +15,7 @@ using DbTrip = ecruise.Database.Models.Trip;
 using DbInvoice = ecruise.Database.Models.Invoice;
 using DbInvoiceItem = ecruise.Database.Models.InvoiceItem;
 using DbCarMaintenance = ecruise.Database.Models.CarMaintenance;
+using DbMaintenance = ecruise.Database.Models.Maintenance;
 using Trip = ecruise.Models.Trip;
 
 namespace ecruise.Api.Controllers
@@ -133,7 +134,7 @@ namespace ecruise.Api.Controllers
                 dbtrip.DistanceTravelled = trip.DistanceTravelled;
 
                 // Get last invoice for the customer (means the invoice of the current month)
-                DbInvoice matchingInvoice = Context.Invoices.OrderBy(i => i.InvoiceId).LastOrDefault(i => i.CustomerId == AuthenticatedCustomerId);
+                DbInvoice matchingInvoice = Context.Invoices.OrderBy(i => i.InvoiceId).LastOrDefault(i => i.CustomerId == dbtrip.CustomerId);
 
                 double calculatedAmount = trip.DistanceTravelled * 0.15 +
                                           2.40 * (dbtrip.EndDate.Value - dbtrip.StartDate).TotalHours;
@@ -205,49 +206,100 @@ namespace ecruise.Api.Controllers
                     // ReSharper disable once PossibleInvalidOperationException
                     var averageTripMileage = allTrips.Average(t => t.DistanceTravelled.Value);
 
+                    // Get all maintenances
+                    var allMaintenances = await Context.Maintenances.ToListAsync();
 
                     // Sort the maintenances for the car into lists
                     List<DbCarMaintenance> carMaintenancesWithDate = new List<DbCarMaintenance>();
-                    carMaintenancesWithDate.AddRange(carMaintenancesForCar.Where(cm => cm.PlannedDate.HasValue || cm.Maintenance.AtDate.HasValue));
+                    List<DbMaintenance> maintenancesWithDate = new List<DbMaintenance>();
+
+                    foreach (var carMaintenance in carMaintenancesForCar)
+                    {
+                        // Add the carMaintenance to the list if the car maintenance has a planned date
+                        if (carMaintenance.PlannedDate.HasValue)
+                            carMaintenancesWithDate.Add(carMaintenance);
+
+                        // Or the maintenance linked has a date
+                        if (allMaintenances.Any(m => m.MaintenanceId == carMaintenance.MaintenanceId &&
+                                                          m.AtDate.HasValue))
+                        {
+                            var maintenance = allMaintenances.FirstOrDefault(
+                                m => m.MaintenanceId == carMaintenance.MaintenanceId &&
+                                     m.AtDate.HasValue);
+
+                            if(maintenance != null)
+                                maintenancesWithDate.Add(maintenance);
+                        }
+                    }
 
                     List<DbCarMaintenance> carMaintenancesWithMileage = new List<DbCarMaintenance>();
-                    carMaintenancesWithMileage.AddRange(carMaintenancesForCar.Where(cm => cm.Maintenance.AtMileage.HasValue));
 
-                    var nextMaintenanceByDate = carMaintenancesWithDate.OrderBy(
-                        cm => cm.PlannedDate.HasValue && cm.Maintenance.AtDate.HasValue
-                            ? DateTime.Compare(cm.PlannedDate.Value, cm.Maintenance.AtDate.Value)
-                            : cm.PlannedDate?.Ticks ?? cm.Maintenance.AtDate.Value.Ticks).FirstOrDefault();
+                    foreach (var carMaintenance in carMaintenancesForCar)
+                    {
+                        // Get the maintenance from the car maintenance
+                        var matchingMaintenance =
+                            allMaintenances.FirstOrDefault(m => m.MaintenanceId == carMaintenance.MaintenanceId);
+
+                        // Can't be null normally
+                        if (matchingMaintenance != null)
+                        {
+                            // If it has a mileage set -> Add it to the list
+                            if(matchingMaintenance.AtMileage.HasValue)
+                                carMaintenancesWithMileage.Add(carMaintenance);
+                        }
+                    }
+
+                    DateTime? maintenanceDate = null;
+
+                    // Get next maintenance with date 
+                    if (maintenancesWithDate.Count > 0)
+                    {
+                        // ReSharper disable once PossibleInvalidOperationException
+                        var maintenance = maintenancesWithDate.OrderBy(m => m.AtDate.Value).FirstOrDefault();
+
+                        if (maintenance != null)
+                            // ReSharper disable once PossibleInvalidOperationException
+                            maintenanceDate = maintenance.AtDate.Value;
+                    }
+
+                    if (carMaintenancesWithDate.Count > 0)
+                    {
+                        // ReSharper disable once PossibleInvalidOperationException
+                        var maintenance = carMaintenancesWithDate.OrderBy(cm => cm.PlannedDate.Value).FirstOrDefault();
+
+                        // Check if the date is earlier than the set date
+                        // ReSharper disable once PossibleInvalidOperationException
+                        if (maintenanceDate == null || maintenanceDate > maintenance.PlannedDate.Value)
+                        {
+                            maintenanceDate = maintenance.PlannedDate;
+                        }
+                    }
 
                     // Check if there is a maintenance by date close
-                    if (nextMaintenanceByDate != null)
+                    if (maintenanceDate != null)
                     {
-                        DateTime nextBookingDate = nextMaintenanceByDate.PlannedDate.HasValue &&
-                                                    nextMaintenanceByDate.Maintenance.AtDate.HasValue
-                            ? (nextMaintenanceByDate.PlannedDate.Value <
-                               nextMaintenanceByDate.Maintenance.AtDate.Value
-                                ? nextMaintenanceByDate.PlannedDate.Value
-                                : nextMaintenanceByDate.Maintenance.AtDate.Value)
-                            // ReSharper disable once PossibleInvalidOperationException
-                            : nextMaintenanceByDate.PlannedDate ?? nextMaintenanceByDate.Maintenance.AtDate.Value;
-
                         // Check if the car if booked immediately would overdue the next maintenance (average time * 2 because the car would need to be charged first)
-                        if (DateTime.UtcNow + new TimeSpan((long)(averageTripDuration * 2)) > nextBookingDate)
+                        if (DateTime.UtcNow + new TimeSpan((long)(averageTripDuration * 2)) > maintenanceDate)
                         {
                             // Set the booking state to be blocked
                             car.BookingState = "BLOCKED";
                         }
                     }
 
-                    // Sort the list with mileage by milage due and get the first one
-                    var nextMaintenanceByMileage = carMaintenancesWithMileage
-                        // ReSharper disable once PossibleInvalidOperationException
-                        .OrderBy(cm => cm.Maintenance.AtMileage.Value)
-                        .FirstOrDefault();
+                    List<DbMaintenance> maintenancesWithMileage = new List<DbMaintenance>();
+
+                    // Walk through all saves carMaintenandesWithMileage
+                    foreach (var cm in carMaintenancesWithMileage)
+                    {
+                        // Save the dependet maintenance
+                        maintenancesWithMileage.Add(allMaintenances.Find(m => m.MaintenanceId == cm.MaintenanceId));
+                    }
+
+                    var firstMaintenanceByMileage = maintenancesWithMileage.OrderBy(m => m.AtMileage).FirstOrDefault();
 
                     // Check if the next trip would make the car have more mileage than needed for the maintenance (+ 0.5 averageMileage to be sure)
-                    // ReSharper disable once PossibleInvalidOperationException
                     if (car.Milage + averageTripMileage * 1.5 >
-                        nextMaintenanceByMileage?.Maintenance.AtMileage)
+                        firstMaintenanceByMileage?.AtMileage)
                     {
                         // Set the booking state to be blocked
                         car.BookingState = "BLOCKED";
