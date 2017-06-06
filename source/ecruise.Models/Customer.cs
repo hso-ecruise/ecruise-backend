@@ -21,11 +21,11 @@ namespace ecruise.Models
         /// <param name="phoneNumber">PhoneNumber (required)</param>
         /// <param name="firstName">FirstName (required)</param>
         /// <param name="lastName">LastName (required)</param>
-        /// <param name="country">Country (required)</param>
-        /// <param name="city">City (required)</param>
-        /// <param name="zipCode">ZipCode (required)</param>
-        /// <param name="street">Street (required)</param>
-        /// <param name="houseNumber">HouseNumber (required)</param>
+        /// <param name="country">Country</param>
+        /// <param name="city">City</param>
+        /// <param name="zipCode">ZipCode</param>
+        /// <param name="street">Street</param>
+        /// <param name="houseNumber">HouseNumber</param>
         /// <param name="addressExtraLine">Extra line for the user's address. Can contain various detail information about the user's address. (required)</param>
         /// <param name="activated">True if the user has activated his account by clicking on the link in the activation email.</param>
         /// <param name="verified">True if the user has verified his account at our head-quarter by bringing us his driver's license.</param>

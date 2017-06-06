@@ -145,15 +145,9 @@ namespace ecruise.Api.Controllers
             string passwordHash = BitConverter.ToString(result).ToLowerInvariant().Replace("-", "");
 
             // create database user model
-            DbCustomer insertCustomer =
-                new DbCustomer
-                {
-                    Email = r.Email,
-                    PasswordHash = passwordHash,
-                    PasswordSalt = passwordSalt,
-                    FirstName = r.FirstName,
-                    LastName = r.LastName,
-                };
+            DbCustomer insertCustomer = CustomerAssembler.AssembleEntity(0, r);
+            insertCustomer.PasswordSalt = passwordSalt;
+            insertCustomer.PasswordHash = passwordHash;
 
             // save customer to database
             var insert = await Context.Customers.AddAsync(insertCustomer);
