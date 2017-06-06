@@ -101,12 +101,14 @@ namespace ecruise.Api.Controllers
                 ));
 
             // Check car
-            if (Context.Customers.Find((ulong)carChargingStation.CarId) == null)
+            var car = await Context.Cars.FindAsync((ulong) carChargingStation.CarId);
+            if (car == null)
                 return NotFound(new Error(202, "The car referenced in the given object does not exist.",
                     "The referenced car must already exist to create a new car chargingstation."));
 
             // Check charging station
-            if (Context.Customers.Find((ulong)carChargingStation.ChargingStationId) == null)
+            var chargingStation = await Context.ChargingStations.FindAsync((ulong) carChargingStation.ChargingStationId);
+            if (chargingStation == null)
                 return NotFound(new Error(202,
                     "The chargingstation referenced in the given object does not exist.",
                     "The referenced chargingstation must already exist to create a new car chargingstation."));
@@ -115,9 +117,15 @@ namespace ecruise.Api.Controllers
             if (carChargingStation.ChargeStart.ToUniversalTime() > DateTime.UtcNow.AddMinutes(3))
                 return BadRequest(new Error(302, "Charge start date must be in the past",
                     "The charging must not start in the future."));
+
             if (carChargingStation.ChargeEnd.HasValue)
                 return BadRequest(new Error(302, "Charge end date cannot be set.",
                     "The charge end date cannot already be set when creating the "));
+
+            // Set the position because the car is connected now
+            car.LastKnownPositionDate = DateTime.UtcNow;
+            car.LastKnownPositionLatitude = chargingStation.Latitude;
+            car.LastKnownPositionLongitude = chargingStation.Longitude;
 
             // Construct entity from model
             var carChargingStationEntity = CarChargingStationAssembler.AssembleEntity(0, carChargingStation);
