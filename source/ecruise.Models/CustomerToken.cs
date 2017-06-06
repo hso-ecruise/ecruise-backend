@@ -14,7 +14,9 @@ namespace ecruise.Models
         public enum TokenTypeEnum
         {
             EmailActivation = 1,
-            Login
+            Login = 2,
+            EmailChangePhase1 = 3,
+            EmailChangePhase2 = 4
         }
 
         /// <summary>

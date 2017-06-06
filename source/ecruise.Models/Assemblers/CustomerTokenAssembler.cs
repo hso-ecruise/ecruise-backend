@@ -17,6 +17,10 @@ namespace ecruise.Models.Assemblers
                     return "EMAIL_ACTIVATION";
                 case CustomerToken.TokenTypeEnum.Login:
                     return "LOGIN";
+                case CustomerToken.TokenTypeEnum.EmailChangePhase1:
+                    return "EMAIL_CHANGE_PHASE_1";
+                case CustomerToken.TokenTypeEnum.EmailChangePhase2:
+                    return "EMAIL_CHANGE_PHASE_2";
                 default:
                     throw new NotImplementedException();
             }
@@ -30,6 +34,10 @@ namespace ecruise.Models.Assemblers
                     return CustomerToken.TokenTypeEnum.EmailActivation;
                 case "LOGIN":
                     return CustomerToken.TokenTypeEnum.Login;
+                case "EMAIL_CHANGE_PHASE_1":
+                    return CustomerToken.TokenTypeEnum.EmailChangePhase1;
+                case "EMAIL_CHANGE_PHASE_2":
+                    return CustomerToken.TokenTypeEnum.EmailChangePhase2;
                 default:
                     throw new NotImplementedException();
             }  
