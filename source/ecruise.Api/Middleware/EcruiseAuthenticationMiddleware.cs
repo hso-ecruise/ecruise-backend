@@ -33,8 +33,6 @@ namespace ecruise.Api.Middleware
                     return;
                 }
 
-                _dbContext.Database.EnsureCreated();
-
                 DbCustomerToken customerToken =
                     await _dbContext.CustomerTokens
                         .Where(t => t.ExpireDate == null || t.ExpireDate > DateTime.UtcNow)

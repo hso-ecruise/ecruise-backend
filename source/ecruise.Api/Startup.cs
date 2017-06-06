@@ -30,6 +30,9 @@ namespace ecruise.Api
                 .AddJsonFile($"appsettings.{env.EnvironmentName}.json", true)
                 .AddEnvironmentVariables();
             Configuration = builder.Build();
+
+            // Schedule background tasks
+            JobManager.Initialize(new BackgroundTasker().ScheduleAllTasks());
         }
 
         private IConfigurationRoot Configuration { get; }
@@ -53,12 +56,6 @@ namespace ecruise.Api
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory,
             EcruiseContext ecruiseContext)
         {
-            // Add CORS to every Request
-            app.UseCors(builder => builder.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
-
-            // Schedule background tasks
-            JobManager.Initialize(new BackgroundTasker().ScheduleAllTasks());
-
             // Add logger
             loggerFactory.AddConsole(Configuration.GetSection("Logging"));
             loggerFactory.AddDebug(LogLevel.Debug);
@@ -68,6 +65,9 @@ namespace ecruise.Api
             {
                 ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
             });
+
+            // Add CORS to every Request
+            app.UseCors(builder => builder.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
 
             // global exception handler
             #region Exception Handler
@@ -92,10 +92,8 @@ namespace ecruise.Api
             // use authentification middleware
             app.UseMiddleware<EcruiseAuthenticationMiddleware>();
 
+            // use MVC
             app.UseMvc();
-
-            // Add CORS to every Request
-            app.UseCors(builder => builder.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
         }
     }
 }
