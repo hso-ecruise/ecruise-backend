@@ -42,7 +42,7 @@ namespace ecruise.Api.Controllers
         {
             // forbid if user is accessing different user's ressources
             if (!HasAccess(id))
-                return Forbid();
+                return Unauthorized();
 
             // validate user input
             if (!ModelState.IsValid)
@@ -66,7 +66,7 @@ namespace ecruise.Api.Controllers
         {
             // forbid if user is accessing different user's ressources
             if (!HasAccess(id))
-                return Forbid();
+                return Unauthorized();
 
             // validate user input
             if (!ModelState.IsValid)
@@ -117,7 +117,7 @@ namespace ecruise.Api.Controllers
         {
             // forbid if user is accessing different user's ressources
             if (!HasAccess(id))
-                return Forbid();
+                return Unauthorized();
 
             // validate user input
             if (!ModelState.IsValid)
@@ -153,7 +153,7 @@ namespace ecruise.Api.Controllers
         {
             // forbid if user is accessing different user's ressources
             if (!HasAccess(id))
-                return Forbid();
+                return Unauthorized();
 
             // validate user input
             if (!ModelState.IsValid)
@@ -182,7 +182,7 @@ namespace ecruise.Api.Controllers
         {
             // forbid if user is accessing different user's ressources
             if (!HasAccess(id))
-                return Forbid();
+                return Unauthorized();
 
             // validate user input
             if (!ModelState.IsValid)
@@ -221,7 +221,7 @@ namespace ecruise.Api.Controllers
         {
             // forbid if user is accessing different user's ressources
             if (!HasAccess(id))
-                return Forbid();
+                return Unauthorized();
 
             // validate user input
             if (!ModelState.IsValid)

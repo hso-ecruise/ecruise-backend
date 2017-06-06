@@ -41,7 +41,7 @@ namespace ecruise.Api.Controllers
         {
             // forbid if not admin
             if (!HasAccess())
-                return Forbid();
+                return Unauthorized();
 
             // validate user input
             if (!ModelState.IsValid)
@@ -119,7 +119,7 @@ namespace ecruise.Api.Controllers
         {
             // forbid if not admin
             if (!HasAccess())
-                return Forbid();
+                return Unauthorized();
 
             // validate user input
             if (!ModelState.IsValid)
@@ -148,7 +148,7 @@ namespace ecruise.Api.Controllers
         {
             // forbid if not admin
             if (!HasAccess())
-                return Forbid();
+                return Unauthorized();
 
             // validate user input
             if (!ModelState.IsValid)
@@ -177,7 +177,7 @@ namespace ecruise.Api.Controllers
         {
             // forbid if not admin
             if (!HasAccess())
-                return Forbid();
+                return Unauthorized();
 
             // validate user input
             if (!ModelState.IsValid)
@@ -206,7 +206,7 @@ namespace ecruise.Api.Controllers
         {
             // forbid if not admin
             if (!HasAccess())
-                return Forbid();
+                return Unauthorized();
 
             // validate user input
             if (!ModelState.IsValid)
@@ -235,7 +235,7 @@ namespace ecruise.Api.Controllers
         {
             // forbid if not admin
             if (!HasAccess())
-                return Forbid();
+                return Unauthorized();
 
             // validate user input
             if (!ModelState.IsValid)

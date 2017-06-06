@@ -55,7 +55,7 @@ namespace ecruise.Api.Controllers
 
             // forbid if current customer is accessing a different user's booking
             if (!HasAccess(booking.CustomerId))
-                return Forbid();
+                return Unauthorized();
 
             return Ok(BookingAssembler.AssembleModel(booking));
         }
@@ -84,7 +84,7 @@ namespace ecruise.Api.Controllers
 
             // forbid if current customer is accessing a different user's booking
             if (!HasAccess(booking.CustomerId))
-                return Forbid();
+                return Unauthorized();
 
             // Check planned date if set
             if (booking.PlannedDate != null && booking.PlannedDate < DateTime.UtcNow.AddMinutes(-5))
@@ -148,7 +148,7 @@ namespace ecruise.Api.Controllers
 
             // forbid if current customer is accessing a different user's booking
             if (!HasAccess(customerId))
-                return Forbid();
+                return Unauthorized();
 
             // Get all bookings with the given trip id
             var bookingEntities = Context.Bookings.Where(b => b.CustomerId == customerId).ToImmutableList();

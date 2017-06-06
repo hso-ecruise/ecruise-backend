@@ -59,7 +59,7 @@ namespace ecruise.Api.Controllers
 
             // forbid if current customer is accessing a different user's trip
             if (!HasAccess(trip.CustomerId))
-                return Forbid();
+                return Unauthorized();
 
             return Ok(TripAssembler.AssembleModel(trip));
         }
@@ -75,7 +75,7 @@ namespace ecruise.Api.Controllers
 
             // forbid if current customer is creating a different user's trip
             if (!HasAccess(trip.CustomerId))
-                return Forbid();
+                return Unauthorized();
 
             // create db trip to be inserted
             DbTrip insertTrip = TripAssembler.AssembleEntity(0, trip);
@@ -121,7 +121,7 @@ namespace ecruise.Api.Controllers
 
             // forbid if current customer is accessing a different user's trip
             if (!HasAccess(dbtrip.CustomerId))
-                return Forbid();
+                return Unauthorized();
 
             // update trip end data using a transaction
             using (var transaction = await Context.Database.BeginTransactionAsync())

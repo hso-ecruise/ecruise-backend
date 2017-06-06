@@ -24,7 +24,7 @@ namespace ecruise.Api.Controllers
         {
             // forbid if not admin
             if (!HasAccess())
-                return Forbid();
+                return Unauthorized();
 
             // Get all entities from database
             var carChargingStationEntities = await Context.CarChargingStations.ToListAsync();
@@ -43,7 +43,7 @@ namespace ecruise.Api.Controllers
         {
             // forbid if not admin
             if (!HasAccess())
-                return Forbid();
+                return Unauthorized();
 
             // Check for correct value
             if (!ModelState.IsValid)
@@ -68,7 +68,7 @@ namespace ecruise.Api.Controllers
         {
             // forbid if not admin
             if (!HasAccess())
-                return Forbid();
+                return Unauthorized();
 
             // Check for correct value
             if (!ModelState.IsValid)
@@ -92,7 +92,7 @@ namespace ecruise.Api.Controllers
         {
             // forbid if not admin
             if (!HasAccess())
-                return Forbid();
+                return Unauthorized();
 
             // Check object for logical validity
             if (!ModelState.IsValid)
@@ -141,7 +141,7 @@ namespace ecruise.Api.Controllers
         {
             // forbid if not admin
             if (!HasAccess())
-                return Forbid();
+                return Unauthorized();
 
             // Transform string to date
             DateTime newChargeEndDateTime;

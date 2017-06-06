@@ -22,7 +22,7 @@ namespace ecruise.Api.Controllers
         {
             // forbid if not admin
             if (!HasAccess())
-                return Forbid();
+                return Unauthorized();
 
             var statistics = await Context.Statistics.ToListAsync();
 
@@ -35,7 +35,7 @@ namespace ecruise.Api.Controllers
         {
             // forbid if not admin
             if (!HasAccess())
-                return Forbid();
+                return Unauthorized();
 
             // Transform string to date
             DateTime requestedDateTime;
