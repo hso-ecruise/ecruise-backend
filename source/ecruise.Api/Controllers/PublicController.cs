@@ -9,6 +9,7 @@ using ecruise.Models.Assemblers;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using RazorLight;
 using CustomerToken = ecruise.Models.CustomerToken;
 using DbCustomer = ecruise.Database.Models.Customer;
 using DbCustomerToken = ecruise.Database.Models.CustomerToken;
@@ -17,8 +18,11 @@ namespace ecruise.Api.Controllers
 {
     public class PublicController : BaseController
     {
-        public PublicController(EcruiseContext context) : base(context)
+        private readonly IRazorLightEngine _razorEngine;
+        
+        public PublicController(EcruiseContext context, IRazorLightEngine razorEngine) : base(context)
         {
+            _razorEngine = razorEngine;
         }
 
         // POST: /public/login/login@ecruise.me
@@ -47,7 +51,7 @@ namespace ecruise.Api.Controllers
                 return Unauthorized();
 
             //// invalidate all old login tokens
-            // List<DbCustomerToken> tokens =
+            // List<Db> tokens =
             //     Context.CustomerTokens
             //         .Where(t => t.Type == TokenType.Login)
             //         .Where(t => t.CustomerId == customer.CustomerId)
@@ -170,17 +174,13 @@ namespace ecruise.Api.Controllers
             var save = Context.SaveChangesAsync();
 
             await CustomerAssembler.AssembleModel(insert.Entity).SendMail("Deine Registrierung bei eCruise",
-                string.Format(
-                    @"Hallo {0},<br>
-herzlich willkommen bei eCruise!<br>
-<br>
-Du bist noch nicht ganz fertig mit deiner Registrierung. Um sie abzuschlieﬂen, fehlt nur noch ein kleiner Schritt:<br>
-Mit einem Klick auf den folgenden Link best‰tigst du deine Anmeldung:<br>
-<br>
-<a href=""https://api.ecruise.me/v1/public/activate/{1}/{2}"">https://api.ecruise.me/v1/public/activate/{1}/{2}</a><br>
-<br>
-Wir freuen uns auf dich!<br>
-Dein eCruise-Team", r.FirstName, r.Email, activationToken));
+                _razorEngine.Parse("CustomerRegistration.cshtml", new
+                {
+                    r.FirstName,
+                    r.Email,
+                    ActivationToken = activationToken
+                })
+            );
 
             await save;
             return Created($"{BasePath}/customers/{insert.Entity.CustomerId}",

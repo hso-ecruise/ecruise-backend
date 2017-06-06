@@ -13,6 +13,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using RazorLight.MVC;
 
 // ReSharper disable UnusedMember.Global
 // ReSharper disable ClassNeverInstantiated.Global
@@ -43,13 +44,16 @@ namespace ecruise.Api
             // Add framework services.
             services.AddCors();
 
-            // Add MVC Service
-            services.AddMvc();
-
             // Add DbContext via DI
             services.AddDbContext<EcruiseContext>(options =>
                 options.UseMySql(Environment.GetEnvironmentVariable("CONNECTION_STRING") ??
                                  Configuration.GetConnectionString("ecruiseMySQL")));
+          
+            // Add Razor Light Engine
+            services.AddRazorLight("/MailTemplates");
+          
+            // Add MVC Service
+            services.AddMvc();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

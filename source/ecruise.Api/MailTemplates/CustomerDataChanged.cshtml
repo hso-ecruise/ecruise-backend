@@ -1,0 +1,18 @@
+﻿@{ Layout = "/_Layout.cshtml"; }
+@model ecruise.Models.Customer
+Hallo @Model.FirstName!
+
+Wie es aussieht, hast du deine Daten bei eCruise geändert.
+Damit du nochmal alles auf einen Blick hast, sind hier deine neuen Daten:
+
+Zu dir:
+  Vorname: @Model.FirstName
+  Nachname: @Model.LastName
+  Telefonnummer: @Model.PhoneNumber
+
+Adresse:
+  @Model.Street @Model.HouseNumber
+@if(string.IsNullOrWhiteSpace(@Model.AddressExtraLine)) {  @Model.AddressExtraLine}
+  @Model.ZipCode @Model.City, @Model.Country
+
+Dein eCruise-Team
