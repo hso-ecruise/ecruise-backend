@@ -40,10 +40,13 @@ namespace ecruise.Api
             // Add framework services.
             services.AddCors();
 
+            // Add MVC Service
+            services.AddMvc();
+
+            // Add DbContext via DI
             services.AddDbContext<EcruiseContext>(options =>
                 options.UseMySql(Environment.GetEnvironmentVariable("CONNECTION_STRING") ??
                                  Configuration.GetConnectionString("ecruiseMySQL")));
-            services.AddMvc();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -90,6 +93,9 @@ namespace ecruise.Api
             app.UseMiddleware<EcruiseAuthenticationMiddleware>();
 
             app.UseMvc();
+
+            // Add CORS to every Request
+            app.UseCors(builder => builder.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
         }
     }
 }
