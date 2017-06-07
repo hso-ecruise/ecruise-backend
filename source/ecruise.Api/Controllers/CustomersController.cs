@@ -337,10 +337,6 @@ namespace ecruise.Api.Controllers
                 return BadRequest(new Error(400, GetModelStateErrorString(),
                     "An error occured. Please check the message for further information."));
 
-            // forbid if user is accessing different user's ressources
-            if (!HasAccess(id))
-                return Unauthorized();
-
             // find requested token in database
             DbCustomerToken dbToken = await Context.CustomerTokens
                 .Where(t => t.ExpireDate == null || t.ExpireDate >= DateTime.UtcNow)
