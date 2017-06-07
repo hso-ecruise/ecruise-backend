@@ -12,7 +12,7 @@ namespace ecruise.Database.Models
         }
 
         public ulong TripId { get; set; }
-        public ulong CarId { get; set; }
+        public ulong? CarId { get; set; }
         public ulong CustomerId { get; set; }
         public DateTime StartDate { get; set; }
         public DateTime? EndDate { get; set; }

@@ -19,7 +19,7 @@ namespace ecruise.Models
         /// <param name="startChargingStationId">StartChargingStationId</param>
         /// <param name="endChargingStationId">EndChargingStationId</param>
         /// <param name="distanceTravelled">DistanceTravelled</param>
-        public Trip(uint tripId, uint carId, uint customerId, DateTime startDate, DateTime? endDate,
+        public Trip(uint tripId, uint? carId, uint customerId, DateTime startDate, DateTime? endDate,
             uint startChargingStationId, uint? endChargingStationId, double? distanceTravelled)
         {
             TripId = tripId;
@@ -43,9 +43,8 @@ namespace ecruise.Models
         ///     See #/definitions/Car
         /// </summary>
         /// <value>See '#/definitions/Car'</value>
-        [Required]
         [Range(1, uint.MaxValue)]
-        public uint CarId { get; }
+        public uint? CarId { get; }
 
         /// <summary>
         ///     See '#/definitions/Customer'
