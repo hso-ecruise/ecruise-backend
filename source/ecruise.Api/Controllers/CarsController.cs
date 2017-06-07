@@ -81,7 +81,7 @@ namespace ecruise.Api.Controllers
         }
 
         // GET: /Cars/charge-level-per-minute
-        [HttpGet("charge-level-per-minute",Name = "GetChargeLevelPerMinute")]
+        [HttpGet("charge-level-per-minute", Name = "GetChargeLevelPerMinute")]
         public IActionResult GetChargeLevelPerMinute()
         {
             return Ok(1.0);
@@ -105,17 +105,15 @@ namespace ecruise.Api.Controllers
                     $"There is no maintenance that has the id {id}."));
 
             // Check if the user is allowed to get the data
-            var trips = await Context.Trips.Where(t => t.CustomerId == AuthenticatedCustomerId && t.EndDate == null).ToListAsync();
+            var trips = await Context.Trips.Where(t => t.CustomerId == AuthenticatedCustomerId && t.EndDate == null)
+                .ToListAsync();
 
             if (trips.Count > 0)
-            {
-                // Search for car id
                 if (trips.FirstOrDefault(t => t.CarId == id) != null)
                 {
                     // Ask the car for its current location
                     // TODO Ask car for current location and update on database
                 }
-            }
 
             return Ok(CarAssembler.AssembleModel(car));
         }
@@ -272,7 +270,7 @@ namespace ecruise.Api.Controllers
         }
 
         // GET: /Cars/closest-to/58/8?radius=100
-        // ReSharper disable PossibleInvalidOperationException
+// ReSharper disable PossibleInvalidOperationException
         [HttpGet(@"closest-to/{latitude}/{longitude}", Name = "GetClosestCar")]
         public async Task<IActionResult> GetClosestCarChargingStation(double latitude, double longitude,
             [FromQuery] int radius)

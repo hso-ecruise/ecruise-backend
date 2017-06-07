@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 using ecruise.Database.Models;
 using ecruise.Models;
 using ecruise.Models.Assemblers;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using RazorLight;

@@ -1,11 +1,9 @@
 using System;
-using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 using ecruise.Database.Models;
 using ecruise.Models;
 using ecruise.Models.Assemblers;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using CarMaintenance = ecruise.Models.CarMaintenance;
@@ -137,7 +135,7 @@ namespace ecruise.Api.Controllers
                         "The given date wasn't set properly. Please check the message for further information."));
 
                 // Check if the invoice item exists
-                if(await Context.InvoiceItems.FindAsync((ulong)carMaintenanceUpdate.InvoiceItemId) == null)
+                if (await Context.InvoiceItems.FindAsync((ulong)carMaintenanceUpdate.InvoiceItemId) == null)
                     return NotFound(new Error(201, "A invoice item with requested id does not exist.",
                         "An error occured. Please check the message for further information."));
 

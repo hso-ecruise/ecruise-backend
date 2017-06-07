@@ -48,10 +48,10 @@ namespace ecruise.Api
             services.AddDbContext<EcruiseContext>(options =>
                 options.UseMySql(Environment.GetEnvironmentVariable("CONNECTION_STRING") ??
                                  Configuration.GetConnectionString("ecruiseMySQL")));
-          
+
             // Add Razor Light Engine
             services.AddRazorLight("/MailTemplates");
-          
+
             // Add MVC Service
             services.AddMvc();
         }
@@ -74,7 +74,9 @@ namespace ecruise.Api
             app.UseCors(builder => builder.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
 
             // global exception handler
+
             #region Exception Handler
+
             app.UseExceptionHandler(builder =>
             {
                 builder.Use(async (context, next) =>
@@ -88,9 +90,13 @@ namespace ecruise.Api
                         await context.Response.WriteAsync(JsonConvert.SerializeObject(new Error(101,
                             "An unexpected exception occured: " + error.Error.Message, error.Error.StackTrace)));
                     }
-                    else await next();
+                    else
+                    {
+                        await next();
+                    }
                 });
             });
+
             #endregion
 
             // use authentification middleware

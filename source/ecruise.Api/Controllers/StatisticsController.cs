@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.Globalization;
 using System.Threading.Tasks;
 using ecruise.Database.Models;
@@ -44,7 +43,7 @@ namespace ecruise.Api.Controllers
             {
                 var statistic = await Context.Statistics.FindAsync(requestedDateTime.Date);
 
-                if(statistic == null)
+                if (statistic == null)
                     return NotFound(new Error(201, "Statistic of requested date does not exist.",
                         "An error occured. Please check the message for further information."));
 

@@ -94,7 +94,7 @@ namespace ecruise.Api.Controllers
                     "You were trying to use a non fully loaded car for a trip. Cars must be fully loaded to use for a trip"));
 
             // Check if the charging station extists
-            var chargingStation = await Context.ChargingStations.FindAsync((ulong) trip.StartChargingStationId);
+            var chargingStation = await Context.ChargingStations.FindAsync((ulong)trip.StartChargingStationId);
 
             if (chargingStation == null)
                 return NotFound(new Error(201, "Charging station with requested id does not exist.",
