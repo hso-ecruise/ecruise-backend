@@ -13,6 +13,7 @@ using Microsoft.EntityFrameworkCore;
 using RazorLight;
 using Customer = ecruise.Models.Customer;
 using DbCustomer = ecruise.Database.Models.Customer;
+using DbTokenType = ecruise.Database.Models.TokenType;
 using DbCustomerToken = ecruise.Database.Models.CustomerToken;
 
 namespace ecruise.Api.Controllers
@@ -151,6 +152,18 @@ namespace ecruise.Api.Controllers
 
                 newToken = BitConverter.ToString(randBytes).ToLowerInvariant().Replace("-", "");
             }
+
+            // save new token to database
+            DbCustomerToken dbt = new DbCustomerToken
+            {
+                CustomerId = c.CustomerId,
+                Type = "EMAIL_CHANGE_PHASE_1",
+                Token = newToken,
+                CreationDate = DateTime.UtcNow,
+            };
+
+            await Context.CustomerTokens.AddAsync(dbt);
+            await Context.SaveChangesAsync();
 
             // send confirmation email
             await c.SendMail("Bestätige deine eMail-Änderung",
@@ -359,6 +372,18 @@ namespace ecruise.Api.Controllers
 
                     newToken = BitConverter.ToString(randBytes).ToLowerInvariant().Replace("-", "");
                 }
+
+                // save new token to database
+                DbCustomerToken dbt = new DbCustomerToken
+                {
+                    CustomerId = c.CustomerId,
+                    Type = "EMAIL_CHANGE_PHASE_2",
+                    Token = newToken,
+                    CreationDate = DateTime.UtcNow,
+                };
+
+                await Context.CustomerTokens.AddAsync(dbt);
+                await Context.SaveChangesAsync();
 
                 // Send second confirmation mail 
                 await c.SendMail("Bestätige deine eMail-Änderung",
