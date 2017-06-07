@@ -9,18 +9,39 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using CarChargingStation = ecruise.Models.CarChargingStation;
 
+
 namespace ecruise.Api.Controllers
 {
+    /// <summary>
+    ///     This class handles all requestes related to car charging station relations.
+    ///     That means that it handles all web requests to /car-charging-stations.
+    /// </summary>
     [Route("v1/car-charging-stations")]
     public class CarChargingStationsController : BaseController
     {
-        public CarChargingStationsController(EcruiseContext context) : base(context)
+        /// <summary>
+        ///     The constructor for the <see cref="CarChargingStationsController"/> class.
+        /// </summary>
+        /// <param name="context">The database context that gets injected by the framework.</param>
+        public CarChargingStationsController(EcruiseContext context)
+            : base(context)
         {
         }
 
-        // GET: /car-charging-stations
-        [HttpGet(Name = "GetAllCarChargingStations")]
-        public async Task<IActionResult> GetAllCharChargingStations()
+        /// <summary>
+        ///     Queries all car charging stationsand returns a http response that indicates if results were found.
+        ///     If there are any results, it returns a list of <see cref="CarChargingStation"/>s.
+        /// </summary>
+        /// <example>
+        ///     GET /car-charging-stations
+        /// </example>
+        /// <returns>
+        ///     HTTP 200 Ok: Returns a List of <see cref="CarChargingStation"/>s if everything's okay.\n
+        ///     HTTP 204 No Content: There are no <see cref="CarChargingStation"/>s.\n
+        ///     HTTP 401 Unauthorized: The authenticated customer has no access list all <see cref="CarChargingStation"/>s.
+        /// </returns>
+        [HttpGet(Name = "GetAllCarChargingStationsAsync")]
+        public async Task<IActionResult> GetAllCharChargingStationsAsync()
         {
             // forbid if not admin
             if (!HasAccess())
@@ -37,9 +58,23 @@ namespace ecruise.Api.Controllers
             return Ok(CarChargingStationAssembler.AssembleModelList(carChargingStationEntities));
         }
 
-        // GET: /car-charging-stations/by-car/5
-        [HttpGet("by-car/{carId}", Name = "GetCarChargingStationsByCar")]
-        public async Task<IActionResult> GetByCarId(ulong carId)
+        /// <summary>
+        ///     Find all <see cref="CarChargingStation"/>s that belongs to an associated <see cref="Models.Car"/> 
+        ///     identified by it's <paramref name="carId"/>.
+        ///     An error response is set if there's no such related <see cref="CarChargingStation"/>.
+        /// </summary>
+        /// <example>
+        ///     GET: /car-charging-stations/by-car/5
+        /// </example>
+        /// <returns>
+        ///     HTTP 200 Ok: Returns a list of all <see cref="CarChargingStation"/>s associated with the requested <see cref="Models.Car"/>
+        ///                  identified by it's <param name="carId"></param>.<br/>
+        ///     HTTP 203 No Content: There is no <see cref="CarChargingStation"/> that the current customer can access
+        ///                          associated with the requested <paramref name="carId"/>.<br/>
+        ///     HTTP 400 Bad Request: The provided parameters are malformed.
+        /// </returns>
+        [HttpGet("by-car/{carId}", Name = "GetCarChargingStationsByCarAsync")]
+        public async Task<IActionResult> GetByCarIdAsync(ulong carId)
         {
             // forbid if not admin
             if (!HasAccess())
@@ -62,9 +97,25 @@ namespace ecruise.Api.Controllers
         }
 
 
-        // GET: /car-charging-stations/by-charging-station/5
+        /// <summary>
+        ///     Find all <see cref="CarChargingStation"/>s that belongs to an associated <see cref="Models.ChargingStation"/> 
+        ///     identified by it's <paramref name="chargingStationId"/>.
+        ///     An error response is set if there's no such related <see cref="CarChargingStation"/>.
+        /// </summary>
+        /// <example>
+        ///     GET: /car-charging-stations/by-charging-station/5
+        /// </example>
+        /// <returns>
+        ///     HTTP 200 Ok: Returns a list of all <see cref="CarChargingStation"/>s associated with the requested
+        ///                  <see cref="Models.ChargingStation"/> identified by it's <param name="chargingStationId"></param>.<br/>
+        ///     HTTP 203 No Content: There is no <see cref="CarChargingStation"/> that the current customer can access
+        ///                          associated with the requested <paramref name="chargingStationId"/>.<br/>
+        ///     HTTP 400 Bad Request: The provided parameters are malformed.
+        ///     HTTP 401 Unauthorized: The authenticated customer has no find a <see cref="CarChargingStation"/> by it's
+        ///                            associated <paramref name="chargingStationId"/>.
+        /// </returns>
         [HttpGet("by-charging-station/{chargingStationId}", Name = "GetCarChargingStationsByChargingStation")]
-        public async Task<IActionResult> GetByChargingStationId(ulong chargingStationId)
+        public async Task<IActionResult> GetByChargingStationIdAsync(ulong chargingStationId)
         {
             // forbid if not admin
             if (!HasAccess())
@@ -86,9 +137,21 @@ namespace ecruise.Api.Controllers
             return Ok(CarChargingStationAssembler.AssembleModelList(carChargingStations));
         }
 
-        // POST: /car-charging-stations
+        /// <summary>
+        ///     Try to create a new <see cref="CarChargingStation"/> with the data provided by <paramref name="carChargingStation"/>.
+        /// </summary>
+        /// <example>
+        ///     POST: /car-charging-stations
+        /// </example>
+        /// <returns>
+        ///     HTTP 201 Created: Object was created successfully. Returns a <see cref="PostReference"/> to the created object.<br/>
+        ///     HTTP 400 Bad Request: The provided parameters are malformed.<br/>
+        ///     HTTP 401 Unauthorized: The authenticated customer has no access to create a <see cref="CarChargingStation"/>.<br/>
+        ///     HTTP 404 Not Found: There is no <see cref="Models.Car"/> or no <see cref="Models.ChargingStation"/> 
+        ///                         associated with their respective Ids provided in <paramref name="carChargingStation"/>.
+        /// </returns>
         [HttpPost]
-        public async Task<IActionResult> Post([FromBody] CarChargingStation carChargingStation)
+        public async Task<IActionResult> CreateCarChargingStationAsync([FromBody] CarChargingStation carChargingStation)
         {
             // forbid if not admin
             if (!HasAccess())
@@ -146,9 +209,20 @@ namespace ecruise.Api.Controllers
                 pr);
         }
 
-        // Patch: /car-charging-stations/5/charge-end
+        /// <summary>
+        ///     Update the end time of the <see cref="CarChargingStation"/> identified by <paramref name="id"/>.
+        /// </summary>
+        /// <example>
+        ///     PATCH: /car-charging-stations/5/charge-end
+        /// </example>
+        /// <returns>
+        ///     HTTP 200 Ok: Object was updated successfully. Returns a <see cref="PostReference"/> to the updated object.<br/>
+        ///     HTTP 400 Bad Request: The provided parameters are malformed.<br/>
+        ///     HTTP 401 Unauthorized: The authenticated customer has no access to edit this <see cref="CarChargingStation"/>.<br/>
+        ///     HTTP 404 Not Found: There is no <see cref="Models.ChargingStation"/> that's related to <paramref name="id"/>.
+        /// </returns>
         [HttpPatch("{id}/charge-end")]
-        public async Task<IActionResult> Patch(ulong id, [FromBody] string chargeEnd)
+        public async Task<IActionResult> UpdateChargeEndAsync(ulong id, [FromBody] string chargeEnd)
         {
             // forbid if not admin
             if (!HasAccess())
