@@ -159,7 +159,7 @@ namespace ecruise.Api.Controllers
                 CustomerId = c.CustomerId,
                 Type = "EMAIL_CHANGE_PHASE_1",
                 Token = newToken,
-                CreationDate = DateTime.UtcNow,
+                CreationDate = DateTime.UtcNow
             };
 
             await Context.CustomerTokens.AddAsync(dbt);
@@ -375,7 +375,7 @@ namespace ecruise.Api.Controllers
                     CustomerId = c.CustomerId,
                     Type = "EMAIL_CHANGE_PHASE_2",
                     Token = newToken,
-                    CreationDate = DateTime.UtcNow,
+                    CreationDate = DateTime.UtcNow
                 };
 
                 await Context.CustomerTokens.AddAsync(dbt);

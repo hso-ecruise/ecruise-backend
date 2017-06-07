@@ -101,13 +101,13 @@ namespace ecruise.Api.Controllers
                 ));
 
             // Check car
-            var car = await Context.Cars.FindAsync((ulong) carChargingStation.CarId);
+            var car = await Context.Cars.FindAsync((ulong)carChargingStation.CarId);
             if (car == null)
                 return NotFound(new Error(202, "The car referenced in the given object does not exist.",
                     "The referenced car must already exist to create a new car chargingstation."));
 
             // Check charging station
-            var chargingStation = await Context.ChargingStations.FindAsync((ulong) carChargingStation.ChargingStationId);
+            var chargingStation = await Context.ChargingStations.FindAsync((ulong)carChargingStation.ChargingStationId);
             if (chargingStation == null)
                 return NotFound(new Error(202,
                     "The chargingstation referenced in the given object does not exist.",

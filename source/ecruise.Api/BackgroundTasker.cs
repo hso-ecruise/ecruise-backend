@@ -7,11 +7,12 @@ using ecruise.Database.Models;
 using ecruise.Models.Assemblers;
 using FluentScheduler;
 using GeoCoordinatePortable;
+using MailKit.Net.Smtp;
 using Microsoft.EntityFrameworkCore;
 using DbCustomer = ecruise.Database.Models.Customer;
 using DbInvoice = ecruise.Database.Models.Invoice;
-
 using DbStatistic = ecruise.Database.Models.Statistic;
+using Trip = ecruise.Models.Trip;
 
 namespace ecruise.Api
 {
@@ -49,7 +50,7 @@ namespace ecruise.Api
         }
 
         /// <summary>
-        /// Checks for bookings that start in less than 30 minutes, reserves a  car for the booking and creates the trip
+        ///     Checks for bookings that start in less than 30 minutes, reserves a  car for the booking and creates the trip
         /// </summary>
         private void CarReservator()
         {
@@ -117,7 +118,7 @@ namespace ecruise.Api
                     }
 
                     // Create trip model
-                    Models.Trip trip = new Models.Trip(0, (uint)closestCar.CarId, (uint)booking.CustomerId,
+                    Trip trip = new Trip(0, (uint)closestCar.CarId, (uint)booking.CustomerId,
                         booking.PlannedDate ?? booking.BookingDate, null,
                         (uint)matchingCarChargingStation.ChargingStationId, null, null);
 
@@ -144,7 +145,7 @@ namespace ecruise.Api
         }
 
         /// <summary>
-        /// Sends the invoice of the current month to a customer if there are entries
+        ///     Sends the invoice of the current month to a customer if there are entries
         /// </summary>
         private async void InvoiceMailer()
         {
@@ -152,39 +153,34 @@ namespace ecruise.Api
             {
                 DateTime checkLastMonth = DateTime.UtcNow.AddDays(-1);
 
-                DateTime monthStart = new DateTime(checkLastMonth.Year, checkLastMonth.Month, 1, 0, 0, 0, DateTimeKind.Utc);
+                DateTime monthStart = new DateTime(checkLastMonth.Year, checkLastMonth.Month, 1, 0, 0, 0,
+                    DateTimeKind.Utc);
                 DateTime monthEnd = monthStart.AddMonths(1).AddMilliseconds(-1);
 
                 // Find invoices in the range
                 // Get all maintenances of the range
                 var carMaintenances = context.CarMaintenances.Where(cm => cm.CompletedDate.HasValue &&
-                                                                           cm.CompletedDate.Value.ToUniversalTime() > monthStart &&
-                                                                           cm.CompletedDate.Value.ToUniversalTime() < monthEnd)
+                                                                          cm.CompletedDate.Value.ToUniversalTime() >
+                                                                          monthStart &&
+                                                                          cm.CompletedDate.Value.ToUniversalTime() <
+                                                                          monthEnd)
                     .ToImmutableList();
 
                 var bookings = context.Bookings
                     .Where(b => b.BookingDate.ToUniversalTime() > monthStart.AddMonths(-1) &&
-                                                            b.BookingDate.ToUniversalTime() < monthEnd &&
-                                                            b.Trip.EndDate.HasValue)
+                                b.BookingDate.ToUniversalTime() < monthEnd &&
+                                b.Trip.EndDate.HasValue)
                     .ToImmutableList();
 
                 List<ulong> invoiceIds = new List<ulong>();
 
                 // Collect all invoice item ids form the entities
                 foreach (var entity in carMaintenances)
-                {
                     if (entity.InvoiceItemId.HasValue && !invoiceIds.Contains(entity.InvoiceItemId.Value))
-                    {
                         invoiceIds.Add(entity.InvoiceItemId.Value);
-                    }
-                }
                 foreach (var entity in bookings)
-                {
                     if (entity.InvoiceItemId.HasValue && !invoiceIds.Contains(entity.InvoiceItemId.Value))
-                    {
                         invoiceIds.Add(entity.InvoiceItemId.Value);
-                    }
-                }
 
                 // Get the all invoices for the invoice items
                 var invoices = context.Invoices
@@ -204,7 +200,8 @@ namespace ecruise.Api
                     // Check if found
                     if (customer == null)
                     {
-                        Debug.WriteLine($"ERROR: The customer with id {invoice.CustomerId} for the invoice with id {invoice.CustomerId} was not found");
+                        Debug.WriteLine(
+                            $"ERROR: The customer with id {invoice.CustomerId} for the invoice with id {invoice.CustomerId} was not found");
                         continue;
                     }
 
@@ -226,7 +223,7 @@ namespace ecruise.Api
                             $"Freundliche Grüße<br/>" +
                             $"Dein eCruise Team");
                     }
-                    catch (MailKit.Net.Smtp.SmtpCommandException)
+                    catch (SmtpCommandException)
                     {
                         // Catch exception if mail recipient is not reachable/existent
                     }
@@ -237,7 +234,7 @@ namespace ecruise.Api
         }
 
         /// <summary>
-        /// Creates the statistic for the current day
+        ///     Creates the statistic for the current day
         /// </summary>
         private async void StatisticCreator()
         {
@@ -271,7 +268,7 @@ namespace ecruise.Api
                 uint carsCharging = (uint)allCars.Count(c => c.ChargingState == "CHARGING");
 
                 // Create Statistic
-                DbStatistic newStatistic = new DbStatistic()
+                DbStatistic newStatistic = new DbStatistic
                 {
                     Date = today,
                     Bookings = countBookingPlannedForToday,
@@ -286,7 +283,7 @@ namespace ecruise.Api
         }
 
         /// <summary>
-        /// Creates a new empty invoice for every customer
+        ///     Creates a new empty invoice for every customer
         /// </summary>
         private async void InvoiceCreator()
         {
@@ -297,7 +294,6 @@ namespace ecruise.Api
                 List<DbInvoice> newInvoices = new List<DbInvoice>();
 
                 foreach (var customer in allCustomers)
-                {
                     // Create a new invoice for each customer
                     newInvoices.Add(new DbInvoice
                     {
@@ -305,7 +301,6 @@ namespace ecruise.Api
                         Paid = false,
                         TotalAmount = 0.0
                     });
-                }
 
                 await context.Invoices.AddRangeAsync(newInvoices);
             }
