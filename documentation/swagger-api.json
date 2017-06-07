@@ -1,0 +1,3606 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "eCruise API Documentation",
+    "description": "This document contains the full API specification for all web-based communication in eCruise. All communication MUST use an encrypted channel like HTTPS.",
+    "version": "0.7.2"
+  },
+  "host": "api.ecruise.me",
+  "basePath": "/v1",
+  "schemes": [
+    "https"
+  ],
+  "produces": [
+    "application/json"
+  ],
+  "consumes": [
+    "application/json"
+  ],
+  "tags": [
+    {
+      "name": "Public"
+    },
+    {
+      "name": "Customer"
+    },
+    {
+      "name": "Booking"
+    },
+    {
+      "name": "Trip"
+    },
+    {
+      "name": "Invoice"
+    },
+    {
+      "name": "Charging Station"
+    },
+    {
+      "name": "Car Charging Station"
+    },
+    {
+      "name": "Car"
+    },
+    {
+      "name": "Maintenance"
+    },
+    {
+      "name": "Car Maintenance"
+    },
+    {
+      "name": "System"
+    },
+    {
+      "name": "Statistic"
+    }
+  ],
+  "securityDefinitions": {
+    "api_token": {
+      "type": "apiKey",
+      "in": "header",
+      "name": "access_token"
+    }
+  },
+  "parameters": {
+    "CustomerId": {
+      "name": "CustomerId",
+      "in": "path",
+      "description": "Customer idenfitier number",
+      "type": "number",
+      "format": "uint32",
+      "required": true
+    },
+    "Email": {
+      "name": "Email",
+      "in": "path",
+      "description": "eMail Address",
+      "type": "string",
+      "required": true
+    },
+    "filter-properties": {
+      "name": "filter-properties",
+      "in": "query",
+      "description": "Makes the server to return only the properties that match those in the \n  query parameter.\n  This parameter is a comma seperated list of property names.\n",
+      "type": "string",
+      "required": false,
+      "collectionFormat": "csv"
+    }
+  },
+  "paths": {
+    "/public/login/{Email}": {
+      "post": {
+        "tags": [
+          "Public"
+        ],
+        "description": "Creates an authentification token for the user \n  to proceed using the API.\n",
+        "parameters": [
+          {
+            "$ref": "#/parameters/Email"
+          },
+          {
+            "in": "body",
+            "name": "Password",
+            "description": "Plain password",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Authenficiation Token to use for further API calls",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "integer",
+                  "format": "uint32",
+                  "description": "The users id\n"
+                },
+                "Token": {
+                  "description": "Token (SHA256 hash)",
+                  "type": "string",
+                  "format": "sha256-hash"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "There is no matching email<->password combination"
+          },
+          "default": {
+            "description": "Something went wrong",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/public/activate/{Email}/{Token}": {
+      "get": {
+        "tags": [
+          "Public"
+        ],
+        "description": "Activates a user by it's email and it's token.\n",
+        "parameters": [
+          {
+            "$ref": "#/parameters/Email"
+          },
+          {
+            "in": "path",
+            "name": "Token",
+            "description": "Randomly generated token that has been sent to the user's\n  email address.\n",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Activation was successful"
+          },
+          "404": {
+            "description": "Email<->Token combination not found"
+          },
+          "default": {
+            "description": "Something went wrong",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/public/register": {
+      "post": {
+        "tags": [
+          "Public"
+        ],
+        "description": "Creates a new `User` object with the properties provided \nin `Registration`. \nReturns on success the corresponding user's user identifier.\n",
+        "parameters": [
+          {
+            "in": "body",
+            "name": "Registration",
+            "description": "Data used to create the Customer.",
+            "required": true,
+            "schema": {
+              "allOf": [
+                {
+                  "type": "object",
+                  "required": [
+                    "Email",
+                    "Password",
+                    "FirstName",
+                    "LastName"
+                  ],
+                  "properties": {
+                    "Email": {
+                      "type": "string",
+                      "format": "email"
+                    },
+                    "Password": {
+                      "type": "string",
+                      "minLength": 8
+                    },
+                    "FirstName": {
+                      "type": "string"
+                    },
+                    "LastName": {
+                      "type": "string"
+                    },
+                    "PhoneNumber": {
+                      "type": "string"
+                    }
+                  }
+                },
+                {
+                  "$ref": "#/definitions/Address"
+                }
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "The user has been created successfully.",
+            "schema": {
+              "$ref": "#/definitions/PostReference"
+            },
+            "headers": {
+              "location": {
+                "description": "Link to the newly created Customer.",
+                "type": "string",
+                "format": "url"
+              }
+            }
+          },
+          "409": {
+            "description": "The specified user already exists."
+          },
+          "default": {
+            "description": "Something went wrong",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/customers": {
+      "get": {
+        "security": [
+          {
+            "api_token": []
+          }
+        ],
+        "tags": [
+          "Customer"
+        ],
+        "description": "Get a list of all `Customer` objects",
+        "parameters": [
+          {
+            "$ref": "#/parameters/filter-properties"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Returns a list of all `Customer` objects",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/Customer"
+              }
+            }
+          },
+          "204": {
+            "description": "The request is valid but there are no customers"
+          },
+          "default": {
+            "description": "Something went wrong",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/customers/{CustomerId}": {
+      "get": {
+        "security": [
+          {
+            "api_token": []
+          }
+        ],
+        "tags": [
+          "Customer"
+        ],
+        "description": "Get a `Customer` by it's unique customer id.",
+        "parameters": [
+          {
+            "$ref": "#/parameters/CustomerId"
+          },
+          {
+            "$ref": "#/parameters/filter-properties"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Returns a `Customer` object",
+            "schema": {
+              "$ref": "#/definitions/Customer"
+            }
+          },
+          "404": {
+            "description": "The specified customer does not exist."
+          },
+          "default": {
+            "description": "Something went wrong",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/customers/{CustomerId}/password": {
+      "patch": {
+        "security": [
+          {
+            "api_token": []
+          }
+        ],
+        "tags": [
+          "Customer"
+        ],
+        "description": "Updates the password of the specified `Customer`.",
+        "parameters": [
+          {
+            "$ref": "#/parameters/CustomerId"
+          },
+          {
+            "in": "body",
+            "name": "Password",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 8
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The password of the `Customer` object has been updated successfully.\n  Returns the reference to the updated `Customer` object.\n",
+            "schema": {
+              "$ref": "#/definitions/PostReference"
+            },
+            "headers": {
+              "location": {
+                "description": "Link to the updated Customer object.",
+                "type": "string",
+                "format": "url"
+              }
+            }
+          },
+          "404": {
+            "description": "Specified `Customer` does not exist."
+          }
+        }
+      }
+    },
+    "/customers/{CustomerId}/email": {
+      "patch": {
+        "security": [
+          {
+            "api_token": []
+          }
+        ],
+        "tags": [
+          "Customer"
+        ],
+        "description": "Updates the `Email` of the specified `Customer`.",
+        "parameters": [
+          {
+            "$ref": "#/parameters/CustomerId"
+          },
+          {
+            "in": "body",
+            "name": "Email",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "email"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The email of the `Customer` object has been updated successfully.\n  Returns the reference to the updated `Customer` object.\n",
+            "schema": {
+              "$ref": "#/definitions/PostReference"
+            },
+            "headers": {
+              "location": {
+                "description": "Link to the updated Customer object.",
+                "type": "string",
+                "format": "url"
+              }
+            }
+          },
+          "404": {
+            "description": "Specified `Customer` does not exist."
+          },
+          "409": {
+            "description": "A `Customer` with the same email address already exists."
+          }
+        }
+      }
+    },
+    "/customers/{CustomerId}/phone-number": {
+      "patch": {
+        "security": [
+          {
+            "api_token": []
+          }
+        ],
+        "tags": [
+          "Customer"
+        ],
+        "description": "Updates the `PhoneNumber` of the specified `Customer`.",
+        "parameters": [
+          {
+            "$ref": "#/parameters/CustomerId"
+          },
+          {
+            "in": "body",
+            "name": "PhoneNumber",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The phone number of the `Customer` object has been updated\n  successfully.\n  Returns the reference to the updated `Customer` object.\n",
+            "schema": {
+              "$ref": "#/definitions/PostReference"
+            },
+            "headers": {
+              "location": {
+                "description": "Link to the updated Customer object.",
+                "type": "string",
+                "format": "url"
+              }
+            }
+          },
+          "404": {
+            "description": "Specified `Customer` does not exist."
+          }
+        }
+      }
+    },
+    "/customers/{CustomerId}/chipcarduid": {
+      "patch": {
+        "security": [
+          {
+            "api_token": []
+          }
+        ],
+        "tags": [
+          "Customer"
+        ],
+        "description": "Updates the `ChipCardUid` of the specified `Customer`.",
+        "parameters": [
+          {
+            "$ref": "#/parameters/CustomerId"
+          },
+          {
+            "in": "body",
+            "name": "ChipCardUid",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The `ChipCardUid` of the `Customer` object has been updated\n  successfully.\n  Returns the reference to the updated `Customer` object.\n",
+            "schema": {
+              "$ref": "#/definitions/PostReference"
+            },
+            "headers": {
+              "location": {
+                "description": "Link to the updated Customer object.",
+                "type": "string",
+                "format": "url"
+              }
+            }
+          },
+          "404": {
+            "description": "Specified `Customer` does not exist."
+          }
+        }
+      }
+    },
+    "/customers/{CustomerId}/address": {
+      "patch": {
+        "security": [
+          {
+            "api_token": []
+          }
+        ],
+        "tags": [
+          "Customer"
+        ],
+        "description": "Updates the address of the specified `Customer`.",
+        "parameters": [
+          {
+            "$ref": "#/parameters/CustomerId"
+          },
+          {
+            "in": "body",
+            "name": "Address",
+            "required": true,
+            "description": "Object with updated address information.\n  Empty fields remain unchanged.\n",
+            "schema": {
+              "$ref": "#/definitions/Address"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The address of the `Customer` object has been updated\n  successfully.\n  Returns the reference to the updated `Customer` object.\n",
+            "schema": {
+              "$ref": "#/definitions/PostReference"
+            },
+            "headers": {
+              "location": {
+                "description": "Link to the updated Customer object.",
+                "type": "string",
+                "format": "url"
+              }
+            }
+          },
+          "404": {
+            "description": "Specified `Customer` does not exist."
+          }
+        }
+      }
+    },
+    "/customers/{CustomerId}/verified": {
+      "patch": {
+        "security": [
+          {
+            "api_token": []
+          }
+        ],
+        "tags": [
+          "Customer"
+        ],
+        "description": "Updates the `Verified` status of the specified `Customer`.",
+        "parameters": [
+          {
+            "$ref": "#/parameters/CustomerId"
+          },
+          {
+            "in": "body",
+            "name": "Verified",
+            "required": true,
+            "schema": {
+              "type": "boolean"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The `Verified` status of the `Customer` object has been updated\n  successfully.\n  Returns the reference to the updated `Customer` object.\n",
+            "schema": {
+              "$ref": "#/definitions/PostReference"
+            },
+            "headers": {
+              "location": {
+                "description": "Link to the updated Customer object.",
+                "type": "string",
+                "format": "url"
+              }
+            }
+          },
+          "404": {
+            "description": "Specified `Customer` does not exist."
+          }
+        }
+      }
+    },
+    "/customers/by-lastname/{LastName}": {
+      "get": {
+        "security": [
+          {
+            "api_token": []
+          }
+        ],
+        "tags": [
+          "Customer"
+        ],
+        "description": "Get the basic information about a customer.",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "LastName",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Returns an array of `Customer` objects",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/Customer"
+              }
+            }
+          },
+          "204": {
+            "description": "There are no customers with that last name."
+          },
+          "default": {
+            "description": "Something went wrong",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/bookings": {
+      "get": {
+        "security": [
+          {
+            "api_token": []
+          }
+        ],
+        "tags": [
+          "Booking"
+        ],
+        "parameters": [
+          {
+            "$ref": "#/parameters/filter-properties"
+          }
+        ],
+        "description": "Get a full list of all booking objects",
+        "responses": {
+          "200": {
+            "description": "A list of all booking objects",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/Booking"
+              }
+            }
+          },
+          "204": {
+            "description": "The request was valid but there are no booking objects"
+          },
+          "default": {
+            "description": "Something went wrong",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      },
+      "post": {
+        "security": [
+          {
+            "api_token": []
+          }
+        ],
+        "tags": [
+          "Booking"
+        ],
+        "description": "Creates a new `Booking` object with the provided properties.\n",
+        "parameters": [
+          {
+            "in": "body",
+            "name": "Booking",
+            "required": true,
+            "description": "The booking to create",
+            "schema": {
+              "$ref": "#/definitions/Booking"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "The booking was created successfully. The response contains\n    a reference to the newly created object.\n",
+            "schema": {
+              "$ref": "#/definitions/PostReference"
+            },
+            "headers": {
+              "location": {
+                "description": "Link to the newly created ressource",
+                "type": "string",
+                "format": "url"
+              }
+            }
+          },
+          "503": {
+            "description": "New bookings are currently not allowed by the system.\n"
+          },
+          "default": {
+            "description": "Something went wrong",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/bookings/{BookingId}": {
+      "get": {
+        "security": [
+          {
+            "api_token": []
+          }
+        ],
+        "tags": [
+          "Booking"
+        ],
+        "description": "Get a `Booking` by it's unique id",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "BookingId",
+            "type": "integer",
+            "format": "uint32",
+            "required": true
+          },
+          {
+            "$ref": "#/parameters/filter-properties"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Booking found. Returns the requested `Booking` object.",
+            "schema": {
+              "$ref": "#/definitions/Booking"
+            }
+          },
+          "404": {
+            "description": "Booking with requested booking id does not exist."
+          },
+          "default": {
+            "description": "Something went wrong",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/bookings/by-trip/{TripId}": {
+      "get": {
+        "security": [
+          {
+            "api_token": []
+          }
+        ],
+        "tags": [
+          "Booking"
+        ],
+        "description": "Get a booking by it's trip id",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "TripId",
+            "type": "integer",
+            "format": "uint32",
+            "required": true
+          },
+          {
+            "$ref": "#/parameters/filter-properties"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Booking found. Returns the requested `Booking` object.",
+            "schema": {
+              "$ref": "#/definitions/Booking"
+            }
+          },
+          "404": {
+            "description": "Booking with requested booking id does not exist."
+          },
+          "default": {
+            "description": "Something went wrong",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/bookings/by-customer/{CustomerId}": {
+      "get": {
+        "security": [
+          {
+            "api_token": []
+          }
+        ],
+        "tags": [
+          "Booking"
+        ],
+        "description": "Get all bookings belonging to a unique customer",
+        "parameters": [
+          {
+            "$ref": "#/parameters/CustomerId"
+          },
+          {
+            "$ref": "#/parameters/filter-properties"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Array of all bookings belonging to the customer",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/Booking"
+              }
+            }
+          },
+          "204": {
+            "description": "No booking found that belongs to the customer"
+          },
+          "404": {
+            "description": "Customer does not exist"
+          },
+          "default": {
+            "description": "Something went wrong",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/bookings/by-planned-date/{Date}": {
+      "get": {
+        "security": [
+          {
+            "api_token": []
+          }
+        ],
+        "tags": [
+          "Booking"
+        ],
+        "description": "Get all planned bookings on a specific date",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "Date",
+            "type": "string",
+            "format": "full-date",
+            "required": true
+          },
+          {
+            "$ref": "#/parameters/filter-properties"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Array of all bookings planned for that day",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/Booking"
+              }
+            }
+          },
+          "204": {
+            "description": "There is no booking planned for the specified day"
+          },
+          "default": {
+            "description": "Something went wrong",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/bookings/by-booked-date/{Date}": {
+      "get": {
+        "security": [
+          {
+            "api_token": []
+          }
+        ],
+        "tags": [
+          "Booking"
+        ],
+        "description": "Get all bookings booked at the specified day",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "Date",
+            "type": "string",
+            "format": "full-date",
+            "required": true
+          },
+          {
+            "$ref": "#/parameters/filter-properties"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Array of all bookings created at the specified day",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/Booking"
+              }
+            }
+          },
+          "204": {
+            "description": "There was no booking created at the specified day"
+          },
+          "default": {
+            "description": "Something went wrong",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/trips": {
+      "get": {
+        "security": [
+          {
+            "api_token": []
+          }
+        ],
+        "tags": [
+          "Trip"
+        ],
+        "parameters": [
+          {
+            "in": "query",
+            "name": "filterbystate",
+            "type": "string",
+            "enum": [
+              "FINISHED",
+              "NOTFINISHED"
+            ],
+            "required": false
+          },
+          {
+            "$ref": "#/parameters/filter-properties"
+          }
+        ],
+        "description": "Get a full list of all trip objects",
+        "responses": {
+          "200": {
+            "description": "A list of all trip objects",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/Trip"
+              }
+            }
+          },
+          "204": {
+            "description": "The request was valid but there are no trip objects"
+          },
+          "default": {
+            "description": "Something went wrong",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      },
+      "post": {
+        "security": [
+          {
+            "api_token": []
+          }
+        ],
+        "tags": [
+          "Trip"
+        ],
+        "description": "Create a new trip object. Set values of EndDate, EndPositionLatitude,\n  EndPositionLongitude and DistanceTravelled are ignored.\n",
+        "parameters": [
+          {
+            "in": "body",
+            "name": "Trip",
+            "required": true,
+            "description": "The trip to create",
+            "schema": {
+              "$ref": "#/definitions/Trip"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "The trip was created successfully. The response contains\n    a reference to the newly created object.\n",
+            "schema": {
+              "$ref": "#/definitions/PostReference"
+            },
+            "headers": {
+              "location": {
+                "description": "Link to the newly created ressource",
+                "type": "string",
+                "format": "url"
+              }
+            }
+          },
+          "default": {
+            "description": "Something went wrong",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/trips/{TripId}": {
+      "get": {
+        "security": [
+          {
+            "api_token": []
+          }
+        ],
+        "tags": [
+          "Trip"
+        ],
+        "description": "Get a single trip object identified by it's id",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "TripId",
+            "type": "integer",
+            "format": "uint32",
+            "required": true
+          },
+          {
+            "$ref": "#/parameters/filter-properties"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Requested trip",
+            "schema": {
+              "$ref": "#/definitions/Trip"
+            }
+          },
+          "404": {
+            "description": "The requested trip does not exist"
+          },
+          "default": {
+            "description": "Something went wrong",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      },
+      "patch": {
+        "security": [
+          {
+            "api_token": []
+          }
+        ],
+        "tags": [
+          "Trip"
+        ],
+        "description": "Update the end attributes of a trip",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "TripId",
+            "type": "integer",
+            "format": "uint32",
+            "required": true
+          },
+          {
+            "in": "body",
+            "name": "Trip",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "required": [
+                "DistanceTravelled",
+                "EndChargingStationId"
+              ],
+              "properties": {
+                "DistanceTravelled": {
+                  "type": "number",
+                  "format": "double"
+                },
+                "EndChargingStationId": {
+                  "type": "integer",
+                  "format": "uint32"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The object has been updated successfully. The reference to the newly updated trip is returned.",
+            "schema": {
+              "$ref": "#/definitions/PostReference"
+            },
+            "headers": {
+              "location": {
+                "description": "Link to the modified ressource",
+                "type": "string",
+                "format": "url"
+              }
+            }
+          },
+          "400": {
+            "description": "One of the given parameters is not valid"
+          },
+          "404": {
+            "description": "The trip does not exist"
+          },
+          "default": {
+            "description": "Something went wrong",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/trips/by-car/{CarId}": {
+      "get": {
+        "security": [
+          {
+            "api_token": []
+          }
+        ],
+        "tags": [
+          "Trip"
+        ],
+        "description": "Get all trip objects identified by their `CarId` property",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "CarId",
+            "type": "integer",
+            "format": "uint32",
+            "required": true
+          },
+          {
+            "$ref": "#/parameters/filter-properties"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A list of trip objects matching the given CarId",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/Trip"
+              }
+            }
+          },
+          "404": {
+            "description": "The requested trip does not exist"
+          },
+          "default": {
+            "description": "Something went wrong",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/invoices": {
+      "get": {
+        "security": [
+          {
+            "api_token": []
+          }
+        ],
+        "tags": [
+          "Invoice"
+        ],
+        "description": "Get a list of all `Invoice` objects",
+        "responses": {
+          "200": {
+            "description": "Returns a list of all `Invoice` objects",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/Invoice"
+              }
+            }
+          },
+          "204": {
+            "description": "There are no invoices."
+          },
+          "default": {
+            "description": "Something went wrong",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/invoices/{InvoiceId}": {
+      "get": {
+        "security": [
+          {
+            "api_token": []
+          }
+        ],
+        "tags": [
+          "Invoice"
+        ],
+        "description": "Get a single invoice identified by it's id",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "InvoiceId",
+            "type": "integer",
+            "format": "uint32",
+            "required": true
+          },
+          {
+            "$ref": "#/parameters/filter-properties"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Requested invoice",
+            "schema": {
+              "$ref": "#/definitions/Invoice"
+            }
+          },
+          "404": {
+            "description": "The requested invoice does not exist"
+          },
+          "default": {
+            "description": "Something went wrong",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/invoices/{InvoiceId}/paid": {
+      "patch": {
+        "security": [
+          {
+            "api_token": []
+          }
+        ],
+        "tags": [
+          "Invoice"
+        ],
+        "description": "Update the payment status of an invoice",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "InvoiceId",
+            "type": "integer",
+            "format": "uint32",
+            "required": true
+          },
+          {
+            "in": "body",
+            "name": "Paid",
+            "required": true,
+            "schema": {
+              "type": "boolean",
+              "description": "Payment status"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The object has been updated successfully. A reference to the newly updated invoice is returned.",
+            "schema": {
+              "$ref": "#/definitions/PostReference"
+            },
+            "headers": {
+              "location": {
+                "description": "Link to the modified ressource",
+                "type": "string",
+                "format": "url"
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid parameters"
+          },
+          "404": {
+            "description": "The invoice does not exist"
+          },
+          "default": {
+            "description": "Something went wrong",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/invoices/{InvoiceId}/items": {
+      "get": {
+        "security": [
+          {
+            "api_token": []
+          }
+        ],
+        "tags": [
+          "Invoice"
+        ],
+        "description": "Get all items on an invoice",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "InvoiceId",
+            "type": "integer",
+            "format": "uint32",
+            "required": true
+          },
+          {
+            "$ref": "#/parameters/filter-properties"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A list of invoice items",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/InvoiceItem"
+              }
+            }
+          },
+          "204": {
+            "description": "The invoice was found but there are no items on it."
+          },
+          "404": {
+            "description": "The requested invoice does not exist"
+          },
+          "default": {
+            "description": "Something went wrong",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      },
+      "post": {
+        "security": [
+          {
+            "api_token": []
+          }
+        ],
+        "tags": [
+          "Invoice"
+        ],
+        "description": "Create a new invoice item",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "InvoiceId",
+            "type": "integer",
+            "format": "uint32",
+            "required": true
+          },
+          {
+            "in": "body",
+            "name": "InvoiceItem",
+            "description": "Invoice item to insert. InvoiceId has to match the invoice id in\n  the parameter.\n",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/InvoiceItem"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "The invoice item was created successfully. The response contains\n  a reference to the newly created object.\n",
+            "schema": {
+              "$ref": "#/definitions/PostReference"
+            },
+            "headers": {
+              "location": {
+                "description": "Link to the newly created ressource",
+                "type": "string",
+                "format": "url"
+              }
+            }
+          },
+          "404": {
+            "description": "The requested invoice does not exist"
+          },
+          "409": {
+            "description": "The invoice id in the header does not match the InvoiceId\n  property of the InvoiceItem object\n"
+          },
+          "default": {
+            "description": "Something went wrong",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/invoices/items/{InvoiceItemId}": {
+      "get": {
+        "security": [
+          {
+            "api_token": []
+          }
+        ],
+        "tags": [
+          "Invoice"
+        ],
+        "description": "Get a single invoice item",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "InvoiceItemId",
+            "type": "integer",
+            "format": "uint32",
+            "required": true
+          },
+          {
+            "$ref": "#/parameters/filter-properties"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Returns the requested invoice item object",
+            "schema": {
+              "$ref": "#/definitions/InvoiceItem"
+            }
+          },
+          "404": {
+            "description": "The requested invoice or invoice item does not exist"
+          },
+          "default": {
+            "description": "Something went wrong",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/invoices/by-customer/{CustomerId}": {
+      "get": {
+        "security": [
+          {
+            "api_token": []
+          }
+        ],
+        "tags": [
+          "Invoice"
+        ],
+        "description": "Get all invoices belonging to the customer",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "CustomerId",
+            "type": "integer",
+            "format": "uint32",
+            "required": true
+          },
+          {
+            "$ref": "#/parameters/filter-properties"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Returns an array of matching invoices",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/Invoice"
+              }
+            }
+          },
+          "404": {
+            "description": "The requested invoice or customer does not exist"
+          },
+          "default": {
+            "description": "Something went wrong",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/invoices/by-invoice-item/{InvoiceItemId}": {
+      "get": {
+        "security": [
+          {
+            "api_token": []
+          }
+        ],
+        "tags": [
+          "Invoice"
+        ],
+        "description": "Get an invoice belonging to the invoice item",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "InvoiceItemId",
+            "type": "integer",
+            "format": "uint32",
+            "required": true
+          },
+          {
+            "$ref": "#/parameters/filter-properties"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Returns the invoice belonging to the invoice item",
+            "schema": {
+              "$ref": "#/definitions/Invoice"
+            }
+          },
+          "404": {
+            "description": "The requested invoice item does not exist"
+          },
+          "default": {
+            "description": "Something went wrong",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/maintenances": {
+      "get": {
+        "security": [
+          {
+            "api_token": []
+          }
+        ],
+        "tags": [
+          "Maintenance"
+        ],
+        "parameters": [
+          {
+            "$ref": "#/parameters/filter-properties"
+          }
+        ],
+        "description": "Get a full list of all maintenances",
+        "responses": {
+          "200": {
+            "description": "Returns a list of all maintenance objects",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/Maintenance"
+              }
+            }
+          },
+          "204": {
+            "description": "The request was valid but there are no maintenances"
+          },
+          "default": {
+            "description": "Something went wrong",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      },
+      "post": {
+        "security": [
+          {
+            "api_token": []
+          }
+        ],
+        "tags": [
+          "Maintenance"
+        ],
+        "description": "Create a new maintenance",
+        "parameters": [
+          {
+            "in": "body",
+            "name": "Maintenance",
+            "required": true,
+            "description": "The maintenace to create",
+            "schema": {
+              "$ref": "#/definitions/Maintenance"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "The maintenance was created successfully. The response contains\n  a reference to the newly created object.\n",
+            "schema": {
+              "$ref": "#/definitions/PostReference"
+            },
+            "headers": {
+              "location": {
+                "description": "Link to the newly created ressource",
+                "type": "string",
+                "format": "url"
+              }
+            }
+          },
+          "default": {
+            "description": "Something went wrong",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/maintenances/{MaintenanceId}": {
+      "get": {
+        "security": [
+          {
+            "api_token": []
+          }
+        ],
+        "tags": [
+          "Maintenance"
+        ],
+        "description": "Get a single maintenance object identified by it's id",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "MaintenanceId",
+            "required": true,
+            "description": "Unique maintenance identified",
+            "type": "integer",
+            "format": "uint32"
+          },
+          {
+            "$ref": "#/parameters/filter-properties"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Returns the requested maintenance object",
+            "schema": {
+              "$ref": "#/definitions/Maintenance"
+            }
+          },
+          "404": {
+            "description": "The maintenance with the requested id does not exist"
+          },
+          "default": {
+            "description": "Something went wrong",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/car-maintenances": {
+      "get": {
+        "security": [
+          {
+            "api_token": []
+          }
+        ],
+        "tags": [
+          "Car Maintenance"
+        ],
+        "description": "Get all car maintenances",
+        "parameters": [
+          {
+            "$ref": "#/parameters/filter-properties"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Returns a list of car maintenance objects",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/CarMaintenance"
+              }
+            }
+          },
+          "204": {
+            "description": "There are no car maintenances"
+          },
+          "default": {
+            "description": "Something went wrong",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      },
+      "post": {
+        "security": [
+          {
+            "api_token": []
+          }
+        ],
+        "tags": [
+          "Car Maintenance"
+        ],
+        "description": "Create a new car maintenance",
+        "parameters": [
+          {
+            "in": "body",
+            "name": "CarMaintenance",
+            "description": "CarMaintenance object to be created.",
+            "schema": {
+              "$ref": "#/definitions/CarMaintenance"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "The car maintenance was created successfully. The response contains\n  a reference to the newly created object.\n",
+            "schema": {
+              "$ref": "#/definitions/PostReference"
+            },
+            "headers": {
+              "location": {
+                "description": "Link to the newly created ressource",
+                "type": "string",
+                "format": "url"
+              }
+            }
+          },
+          "400": {
+            "description": "One of the fields supplied in the object is invalid. This may be\n  due to invalid ids.\n",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "default": {
+            "description": "Something went wrong",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/car-maintenances/{CarMaintenanceId}": {
+      "get": {
+        "security": [
+          {
+            "api_token": []
+          }
+        ],
+        "tags": [
+          "Car Maintenance"
+        ],
+        "description": "Get a single car maintenance object identified by it's id.",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "CarMaintenanceId",
+            "required": true,
+            "type": "integer",
+            "format": "uint32"
+          },
+          {
+            "$ref": "#/parameters/filter-properties"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Returns the requested car maintenance object.",
+            "schema": {
+              "$ref": "#/definitions/CarMaintenance"
+            }
+          },
+          "404": {
+            "description": "Requested car maintenance does not exist."
+          },
+          "default": {
+            "description": "Something went wrong",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      },
+      "patch": {
+        "security": [
+          {
+            "api_token": []
+          }
+        ],
+        "tags": [
+          "Car Maintenance"
+        ],
+        "description": "Updates the completed date of the car maintenance.",
+        "parameters": [
+          {
+            "in": "body",
+            "name": "CarMaintenance",
+            "description": "CarMaintenance object to be created.",
+            "schema": {
+              "$ref": "#/definitions/CarMaintenanceUpdate"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The specified car maintenance has been successfully updated.\nA reference to the updated car maintenence is returned.\n",
+            "schema": {
+              "$ref": "#/definitions/PostReference"
+            },
+            "headers": {
+              "location": {
+                "description": "Link to the newly created ressource",
+                "type": "string",
+                "format": "url"
+              }
+            }
+          },
+          "400": {
+            "description": "The date is in a invalid format."
+          },
+          "404": {
+            "description": "The specified car maintenance does not exist."
+          },
+          "default": {
+            "description": "Something went wrong",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/car-maintenances/by-car/{CarId}": {
+      "get": {
+        "security": [
+          {
+            "api_token": []
+          }
+        ],
+        "tags": [
+          "Car Maintenance"
+        ],
+        "description": "Get a single car maintenance object identified by it's id.",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "CarId",
+            "required": true,
+            "type": "integer",
+            "format": "uint32"
+          },
+          {
+            "$ref": "#/parameters/filter-properties"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Returns the requested car maintenance object.",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/CarMaintenance"
+              }
+            }
+          },
+          "203": {
+            "description": "There are no car maintenances that belong to this car."
+          },
+          "404": {
+            "description": "Requested car does not exist."
+          },
+          "default": {
+            "description": "Something went wrong",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/car-maintenances/by-maintenance/{MaintenanceId}": {
+      "get": {
+        "security": [
+          {
+            "api_token": []
+          }
+        ],
+        "tags": [
+          "Car Maintenance"
+        ],
+        "description": "Get a single car maintenance object identified by it's id.",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "MaintenanceId",
+            "required": true,
+            "type": "integer",
+            "format": "uint32"
+          },
+          {
+            "$ref": "#/parameters/filter-properties"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Returns the requested car maintenance object.",
+            "schema": {
+              "$ref": "#/definitions/CarMaintenance"
+            }
+          },
+          "203": {
+            "description": "There are no car maintenances that belong to this maintenance.\n"
+          },
+          "404": {
+            "description": "Requested maintenance does not exist."
+          },
+          "default": {
+            "description": "Something went wrong",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/car-maintenances/by-invoice-item/{InvoiceItemId}": {
+      "get": {
+        "security": [
+          {
+            "api_token": []
+          }
+        ],
+        "tags": [
+          "Car Maintenance"
+        ],
+        "description": "Get a single car maintenance object identified by it's id.",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "InvoiceItemId",
+            "required": true,
+            "type": "integer",
+            "format": "uint32"
+          },
+          {
+            "$ref": "#/parameters/filter-properties"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Returns the requested car maintenance object.",
+            "schema": {
+              "$ref": "#/definitions/CarMaintenance"
+            }
+          },
+          "203": {
+            "description": "There are no car maintenances that belong to this invoice item.\n"
+          },
+          "404": {
+            "description": "Requested invoice item does not exist."
+          },
+          "default": {
+            "description": "Something went wrong",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/cars": {
+      "get": {
+        "security": [
+          {
+            "api_token": []
+          }
+        ],
+        "tags": [
+          "Car"
+        ],
+        "parameters": [
+          {
+            "$ref": "#/parameters/filter-properties"
+          }
+        ],
+        "description": "Get a full list of all car objects",
+        "responses": {
+          "200": {
+            "description": "A list of all car objects",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/Car"
+              }
+            }
+          },
+          "204": {
+            "description": "The request was valid but there are no car objects"
+          },
+          "default": {
+            "description": "Something went wrong",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      },
+      "post": {
+        "security": [
+          {
+            "api_token": []
+          }
+        ],
+        "tags": [
+          "Car"
+        ],
+        "description": "Create a new car object",
+        "parameters": [
+          {
+            "in": "body",
+            "name": "Car",
+            "required": true,
+            "description": "The Car to create",
+            "schema": {
+              "$ref": "#/definitions/Car"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "The Car was created successfully. The response contains\n    a reference to the newly created object.\n",
+            "schema": {
+              "$ref": "#/definitions/PostReference"
+            },
+            "headers": {
+              "location": {
+                "description": "Link to the newly created ressource",
+                "type": "string",
+                "format": "url"
+              }
+            }
+          },
+          "default": {
+            "description": "Something went wrong",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/cars/{CarId}": {
+      "get": {
+        "security": [
+          {
+            "api_token": []
+          }
+        ],
+        "tags": [
+          "Car"
+        ],
+        "description": "Get a single car object identified by it's id",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "CarId",
+            "type": "integer",
+            "format": "uint32",
+            "required": true
+          },
+          {
+            "$ref": "#/parameters/filter-properties"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Requested car",
+            "schema": {
+              "$ref": "#/definitions/Car"
+            }
+          },
+          "404": {
+            "description": "The requested car does not exist"
+          },
+          "default": {
+            "description": "Something went wrong",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/cars/charge-level-per-minute": {
+      "get": {
+        "security": [
+          {
+            "api_token": []
+          }
+        ],
+        "tags": [
+          "Car"
+        ],
+        "description": "Returns the average load achieved per minute when a car is charging",
+        "responses": {
+          "200": {
+            "description": "The charge achieved per minute",
+            "schema": {
+              "type": "number",
+              "format": "double",
+              "description": "The charge level gained per minute        \n"
+            }
+          },
+          "default": {
+            "description": "Something went wrong",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/cars/{CarId}/find": {
+      "get": {
+        "security": [
+          {
+            "api_token": []
+          }
+        ],
+        "tags": [
+          "Car"
+        ],
+        "description": "Find the curent position of the car",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "CarId",
+            "type": "integer",
+            "format": "uint32",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Requested car with updated position values",
+            "schema": {
+              "$ref": "#/definitions/Car"
+            }
+          },
+          "404": {
+            "description": "The car does not exist"
+          },
+          "599": {
+            "description": "The requested car did not answer"
+          },
+          "default": {
+            "description": "Something went wrong",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/cars/{CarId}/chargingstate": {
+      "patch": {
+        "security": [
+          {
+            "api_token": []
+          }
+        ],
+        "tags": [
+          "Car"
+        ],
+        "description": "Update the `ChargingState` of a car",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "CarId",
+            "type": "integer",
+            "format": "uint32",
+            "required": true
+          },
+          {
+            "in": "body",
+            "name": "ChargingState",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "DISCHARGING",
+                "CHARGING",
+                "FULL"
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The object has been updated successfully. The newly updated car is returned.",
+            "schema": {
+              "$ref": "#/definitions/Car"
+            },
+            "headers": {
+              "location": {
+                "description": "Link to the modified ressource",
+                "type": "string",
+                "format": "url"
+              }
+            }
+          },
+          "400": {
+            "description": "The given charging state was not valid"
+          },
+          "404": {
+            "description": "The car does not exist"
+          },
+          "default": {
+            "description": "Something went wrong",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/cars/{CarId}/bookingstate": {
+      "patch": {
+        "security": [
+          {
+            "api_token": []
+          }
+        ],
+        "tags": [
+          "Car"
+        ],
+        "description": "Update the booking state of a car",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "CarId",
+            "type": "integer",
+            "format": "uint32",
+            "required": true
+          },
+          {
+            "in": "body",
+            "name": "BookingState",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "AVAILABLE",
+                "BOOKED",
+                "BLOCKED"
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The object has been updated successfully. The newly updated car is returned.",
+            "schema": {
+              "$ref": "#/definitions/Car"
+            },
+            "headers": {
+              "location": {
+                "description": "Link to the modified ressource",
+                "type": "string",
+                "format": "url"
+              }
+            }
+          },
+          "400": {
+            "description": "The given booking state is not valid"
+          },
+          "404": {
+            "description": "The car does not exist"
+          },
+          "default": {
+            "description": "Something went wrong",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/cars/{CarId}/mileage": {
+      "patch": {
+        "security": [
+          {
+            "api_token": []
+          }
+        ],
+        "tags": [
+          "Car"
+        ],
+        "description": "Update the mileage of a car",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "CarId",
+            "type": "integer",
+            "format": "uint32",
+            "required": true
+          },
+          {
+            "in": "body",
+            "name": "Mileage",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "uint32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The object has been updated successfully. The newly updated car is returned.",
+            "schema": {
+              "$ref": "#/definitions/Car"
+            },
+            "headers": {
+              "location": {
+                "description": "Link to the modified ressource",
+                "type": "string",
+                "format": "url"
+              }
+            }
+          },
+          "400": {
+            "description": "The given mileage is not valid"
+          },
+          "404": {
+            "description": "The car does not exist"
+          },
+          "default": {
+            "description": "Something went wrong",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/cars/{CarId}/chargelevel": {
+      "patch": {
+        "security": [
+          {
+            "api_token": []
+          }
+        ],
+        "tags": [
+          "Car"
+        ],
+        "description": "Update the `ChargeLevel` of a car",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "CarId",
+            "type": "integer",
+            "format": "uint32",
+            "required": true
+          },
+          {
+            "in": "body",
+            "name": "ChargeLevel",
+            "required": true,
+            "schema": {
+              "type": "number",
+              "format": "uint32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The object has been updated successfully. The newly updated car is returned.",
+            "schema": {
+              "$ref": "#/definitions/Car"
+            },
+            "headers": {
+              "location": {
+                "description": "Link to the modified ressource",
+                "type": "string",
+                "format": "url"
+              }
+            }
+          },
+          "400": {
+            "description": "The given charge level is not valid"
+          },
+          "404": {
+            "description": "The car does not exist"
+          },
+          "default": {
+            "description": "Something went wrong",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/cars/{CarId}/position/{Latitude}/{Longitude}": {
+      "patch": {
+        "security": [
+          {
+            "api_token": []
+          }
+        ],
+        "tags": [
+          "Car"
+        ],
+        "description": "Update the last known position of a car.\n  The last known position date gets automatically updated by the server.\n",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "CarId",
+            "type": "integer",
+            "format": "uint32",
+            "required": true
+          },
+          {
+            "in": "path",
+            "name": "Latitude",
+            "type": "number",
+            "format": "double",
+            "required": true
+          },
+          {
+            "in": "path",
+            "name": "Longitude",
+            "type": "number",
+            "format": "double",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The object has been updated successfully. The newly updated car is returned.",
+            "schema": {
+              "$ref": "#/definitions/Car"
+            },
+            "headers": {
+              "location": {
+                "description": "Link to the modified ressource",
+                "type": "string",
+                "format": "url"
+              }
+            }
+          },
+          "400": {
+            "description": "The given latitude or longitude is not valid"
+          },
+          "404": {
+            "description": "The car does not exist"
+          },
+          "default": {
+            "description": "Something went wrong",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/cars/closest-to/{Latitude}/{Longitude}": {
+      "get": {
+        "security": [
+          {
+            "api_token": []
+          }
+        ],
+        "tags": [
+          "Car"
+        ],
+        "description": "Get the next car closest to the given position\n",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "Latitude",
+            "type": "number",
+            "format": "double",
+            "required": true
+          },
+          {
+            "in": "path",
+            "name": "Longitude",
+            "type": "number",
+            "format": "double",
+            "required": true
+          },
+          {
+            "in": "query",
+            "name": "radius",
+            "type": "integer",
+            "format": "uint32",
+            "default": 0,
+            "required": false,
+            "description": "Radius of the area to search for cars.\n  If the radius is 0, only the closest one is returned.\n"
+          },
+          {
+            "$ref": "#/parameters/filter-properties"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Closest car",
+            "schema": {
+              "$ref": "#/definitions/Car"
+            }
+          },
+          "default": {
+            "description": "Something went wrong",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/car-charging-stations": {
+      "get": {
+        "security": [
+          {
+            "api_token": []
+          }
+        ],
+        "tags": [
+          "Car Charging Station"
+        ],
+        "description": "Get a list of all `CarChargingStation` objects.",
+        "parameters": [
+          {
+            "$ref": "#/parameters/filter-properties"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Returns an array of `CarChargingStation` objects.",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/CarChargingStation"
+              }
+            }
+          },
+          "204": {
+            "description": "The request was successful but there are no \n  CarChargingStation` objects\n"
+          },
+          "default": {
+            "description": "Something went wrong",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      },
+      "post": {
+        "security": [
+          {
+            "api_token": []
+          }
+        ],
+        "tags": [
+          "Car Charging Station"
+        ],
+        "description": "Creates a new `CarChargingStation` object.",
+        "parameters": [
+          {
+            "in": "body",
+            "name": "CarChargingStation",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/CarChargingStation"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The `CarChargingStation` object was created successfully.\nReturns the reference to the newly created object.\n",
+            "schema": {
+              "$ref": "#/definitions/PostReference"
+            },
+            "headers": {
+              "location": {
+                "description": "Link to the created car charging station",
+                "type": "string",
+                "format": "url"
+              }
+            }
+          },
+          "409": {
+            "description": "There is a conflict in the time span of the car."
+          },
+          "default": {
+            "description": "Something went wrong",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/car-charging-stations/{CarChargingStationId}/charge-end": {
+      "patch": {
+        "security": [
+          {
+            "api_token": []
+          }
+        ],
+        "tags": [
+          "Car Charging Station"
+        ],
+        "description": "Updates the `ChargeEnd`property of the specified `CarChargingStation`.\n",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "CarChargingStationId",
+            "required": true,
+            "type": "integer",
+            "format": "uint32"
+          },
+          {
+            "in": "body",
+            "name": "ChargeEnd",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The `CarChargingStation` has been successfully updated.\n  Returns a reference to the updated object.\n",
+            "schema": {
+              "$ref": "#/definitions/PostReference"
+            },
+            "headers": {
+              "location": {
+                "description": "Link to the updated CarChargingStation",
+                "type": "string",
+                "format": "url"
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid date format"
+          },
+          "404": {
+            "description": "The requested `CarChargingStationId` does not exist."
+          },
+          "default": {
+            "description": "Something went wrong",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/car-charging-stations/by-car/{CarId}": {
+      "get": {
+        "security": [
+          {
+            "api_token": []
+          }
+        ],
+        "tags": [
+          "Car Charging Station"
+        ],
+        "description": "Get all `CarChargingStation` objects that are related to a `Car`.\n",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "CarId",
+            "required": true,
+            "type": "integer",
+            "format": "uint32"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Returns a list of related `CarChargingStation` objects.",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/CarChargingStation"
+              }
+            }
+          },
+          "204": {
+            "description": "There are no car charging stations related to this car."
+          },
+          "default": {
+            "description": "Something went wrong",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/car-charging-stations/by-charging-station/{ChargingStationId}": {
+      "get": {
+        "security": [
+          {
+            "api_token": []
+          }
+        ],
+        "tags": [
+          "Car Charging Station"
+        ],
+        "description": "Get all `CarChargingStation` objects that are related to \n  a `ChargingStation`.\n",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "ChargingStationId",
+            "required": true,
+            "type": "integer",
+            "format": "uint32"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Returns a list of related `CarChargingStation` objects.",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/CarChargingStation"
+              }
+            }
+          },
+          "204": {
+            "description": "There are no car charging stations related to this \n  charging station.\n"
+          },
+          "default": {
+            "description": "Something went wrong",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/charging-stations": {
+      "get": {
+        "security": [
+          {
+            "api_token": []
+          }
+        ],
+        "tags": [
+          "Charging Station"
+        ],
+        "parameters": [
+          {
+            "$ref": "#/parameters/filter-properties"
+          }
+        ],
+        "description": "Get a full list of all charging stations, their location and \ntheir status.\n",
+        "responses": {
+          "200": {
+            "description": "Array of charging station objects",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/ChargingStation"
+              }
+            }
+          },
+          "default": {
+            "description": "Something went wrong",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      },
+      "post": {
+        "security": [
+          {
+            "api_token": []
+          }
+        ],
+        "tags": [
+          "Charging Station"
+        ],
+        "description": "Create a new charging station.\n",
+        "parameters": [
+          {
+            "in": "body",
+            "name": "ChargingStation",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/ChargingStation"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Charging Station was successfully created.",
+            "schema": {
+              "$ref": "#/definitions/PostReference"
+            },
+            "headers": {
+              "location": {
+                "description": "Link to the newly created ressource",
+                "type": "string",
+                "format": "url"
+              }
+            }
+          },
+          "303": {
+            "description": "The object already exists.",
+            "schema": {
+              "$ref": "#/definitions/PostReference"
+            },
+            "headers": {
+              "location": {
+                "description": "Link to the existing ressource",
+                "type": "string",
+                "format": "url"
+              }
+            }
+          },
+          "default": {
+            "description": "The object could not be created.",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/charging-stations/{ChargingStationId}": {
+      "get": {
+        "security": [
+          {
+            "api_token": []
+          }
+        ],
+        "tags": [
+          "Charging Station"
+        ],
+        "description": "Get a single `ChargingStation` by its unique id",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "ChargingStationId",
+            "required": true,
+            "type": "integer",
+            "format": "uint32"
+          },
+          {
+            "$ref": "#/parameters/filter-properties"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Returns the requested charging station object",
+            "schema": {
+              "$ref": "#/definitions/ChargingStation"
+            }
+          },
+          "404": {
+            "description": "The requested charging station object does not exist"
+          }
+        }
+      }
+    },
+    "/charging-stations/closest-to/{Latitude}/{Longitude}": {
+      "get": {
+        "security": [
+          {
+            "api_token": []
+          }
+        ],
+        "tags": [
+          "Charging Station"
+        ],
+        "description": "Get the charging stations closest to the given position\n",
+        "parameters": [
+          {
+            "name": "Latitude",
+            "in": "path",
+            "required": true,
+            "type": "number",
+            "format": "double"
+          },
+          {
+            "name": "Longitude",
+            "in": "path",
+            "required": true,
+            "type": "number",
+            "format": "double"
+          },
+          {
+            "name": "min-free-slots",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "uint32"
+          },
+          {
+            "name": "radius",
+            "in": "query",
+            "required": false,
+            "default": 0,
+            "type": "integer",
+            "format": "uint32",
+            "description": "Radius in meters of the area to search for charging stations.\nIf the radius is 0, only the closest one is returned.\nDefaults to 0.\n"
+          },
+          {
+            "$ref": "#/parameters/filter-properties"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Closest charging station object",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/ChargingStation"
+              }
+            }
+          },
+          "default": {
+            "description": "Something went wrong",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/statistics": {
+      "get": {
+        "security": [
+          {
+            "api_token": []
+          }
+        ],
+        "tags": [
+          "Statistic"
+        ],
+        "parameters": [
+          {
+            "$ref": "#/parameters/filter-properties"
+          }
+        ],
+        "description": "Get a full list of all statistics.\n",
+        "responses": {
+          "200": {
+            "description": "Array of statistic objects",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/Statistic"
+              }
+            }
+          },
+          "default": {
+            "description": "Something went wrong",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/statistics/{Date}": {
+      "get": {
+        "security": [
+          {
+            "api_token": []
+          }
+        ],
+        "tags": [
+          "Statistic"
+        ],
+        "description": "Gets the statistic of the specified day",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "Date",
+            "required": true,
+            "type": "string",
+            "format": "date-time"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Returns the requested charging station object\n",
+            "schema": {
+              "$ref": "#/definitions/Statistic"
+            }
+          },
+          "400": {
+            "description": "The date is in an invalid format."
+          },
+          "404": {
+            "description": "The specified statistic does not exist."
+          },
+          "default": {
+            "description": "Something went wrong",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "Booking": {
+      "type": "object",
+      "required": [
+        "customerId",
+        "bookingPositionLatitude",
+        "bookingPositionLongitude",
+        "bookingDate"
+      ],
+      "properties": {
+        "bookingId": {
+          "type": "integer",
+          "format": "uint32"
+        },
+        "customerId": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 1,
+          "description": "See '#/definitions/Customer'"
+        },
+        "tripId": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 1,
+          "description": "See '#/definitions/Trip'"
+        },
+        "invoiceItemId": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 1,
+          "description": "See '#/definitions/InvoiceItem'"
+        },
+        "bookingPositionLatitude": {
+          "type": "number",
+          "format": "double",
+          "minimum": -90,
+          "maximum": 90
+        },
+        "bookingPositionLongitude": {
+          "type": "number",
+          "format": "double",
+          "minimum": -180,
+          "maximum": 180
+        },
+        "bookingDate": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "plannedDate": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "Car": {
+      "type": "object",
+      "required": [
+        "licensePlate",
+        "chargingState",
+        "bookingState",
+        "mileage",
+        "chargeLevel",
+        "kilowatts",
+        "manufacturer",
+        "model",
+        "yearOfConstruction"
+      ],
+      "properties": {
+        "carId": {
+          "type": "integer",
+          "format": "uint32"
+        },
+        "licensePlate": {
+          "type": "string",
+          "format": "AA AA 1111"
+        },
+        "chargingState": {
+          "type": "string",
+          "enum": [
+            "DISCHARGING",
+            "CHARGING",
+            "FULL"
+          ]
+        },
+        "bookingState": {
+          "type": "string",
+          "enum": [
+            "AVAILABLE",
+            "BOOKED",
+            "BLOCKED"
+          ]
+        },
+        "mileage": {
+          "type": "integer",
+          "format": "uint32",
+          "description": "The milage driven with this car in kilometers"
+        },
+        "chargeLevel": {
+          "type": "number",
+          "format": "double",
+          "minimum": 0,
+          "maximum": 100,
+          "description": "Current charging level of the car. From 0. to 100."
+        },
+        "kilowatts": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 0,
+          "maximum": 999,
+          "description": "The power of the motor in kilowatts"
+        },
+        "manufacturer": {
+          "type": "string",
+          "maxLength": 64
+        },
+        "model": {
+          "type": "string",
+          "maxLength": 32
+        },
+        "yearOfConstruction": {
+          "type": "integer",
+          "format": "int32",
+          "minimum": 1950,
+          "maximum": 2100
+        },
+        "lastKnownPositionLatitude": {
+          "type": "number",
+          "format": "double",
+          "minimum": -90,
+          "maximum": 90
+        },
+        "lastKnownPositionLongitude": {
+          "type": "number",
+          "format": "double",
+          "minimum": -180,
+          "maximum": 180
+        },
+        "lastKnownPositionDate": {
+          "type": "string",
+          "format": "date-time",
+          "description": "The Time at which the last"
+        }
+      }
+    },
+    "CarChargingStation": {
+      "type": "object",
+      "required": [
+        "carId",
+        "chargingStationId",
+        "chargeStart"
+      ],
+      "properties": {
+        "carChargingStationId": {
+          "type": "integer",
+          "format": "uint32"
+        },
+        "carId": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 1,
+          "description": "See '#/definitions/Car'"
+        },
+        "chargingStationId": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 1,
+          "description": "See '#/definitions/ChargingStation'"
+        },
+        "chargeStart": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "chargeEnd": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "CarMaintenance": {
+      "type": "object",
+      "required": [
+        "carId",
+        "maintenanceId"
+      ],
+      "properties": {
+        "carMaintenanceId": {
+          "type": "integer",
+          "format": "uint32"
+        },
+        "carId": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 1,
+          "description": "See '#/definitions/Car'"
+        },
+        "maintenanceId": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 1,
+          "description": "See '#/definitions/Maintenance'"
+        },
+        "invoiceItemId": {
+          "type": "integer",
+          "format": "uint32",
+          "description": "See '#/definitions/InvoiceItem'"
+        },
+        "plannedDate": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "completedDate": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "ChargingStation": {
+      "type": "object",
+      "required": [
+        "slots",
+        "slotsOccupied",
+        "latitude",
+        "longitude"
+      ],
+      "properties": {
+        "chargingStationId": {
+          "type": "integer",
+          "format": "uint32"
+        },
+        "slots": {
+          "type": "integer",
+          "format": "uint8",
+          "minimum": 1,
+          "description": "Number of slots"
+        },
+        "slotsOccupied": {
+          "type": "integer",
+          "format": "uint8",
+          "description": "How many slots on the charging station are currently\noccupied by cars.\n"
+        },
+        "latitude": {
+          "type": "number",
+          "format": "double",
+          "minimum": -90,
+          "maximum": 90
+        },
+        "longitude": {
+          "type": "number",
+          "format": "double",
+          "minimum": -180,
+          "maximum": 180
+        }
+      }
+    },
+    "Configuration": {
+      "type": "object",
+      "properties": {
+        "configurationId": {
+          "type": "integer",
+          "format": "uint32"
+        },
+        "allowNewBookings": {
+          "type": "boolean",
+          "description": "Sets if new bookings of any customers are allowed or not\n"
+        }
+      }
+    },
+    "Customer": {
+      "allOf": [
+        {
+          "type": "object",
+          "required": [
+            "email",
+            "phoneNumber",
+            "firstName",
+            "lastName"
+          ],
+          "properties": {
+            "customerId": {
+              "type": "integer",
+              "format": "uint32"
+            },
+            "email": {
+              "type": "string",
+              "format": "email",
+              "maxLength": 64
+            },
+            "phoneNumber": {
+              "type": "string",
+              "maxLength": 32
+            },
+            "firstName": {
+              "type": "string",
+              "maxLength": 48
+            },
+            "lastName": {
+              "type": "string",
+              "maxLength": 48
+            },
+            "chipCardUid": {
+              "type": "string",
+              "minLength": 16,
+              "maxLength": 16,
+              "description": "The Unique ID of the chip card the customer gets\nto unlock a car.\n"
+            },
+            "activated": {
+              "type": "boolean",
+              "description": "True if the user has activated his account by clicking on the\n  link in the activation email.\n"
+            },
+            "verified": {
+              "type": "boolean",
+              "description": "True if the user has verified his account at our head-quarter\n  by bringing us his driver's license.\n"
+            }
+          }
+        },
+        {
+          "$ref": "#/definitions/Address"
+        }
+      ]
+    },
+    "Error": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "integer",
+          "format": "int32",
+          "description": "Unique error code"
+        },
+        "message": {
+          "type": "string",
+          "description": "Basic error message"
+        },
+        "description": {
+          "type": "string",
+          "description": "Detailed error message"
+        }
+      }
+    },
+    "Invoice": {
+      "type": "object",
+      "required": [
+        "customerId",
+        "totalAmount",
+        "paid"
+      ],
+      "properties": {
+        "invoiceId": {
+          "type": "integer",
+          "format": "uint32"
+        },
+        "customerId": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 1,
+          "description": "See '#/definitions/Customer'"
+        },
+        "totalAmount": {
+          "type": "number",
+          "format": "double"
+        },
+        "paid": {
+          "type": "boolean"
+        }
+      }
+    },
+    "InvoiceItem": {
+      "type": "object",
+      "required": [
+        "reason",
+        "type",
+        "amount"
+      ],
+      "properties": {
+        "invoiceItemId": {
+          "type": "integer",
+          "format": "uint32"
+        },
+        "invoiceId": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 1,
+          "description": "See '#/definitions/Invoice'"
+        },
+        "reason": {
+          "type": "string",
+          "description": "Text which will appear on the invoice.\nCan contain the name of the service or some other reason.\n"
+        },
+        "type": {
+          "type": "string",
+          "default": "DEBIT",
+          "enum": [
+            "DEBIT",
+            "CREDIT"
+          ]
+        },
+        "amount": {
+          "type": "number",
+          "format": "double",
+          "minimum": 0
+        }
+      }
+    },
+    "Maintenance": {
+      "type": "object",
+      "required": [
+        "spontaneously"
+      ],
+      "properties": {
+        "maintenenaceId": {
+          "type": "integer",
+          "format": "uint32"
+        },
+        "spontaneously": {
+          "type": "boolean"
+        },
+        "atMileage": {
+          "type": "integer",
+          "format": "uint32"
+        },
+        "atDate": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "PostReference": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "integer",
+          "format": "uint32",
+          "description": "The ressource's unique identifier\n"
+        },
+        "url": {
+          "type": "string",
+          "description": "URL to the ressource\n"
+        }
+      }
+    },
+    "Trip": {
+      "type": "object",
+      "required": [
+        "customerId"
+      ],
+      "properties": {
+        "tripId": {
+          "type": "integer",
+          "format": "uint32"
+        },
+        "carId": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 1,
+          "description": "See '#/definitions/Car'"
+        },
+        "customerId": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 1,
+          "description": "See '#/definitions/Customer'"
+        },
+        "startDate": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Date and time when the trip started"
+        },
+        "endDate": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Date and time when the trip ended"
+        },
+        "startChargingStationId": {
+          "type": "integer",
+          "format": "uint32"
+        },
+        "endChargingStationId": {
+          "type": "integer",
+          "format": "uint32"
+        },
+        "distanceTravelled": {
+          "type": "number",
+          "format": "double",
+          "description": "The distance travelled with this trip in kilometers"
+        }
+      }
+    },
+    "CarMaintenanceUpdate": {
+      "type": "object",
+      "required": [
+        "invoiceItemId",
+        "completedDate"
+      ],
+      "properties": {
+        "invoiceItemId": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 1,
+          "description": "See '#/definitions/InvoiceItem'"
+        },
+        "completedDate": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Date and time when the maintenance ended"
+        }
+      }
+    },
+    "Statistic": {
+      "type": "object",
+      "required": [
+        "date"
+      ],
+      "properties": {
+        "date": {
+          "type": "string",
+          "format": "date-time",
+          "description": "The day the statistic is for (Set to 12:00 AM)"
+        },
+        "bookings": {
+          "type": "integer",
+          "format": "uint32",
+          "description": "The known number of bookings at this day at midnight"
+        },
+        "averageChargeLevel": {
+          "type": "number",
+          "format": "double",
+          "description": "The overall charge level of all cars at midnight"
+        }
+      }
+    },
+    "Address": {
+      "type": "object",
+      "required": [
+        "country",
+        "city",
+        "zipCode",
+        "street",
+        "houseNumber"
+      ],
+      "properties": {
+        "country": {
+          "type": "string",
+          "minLength": 2,
+          "maxLength": 2
+        },
+        "city": {
+          "type": "string",
+          "maxLength": 64
+        },
+        "zipCode": {
+          "type": "integer",
+          "format": "uint32",
+          "minimum": 1000,
+          "maximum": 99999
+        },
+        "street": {
+          "type": "string",
+          "maxLength": 128
+        },
+        "houseNumber": {
+          "type": "string",
+          "maxLength": 8
+        },
+        "addressExtraLine": {
+          "type": "string",
+          "maxLength": 64,
+          "description": "Extra line for the user's address. Can contain various \n  detail information about the user's address.\n"
+        }
+      }
+    }
+  }
+}
