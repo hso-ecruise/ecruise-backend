@@ -153,10 +153,12 @@ namespace ecruise.Models
             // set mail header fields
             mail.From.Add(new MailboxAddress("eCruise Information", "info@ecruise.me"));
             mail.To.Add(new MailboxAddress($"{FirstName} {LastName}", $"{Email}"));
+
             mail.Subject = subject;
             mail.Body = new TextPart("html")
             {
-                Text = body
+                Text = body,
+                ContentTransferEncoding = ContentEncoding.Base64
             };
 
             // create the smtp client
