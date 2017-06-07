@@ -5,14 +5,11 @@ Hallo @Model.FirstName!
 Wie es aussieht, hast du deine Daten bei eCruise geändert.
 Damit du nochmal alles auf einen Blick hast, sind hier deine neuen Daten:
 
-Zu dir:
-  Vorname: @Model.FirstName
-  Nachname: @Model.LastName
-  Telefonnummer: @Model.PhoneNumber
-
-Adresse:
-  @Model.Street @Model.HouseNumber
-@if(string.IsNullOrWhiteSpace(@Model.AddressExtraLine)) {  @Model.AddressExtraLine}
-  @Model.ZipCode @Model.City, @Model.Country
+<b>@Model.FirstName @Model.LastName
+    Tel. @Model.PhoneNumber
+    @Model.Street @Model.HouseNumber
+    @if (string.IsNullOrWhiteSpace(@Model.AddressExtraLine))
+    {  @Model.AddressExtraLine}
+    @Model.ZipCode @Model.City, @Model.Country</b>
 
 Dein eCruise-Team
