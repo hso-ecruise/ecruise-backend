@@ -268,7 +268,6 @@ namespace ecruise.Api.Controllers
             return Ok(BookingAssembler.AssembleModelList(matchingbookings));
         }
 
-        // GET: /Bookings/by-planned-date/<date>
         /// <summary>
         ///     Find all <see cref="Booking"/> that were/are planned at a certain <paramref name="date"/>.
         ///     An error response is set if there's was <see cref="Models.Booking"/> on that date.
