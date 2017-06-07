@@ -36,7 +36,7 @@ namespace ecruise.Api.Controllers
         ///     GET /bookings
         /// </example>
         /// <returns>
-        ///     HTTP 200 Ok: Returns a List of <see cref="Booking"/>s if <see cref="Booking"/>s everything's okay.
+        ///     HTTP 200 Ok: Returns a List of <see cref="Booking"/>s if <see cref="Booking"/>s everything's okay.<br/>
         ///     HTTP 204 No Content: There are no <see cref="Booking"/>s.
         /// </returns>
         [HttpGet(Name = "GetAllBookingsAsync")]
@@ -64,9 +64,9 @@ namespace ecruise.Api.Controllers
         ///     GET /bookings/5
         /// </example>
         /// <returns>
-        ///     HTTP 200 Ok: Returns the <see cref="Booking"/> if everything's okay.
-        ///     HTTP 400 Bad Request: The provided parameters are malformed.
-        ///     HTTP 401 Unauthorized: The authenticated customer has no access to the requested <see cref="Booking"/>.
+        ///     HTTP 200 Ok: Returns the <see cref="Booking"/> if everything's okay.<br/>
+        ///     HTTP 400 Bad Request: The provided parameters are malformed.<br/>
+        ///     HTTP 401 Unauthorized: The authenticated customer has no access to the requested <see cref="Booking"/>.<br/>
         ///     HTTP 404 Not Found: There is no booking with such an <paramref name="id"/>.
         /// </returns>
         [HttpGet("{id}", Name = "GetBookingAsync")]
@@ -100,9 +100,9 @@ namespace ecruise.Api.Controllers
         ///     POST /bookings
         /// </example>
         /// <returns>
-        ///     HTTP 201 Created: Returns a <see cref="PostReference"/> to the created object on success.
-        ///     HTTP 400 Bad Request: The provided parameters are malformed.
-        ///     HTTP 401 Unauthorized: The authenticated customer has no access to create the provided <see cref="Booking"/>.
+        ///     HTTP 201 Created: Returns a <see cref="PostReference"/> to the created object on success.<br/>
+        ///     HTTP 400 Bad Request: The provided parameters are malformed.<br/>
+        ///     HTTP 401 Unauthorized: The authenticated customer has no access to create the provided <see cref="Booking"/>.<br/>
         ///     HTTP 404 Not Found: There is no customer with CustomerId provided in <paramref name="booking"/>.
         /// </returns>
         [HttpPost(Name = "PostBookingAsync")]
@@ -167,9 +167,9 @@ namespace ecruise.Api.Controllers
         ///     GET: /bookings/by-trip/5
         /// </example>
         /// <returns>
-        ///     HTTP 200 Ok: Returns the <see cref="Models.Booking"/> associated with the requested <param name="tripId"></param>.
+        ///     HTTP 200 Ok: Returns the <see cref="Models.Booking"/> associated with the requested <param name="tripId"></param>.<br/>
         ///     HTTP 203 No Content: There is no <see cref="Models.Booking"/> that the current customer can access
-        ///                          associated with the requested <paramref name="tripId"/>.
+        ///                          associated with the requested <paramref name="tripId"/>.<br/>
         ///     HTTP 400 Bad Request: The provided parameters are malformed.
         /// </returns>
         [HttpGet("by-trip/{tripId}", Name = "GetBookingsByTripAsync")]
@@ -203,9 +203,9 @@ namespace ecruise.Api.Controllers
         ///     GET: /bookings/by-customer/5
         /// </example>
         /// <returns>
-        ///     HTTP 200 Ok: Returns the <see cref="Models.Booking"/> associated with the requested <param name="customerId"></param>.
+        ///     HTTP 200 Ok: Returns the <see cref="Models.Booking"/> associated with the requested <param name="customerId"></param>.<br/>
         ///     HTTP 203 No Content: There is no <see cref="Models.Booking"/> that the current customer can access associated with 
-        ///                          the requested <paramref name="customerId"/>.
+        ///                          the requested <paramref name="customerId"/>.<br/>
         ///     HTTP 400 Bad Request: The provided parameters are malformed.
         /// </returns>
         [HttpGet("by-customer/{customerId}", Name = "GetBookingsByCustomerAsync")]
@@ -238,8 +238,8 @@ namespace ecruise.Api.Controllers
         ///     GET: /Bookings/by-booking-date/{date}
         /// </example>
         /// <returns>
-        ///     HTTP 200 Ok: Returns the <see cref="Models.Booking"/> booked at the requested <paramref name="date"/>.
-        ///     HTTP 203 No Content: There is no <see cref="Models.Booking"/> that was booked on that date.
+        ///     HTTP 200 Ok: Returns the <see cref="Models.Booking"/> booked at the requested <paramref name="date"/>.<br/>
+        ///     HTTP 203 No Content: There is no <see cref="Models.Booking"/> that was booked on that date.<br/>
         ///     HTTP 400 Bad Request: The provided parameters are malformed.
         /// </returns>
         [HttpGet("by-booking-date/{date}", Name = "GetBookingsByBookingDateAsync")]
@@ -276,8 +276,8 @@ namespace ecruise.Api.Controllers
         ///     GET: /Bookings/by-planned-date/{date}
         /// </example>
         /// <returns>
-        ///     HTTP 200 Ok: Returns the <see cref="Models.Booking"/> planned at the requested <paramref name="date"/>.
-        ///     HTTP 203 No Content: There is no <see cref="Models.Booking"/> that was/is planned on that date.
+        ///     HTTP 200 Ok: Returns the <see cref="Models.Booking"/> planned at the requested <paramref name="date"/>.<br/>
+        ///     HTTP 203 No Content: There is no <see cref="Models.Booking"/> that was/is planned on that date.<br/>
         ///     HTTP 400 Bad Request: The provided parameters are malformed.
         /// </returns>
         [HttpGet("by-planned-date/{date}", Name = "GetBookingsByPlannedDateAsync")]
