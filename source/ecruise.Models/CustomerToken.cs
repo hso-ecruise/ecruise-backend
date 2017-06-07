@@ -9,7 +9,7 @@ namespace ecruise.Models
         : IEquatable<CustomerToken>
     {
         /// <summary>
-        /// Defines the CustomerToken Type
+        ///     Defines the CustomerToken Type
         /// </summary>
         public enum TokenTypeEnum
         {
@@ -20,7 +20,7 @@ namespace ecruise.Models
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="CustomerToken" /> class.
+        ///     Initializes a new instance of the <see cref="CustomerToken" /> class.
         /// </summary>
         /// <param name="customerTokenId">CustomerTokenId (required)</param>
         /// <param name="customerId">CustomerId (required)</param>
@@ -40,43 +40,66 @@ namespace ecruise.Models
         }
 
         /// <summary>
-        /// Gets CustomerTokenId
+        ///     Gets CustomerTokenId
         /// </summary>
-        [Required, Range(0, uint.MaxValue)]
+        [Required]
+        [Range(0, uint.MaxValue)]
         public uint CustomerTokenId { get; }
 
         /// <summary>
-        /// Gets CustomerId
+        ///     Gets CustomerId
         /// </summary>
-        [Required, Range(1, uint.MaxValue)]
+        [Required]
+        [Range(1, uint.MaxValue)]
         public uint CustomerId { get; }
 
         /// <summary>
-        /// Gets Type
+        ///     Gets Type
         /// </summary>
         [Required]
         public TokenTypeEnum Type { get; }
 
         /// <summary>
-        /// Gets Token
+        ///     Gets Token
         /// </summary>
-        [Required, StringLength(128)]
+        [Required]
+        [StringLength(128)]
         public string Token { get; }
 
         /// <summary>
-        /// Gets CreationDate
+        ///     Gets CreationDate
         /// </summary>
-        [Required, DataType(DataType.DateTime)]
+        [Required]
+        [DataType(DataType.DateTime)]
         public DateTime CreationDate { get; }
 
         /// <summary>
-        /// Gets ExpireDate
+        ///     Gets ExpireDate
         /// </summary>
         [DataType(DataType.DateTime)]
         public DateTime? ExpireDate { get; }
 
         /// <summary>
-        /// Returns the string presentation of the object
+        ///     Returns true if CustomerToken instances are equal
+        /// </summary>
+        /// <param name="other">Instance of CustomerToken to be compared</param>
+        /// <returns>Boolean</returns>
+        public bool Equals(CustomerToken other)
+        {
+            if (ReferenceEquals(null, other)) return false;
+            if (ReferenceEquals(this, other)) return true;
+
+            return
+                (CustomerTokenId == other.CustomerTokenId || CustomerTokenId.Equals(other.CustomerTokenId)) &&
+                (CustomerId == other.CustomerId || CustomerId.Equals(other.CustomerId)) &&
+                (Type == other.Type || Type.Equals(other.Type)) &&
+                (Token == other.Token || Token.Equals(other.Token)) &&
+                (CreationDate == other.CreationDate || CreationDate.Equals(other.CreationDate)) &&
+                (ExpireDate == other.ExpireDate || ExpireDate.HasValue && ExpireDate.Equals(other.ExpireDate));
+        }
+
+        /// <summary>
+        ///     Returns the string presentation of the object
         /// </summary>
         /// <returns>String presentation of the object</returns>
         public override string ToString()
@@ -94,7 +117,7 @@ namespace ecruise.Models
         }
 
         /// <summary>
-        /// Returns the JSON string presentation of the object
+        ///     Returns the JSON string presentation of the object
         /// </summary>
         /// <returns>JSON string presentation of the object</returns>
         public string ToJson()
@@ -103,7 +126,7 @@ namespace ecruise.Models
         }
 
         /// <summary>
-        /// Returns true if objects are equal
+        ///     Returns true if objects are equal
         /// </summary>
         /// <param name="obj">Object to be compared</param>
         /// <returns>Boolean</returns>
@@ -116,26 +139,7 @@ namespace ecruise.Models
         }
 
         /// <summary>
-        /// Returns true if CustomerToken instances are equal
-        /// </summary>
-        /// <param name="other">Instance of CustomerToken to be compared</param>
-        /// <returns>Boolean</returns>
-        public bool Equals(CustomerToken other)
-        {
-            if (ReferenceEquals(null, other)) return false;
-            if (ReferenceEquals(this, other)) return true;
-
-            return
-                (CustomerTokenId == other.CustomerTokenId || CustomerTokenId.Equals(other.CustomerTokenId)) &&
-                (CustomerId == other.CustomerId || CustomerId.Equals(other.CustomerId)) &&
-                (Type == other.Type || Type.Equals(other.Type)) &&
-                (Token == other.Token || Token.Equals(other.Token)) &&
-                (CreationDate == other.CreationDate || CreationDate.Equals(other.CreationDate)) &&
-                (ExpireDate == other.ExpireDate || (ExpireDate.HasValue && ExpireDate.Equals(other.ExpireDate)));
-        }
-
-        /// <summary>
-        /// Gets the hash code
+        ///     Gets the hash code
         /// </summary>
         /// <returns>Hash code</returns>
         public override int GetHashCode()

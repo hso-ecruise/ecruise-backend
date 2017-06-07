@@ -1,7 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-
-using Customer = ecruise.Models.Customer;
 using DbCustomer = ecruise.Database.Models.Customer;
 
 namespace ecruise.Models.Assemblers
@@ -58,8 +56,7 @@ namespace ecruise.Models.Assemblers
             if (setIdsNull)
                 return models.Select(e => AssembleEntity(0, e)).ToList();
 
-            else
-                return models.Select(e => AssembleEntity(e.CustomerId, e)).ToList();
+            return models.Select(e => AssembleEntity(e.CustomerId, e)).ToList();
         }
     }
 }

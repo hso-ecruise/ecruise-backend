@@ -1,7 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-
-using ChargingStation = ecruise.Models.ChargingStation;
 using DbChargingStation = ecruise.Database.Models.ChargingStation;
 
 namespace ecruise.Models.Assemblers
@@ -19,6 +17,7 @@ namespace ecruise.Models.Assemblers
                 Longitude = chargingStationModel.Longitude
             };
         }
+
         public static ChargingStation AssembleModel(DbChargingStation chargingStationEntity)
 
         {
@@ -40,8 +39,7 @@ namespace ecruise.Models.Assemblers
             if (setIdsNull)
                 return models.Select(e => AssembleEntity(0, e)).ToList();
 
-            else
-                return models.Select(e => AssembleEntity(e.ChargingStationId, e)).ToList();
+            return models.Select(e => AssembleEntity(e.ChargingStationId, e)).ToList();
         }
     }
 }

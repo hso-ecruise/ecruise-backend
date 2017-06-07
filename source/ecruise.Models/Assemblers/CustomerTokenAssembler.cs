@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-
-using CustomerToken = ecruise.Models.CustomerToken;
 using DbCustomerToken = ecruise.Database.Models.CustomerToken;
 
 namespace ecruise.Models.Assemblers
@@ -40,7 +38,7 @@ namespace ecruise.Models.Assemblers
                     return CustomerToken.TokenTypeEnum.EmailChangePhase2;
                 default:
                     throw new NotImplementedException();
-            }  
+            }
         }
 
         public static DbCustomerToken AssembleEntity(ulong customerTokenId, CustomerToken customerTokenModel)
@@ -78,8 +76,7 @@ namespace ecruise.Models.Assemblers
             if (setIdsNull)
                 return models.Select(e => AssembleEntity(0, e)).ToList();
 
-            else
-                return models.Select(e => AssembleEntity(e.CustomerTokenId, e)).ToList();
+            return models.Select(e => AssembleEntity(e.CustomerTokenId, e)).ToList();
         }
     }
 }

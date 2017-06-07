@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-
-using InvoiceItem = ecruise.Models.InvoiceItem;
 using DbInvoiceItem = ecruise.Database.Models.InvoiceItem;
 
 namespace ecruise.Models.Assemblers
@@ -67,8 +65,7 @@ namespace ecruise.Models.Assemblers
             if (setIdsNull)
                 return models.Select(e => AssembleEntity(0, e)).ToList();
 
-            else
-                return models.Select(e => AssembleEntity(e.InvoiceItemId, e)).ToList();
+            return models.Select(e => AssembleEntity(e.InvoiceItemId, e)).ToList();
         }
     }
 }

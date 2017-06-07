@@ -9,17 +9,7 @@ namespace ecruise.Models
         : IEquatable<Car>
     {
         /// <summary>
-        /// Gets or Sets ChargingState
-        /// </summary>
-        public enum ChargingStateEnum
-        {
-            Discharging = 1,
-            Charging,
-            Full
-        }
-
-        /// <summary>
-        /// Gets or Sets BookingState
+        ///     Gets or Sets BookingState
         /// </summary>
         public enum BookingStateEnum
         {
@@ -29,7 +19,17 @@ namespace ecruise.Models
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="Car" /> class.
+        ///     Gets or Sets ChargingState
+        /// </summary>
+        public enum ChargingStateEnum
+        {
+            Discharging = 1,
+            Charging,
+            Full
+        }
+
+        /// <summary>
+        ///     Initializes a new instance of the <see cref="Car" /> class.
         /// </summary>
         /// <param name="carId">CarId (required)</param>
         /// <param name="licensePlate">LicensePlate (required)</param>
@@ -66,133 +66,95 @@ namespace ecruise.Models
         }
 
         /// <summary>
-        /// Gets or Sets CarId
+        ///     Gets or Sets CarId
         /// </summary>
-        [Required, Range(0, uint.MaxValue)]
+        [Required]
+        [Range(0, uint.MaxValue)]
         public uint CarId { get; }
 
         /// <summary>
-        /// Gets or Sets LicensePlate
+        ///     Gets or Sets LicensePlate
         /// </summary>
-        [Required, RegularExpression(@"^[A-Z]{1,3} [A-Z]{1,2} [0-9]{1,4}$"), StringLength(16, MinimumLength = 5)]
+        [Required]
+        [RegularExpression(@"^[A-Z]{1,3} [A-Z]{1,2} [0-9]{1,4}$")]
+        [StringLength(16, MinimumLength = 5)]
         public string LicensePlate { get; }
 
         /// <summary>
-        /// Gets or Sets ChargingState
+        ///     Gets or Sets ChargingState
         /// </summary>
         [Required]
         public ChargingStateEnum ChargingState { get; set; }
 
         /// <summary>
-        /// Gets or Sets BookingState
+        ///     Gets or Sets BookingState
         /// </summary>
         [Required]
         public BookingStateEnum BookingState { get; set; }
 
         /// <summary>
-        /// Gets or Sets Mileage
+        ///     Gets or Sets Mileage
         /// </summary>
-        [Required, Range(0, uint.MaxValue)]
+        [Required]
+        [Range(0, uint.MaxValue)]
         public uint Mileage { get; set; }
 
         /// <summary>
-        /// Current charging level of the car. From 0. to 100.
+        ///     Current charging level of the car. From 0. to 100.
         /// </summary>
         /// <value>Current charging level of the car. From 0. to 100.</value>
-        [Required, Range(0.0, 100.0)]
+        [Required]
+        [Range(0.0, 100.0)]
         public double ChargeLevel { get; set; }
 
         /// <summary>
-        /// Gets or Sets Kilowatts
+        ///     Gets or Sets Kilowatts
         /// </summary>
-        [Required, Range(0, 999)]
+        [Required]
+        [Range(0, 999)]
         public uint Kilowatts { get; }
 
         /// <summary>
-        /// Gets or Sets Manufacturer
+        ///     Gets or Sets Manufacturer
         /// </summary>
-        [Required, StringLength(64)]
+        [Required]
+        [StringLength(64)]
         public string Manufacturer { get; }
 
         /// <summary>
-        /// Gets or Sets Model
+        ///     Gets or Sets Model
         /// </summary>
-        [Required, StringLength(32)]
+        [Required]
+        [StringLength(32)]
         public string Model { get; }
 
         /// <summary>
-        /// Gets or Sets YearOfConstruction
+        ///     Gets or Sets YearOfConstruction
         /// </summary>
-        [Required, Range(1950, 2100)]
+        [Required]
+        [Range(1950, 2100)]
         public int YearOfConstruction { get; }
 
         /// <summary>
-        /// Gets or Sets LastKnownPositionLatitude
+        ///     Gets or Sets LastKnownPositionLatitude
         /// </summary>
         [Range(-90.0, 90.0)]
         public double? LastKnownPositionLatitude { get; set; }
 
         /// <summary>
-        /// Gets or Sets LastKnownPositionLongitude
+        ///     Gets or Sets LastKnownPositionLongitude
         /// </summary>
         [Range(-180.0, 180.0)]
         public double? LastKnownPositionLongitude { get; set; }
 
         /// <summary>
-        /// Gets or Sets LastKnownPositionDate
+        ///     Gets or Sets LastKnownPositionDate
         /// </summary>
         [DataType(DataType.DateTime)]
         public DateTime? LastKnownPositionDate { get; set; }
 
         /// <summary>
-        /// Returns the string presentation of the object
-        /// </summary>
-        /// <returns>String presentation of the object</returns>
-        public override string ToString()
-        {
-            var sb = new StringBuilder();
-            sb.Append("class Car {\n");
-            sb.Append("  CarId: ").Append(CarId).Append("\n");
-            sb.Append("  LicensePlate: ").Append(LicensePlate).Append("\n");
-            sb.Append("  ChargingState: ").Append(ChargingState).Append("\n");
-            sb.Append("  BookingState: ").Append(BookingState).Append("\n");
-            sb.Append("  Mileage: ").Append(Mileage).Append("\n");
-            sb.Append("  ChargeLevel: ").Append(ChargeLevel).Append("\n");
-            sb.Append("  Kilowatts: ").Append(Kilowatts).Append("\n");
-            sb.Append("  Manufacturer: ").Append(Manufacturer).Append("\n");
-            sb.Append("  Model: ").Append(Model).Append("\n");
-            sb.Append("  YearOfConstruction: ").Append(YearOfConstruction).Append("\n");
-            sb.Append("  LastKnownPositionLatitude: ").Append(LastKnownPositionLatitude).Append("\n");
-            sb.Append("  LastKnownPositionLongitude: ").Append(LastKnownPositionLongitude).Append("\n");
-            sb.Append("  LastKnownPositionDate: ").Append(LastKnownPositionDate).Append("\n");
-            sb.Append("}\n");
-            return sb.ToString();
-        }
-
-        /// <summary>
-        /// Returns the JSON string presentation of the object
-        /// </summary>
-        /// <returns>JSON string presentation of the object</returns>
-        public string ToJson()
-        {
-            return JsonConvert.SerializeObject(this, Formatting.Indented);
-        }
-
-        /// <summary>
-        /// Returns true if objects are equal
-        /// </summary>
-        /// <param name="obj">Object to be compared</param>
-        /// <returns>Boolean</returns>
-        public override bool Equals(object obj)
-        {
-            if (ReferenceEquals(null, obj)) return false;
-            if (ReferenceEquals(this, obj)) return true;
-            if (obj.GetType() != GetType()) return false;
-            return Equals((Car)obj);
-        }
-
-        /// <summary>
-        /// Returns true if Car instances are equal
+        ///     Returns true if Car instances are equal
         /// </summary>
         /// <param name="other">Instance of Car to be compared</param>
         /// <returns>Boolean</returns>
@@ -233,7 +195,54 @@ namespace ecruise.Models
         }
 
         /// <summary>
-        /// Gets the hash code
+        ///     Returns the string presentation of the object
+        /// </summary>
+        /// <returns>String presentation of the object</returns>
+        public override string ToString()
+        {
+            var sb = new StringBuilder();
+            sb.Append("class Car {\n");
+            sb.Append("  CarId: ").Append(CarId).Append("\n");
+            sb.Append("  LicensePlate: ").Append(LicensePlate).Append("\n");
+            sb.Append("  ChargingState: ").Append(ChargingState).Append("\n");
+            sb.Append("  BookingState: ").Append(BookingState).Append("\n");
+            sb.Append("  Mileage: ").Append(Mileage).Append("\n");
+            sb.Append("  ChargeLevel: ").Append(ChargeLevel).Append("\n");
+            sb.Append("  Kilowatts: ").Append(Kilowatts).Append("\n");
+            sb.Append("  Manufacturer: ").Append(Manufacturer).Append("\n");
+            sb.Append("  Model: ").Append(Model).Append("\n");
+            sb.Append("  YearOfConstruction: ").Append(YearOfConstruction).Append("\n");
+            sb.Append("  LastKnownPositionLatitude: ").Append(LastKnownPositionLatitude).Append("\n");
+            sb.Append("  LastKnownPositionLongitude: ").Append(LastKnownPositionLongitude).Append("\n");
+            sb.Append("  LastKnownPositionDate: ").Append(LastKnownPositionDate).Append("\n");
+            sb.Append("}\n");
+            return sb.ToString();
+        }
+
+        /// <summary>
+        ///     Returns the JSON string presentation of the object
+        /// </summary>
+        /// <returns>JSON string presentation of the object</returns>
+        public string ToJson()
+        {
+            return JsonConvert.SerializeObject(this, Formatting.Indented);
+        }
+
+        /// <summary>
+        ///     Returns true if objects are equal
+        /// </summary>
+        /// <param name="obj">Object to be compared</param>
+        /// <returns>Boolean</returns>
+        public override bool Equals(object obj)
+        {
+            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            if (obj.GetType() != GetType()) return false;
+            return Equals((Car)obj);
+        }
+
+        /// <summary>
+        ///     Gets the hash code
         /// </summary>
         /// <returns>Hash code</returns>
         public override int GetHashCode()

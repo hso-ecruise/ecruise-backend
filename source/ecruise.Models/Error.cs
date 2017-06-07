@@ -9,7 +9,7 @@ namespace ecruise.Models
         : IEquatable<Error>
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="Error" /> class.
+        ///     Initializes a new instance of the <see cref="Error" /> class.
         /// </summary>
         /// <param name="code">Unique error code (required)</param>
         /// <param name="message">Basic error message (required)</param>
@@ -22,65 +22,29 @@ namespace ecruise.Models
         }
 
         /// <summary>
-        /// Unique error code
+        ///     Unique error code
         /// </summary>
         /// <value>Unique error code</value>
-        [Required, Range(int.MinValue, int.MaxValue)]
+        [Required]
+        [Range(int.MinValue, int.MaxValue)]
         public int Code { get; }
 
         /// <summary>
-        /// Basic error message
+        ///     Basic error message
         /// </summary>
         /// <value>Basic error message</value>
         [Required]
         public string Message { get; }
 
         /// <summary>
-        /// Detailed error message
+        ///     Detailed error message
         /// </summary>
         /// <value>Detailed error message</value>
         [Required]
         public string Description { get; }
 
         /// <summary>
-        /// Returns the string presentation of the object
-        /// </summary>
-        /// <returns>String presentation of the object</returns>
-        public override string ToString()
-        {
-            var sb = new StringBuilder();
-            sb.Append("class Error {\n");
-            sb.Append("  Code: ").Append(Code).Append("\n");
-            sb.Append("  Message: ").Append(Message).Append("\n");
-            sb.Append("  Description: ").Append(Description).Append("\n");
-            sb.Append("}\n");
-            return sb.ToString();
-        }
-
-        /// <summary>
-        /// Returns the JSON string presentation of the object
-        /// </summary>
-        /// <returns>JSON string presentation of the object</returns>
-        public string ToJson()
-        {
-            return JsonConvert.SerializeObject(this, Formatting.Indented);
-        }
-
-        /// <summary>
-        /// Returns true if objects are equal
-        /// </summary>
-        /// <param name="obj">Object to be compared</param>
-        /// <returns>Boolean</returns>
-        public override bool Equals(object obj)
-        {
-            if (ReferenceEquals(null, obj)) return false;
-            if (ReferenceEquals(this, obj)) return true;
-            if (obj.GetType() != GetType()) return false;
-            return Equals((Error)obj);
-        }
-
-        /// <summary>
-        /// Returns true if Error instances are equal
+        ///     Returns true if Error instances are equal
         /// </summary>
         /// <param name="other">Instance of Error to be compared</param>
         /// <returns>Boolean</returns>
@@ -96,7 +60,44 @@ namespace ecruise.Models
         }
 
         /// <summary>
-        /// Gets the hash code
+        ///     Returns the string presentation of the object
+        /// </summary>
+        /// <returns>String presentation of the object</returns>
+        public override string ToString()
+        {
+            var sb = new StringBuilder();
+            sb.Append("class Error {\n");
+            sb.Append("  Code: ").Append(Code).Append("\n");
+            sb.Append("  Message: ").Append(Message).Append("\n");
+            sb.Append("  Description: ").Append(Description).Append("\n");
+            sb.Append("}\n");
+            return sb.ToString();
+        }
+
+        /// <summary>
+        ///     Returns the JSON string presentation of the object
+        /// </summary>
+        /// <returns>JSON string presentation of the object</returns>
+        public string ToJson()
+        {
+            return JsonConvert.SerializeObject(this, Formatting.Indented);
+        }
+
+        /// <summary>
+        ///     Returns true if objects are equal
+        /// </summary>
+        /// <param name="obj">Object to be compared</param>
+        /// <returns>Boolean</returns>
+        public override bool Equals(object obj)
+        {
+            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            if (obj.GetType() != GetType()) return false;
+            return Equals((Error)obj);
+        }
+
+        /// <summary>
+        ///     Gets the hash code
         /// </summary>
         /// <returns>Hash code</returns>
         public override int GetHashCode()

@@ -8,7 +8,7 @@ namespace ecruise.Models
     public class ChargingStation
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="ChargingStation" /> class.
+        ///     Initializes a new instance of the <see cref="ChargingStation" /> class.
         /// </summary>
         /// <param name="chargingStationId">ChargingStationId (required)</param>
         /// <param name="slots">Slots (required)</param>
@@ -26,25 +26,30 @@ namespace ecruise.Models
         }
 
         /// <summary>
-        /// Gets or Sets a CustomerId
+        ///     Gets or Sets a CustomerId
         /// </summary>
-        [Required, Range(0, uint.MaxValue)]
+        [Required]
+        [Range(0, uint.MaxValue)]
         public uint ChargingStationId { get; }
 
-        [Required, Range(1, uint.MaxValue)]
+        [Required]
+        [Range(1, uint.MaxValue)]
         public uint Slots { get; }
 
-        [Required, Range(0, uint.MaxValue)]
+        [Required]
+        [Range(0, uint.MaxValue)]
         public uint SlotsOccupied { get; set; }
 
-        [Required, Range(-90.0, 90.0)]
+        [Required]
+        [Range(-90.0, 90.0)]
         public double Latitude { get; }
 
-        [Required, Range(-180.0, 180.0)]
+        [Required]
+        [Range(-180.0, 180.0)]
         public double Longitude { get; }
 
         /// <summary>
-        /// Returns the string presentation of the object
+        ///     Returns the string presentation of the object
         /// </summary>
         /// <returns>String presentation of the object</returns>
         public override string ToString()
@@ -61,7 +66,7 @@ namespace ecruise.Models
         }
 
         /// <summary>
-        /// Returns the JSON string presentation of the object
+        ///     Returns the JSON string presentation of the object
         /// </summary>
         /// <returns>JSON string presentation of the object</returns>
         public string ToJson()
@@ -70,7 +75,7 @@ namespace ecruise.Models
         }
 
         /// <summary>
-        /// Returns true if objects are equal
+        ///     Returns true if objects are equal
         /// </summary>
         /// <param name="obj">Object to be compared</param>
         /// <returns>Boolean</returns>
@@ -83,7 +88,7 @@ namespace ecruise.Models
         }
 
         /// <summary>
-        /// Returns true if Address instances are equal
+        ///     Returns true if Address instances are equal
         /// </summary>
         /// <param name="other">Instance of Address to be compared</param>
         /// <returns>Boolean</returns>
@@ -101,7 +106,7 @@ namespace ecruise.Models
         }
 
         /// <summary>
-        /// Gets the hash code
+        ///     Gets the hash code
         /// </summary>
         /// <returns>Hash code</returns>
         public override int GetHashCode()

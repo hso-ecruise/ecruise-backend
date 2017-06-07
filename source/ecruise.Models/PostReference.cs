@@ -9,7 +9,7 @@ namespace ecruise.Models
         : IEquatable<PostReference>
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="PostReference" /> class.
+        ///     Initializes a new instance of the <see cref="PostReference" /> class.
         /// </summary>
         /// <param name="id">The ressource's unique identifier (required)</param>
         /// <param name="url">URL to the ressource (required)</param>
@@ -20,57 +20,22 @@ namespace ecruise.Models
         }
 
         /// <summary>
-        /// The ressource's unique identifier 
+        ///     The ressource's unique identifier
         /// </summary>
         /// <value>The ressource's unique identifier</value>
-        [Required, Range(1, uint.MaxValue)]
+        [Required]
+        [Range(1, uint.MaxValue)]
         public ulong Id { get; }
 
         /// <summary>
-        /// URL to the ressource 
+        ///     URL to the ressource
         /// </summary>
         /// <value>URL to the ressource </value>
         [Required]
         public string Url { get; }
 
         /// <summary>
-        /// Returns the string presentation of the object
-        /// </summary>
-        /// <returns>String presentation of the object</returns>
-        public override string ToString()
-        {
-            var sb = new StringBuilder();
-            sb.Append("class PostReference {\n");
-            sb.Append("  Id: ").Append(Id).Append("\n");
-            sb.Append("  Url: ").Append(Url).Append("\n");
-            sb.Append("}\n");
-            return sb.ToString();
-        }
-
-        /// <summary>
-        /// Returns the JSON string presentation of the object
-        /// </summary>
-        /// <returns>JSON string presentation of the object</returns>
-        public string ToJson()
-        {
-            return JsonConvert.SerializeObject(this, Formatting.Indented);
-        }
-
-        /// <summary>
-        /// Returns true if objects are equal
-        /// </summary>
-        /// <param name="obj">Object to be compared</param>
-        /// <returns>Boolean</returns>
-        public override bool Equals(object obj)
-        {
-            if (ReferenceEquals(null, obj)) return false;
-            if (ReferenceEquals(this, obj)) return true;
-            if (obj.GetType() != GetType()) return false;
-            return Equals((PostReference)obj);
-        }
-
-        /// <summary>
-        /// Returns true if PostReference instances are equal
+        ///     Returns true if PostReference instances are equal
         /// </summary>
         /// <param name="other">Instance of PostReference to be compared</param>
         /// <returns>Boolean</returns>
@@ -85,7 +50,43 @@ namespace ecruise.Models
         }
 
         /// <summary>
-        /// Gets the hash code
+        ///     Returns the string presentation of the object
+        /// </summary>
+        /// <returns>String presentation of the object</returns>
+        public override string ToString()
+        {
+            var sb = new StringBuilder();
+            sb.Append("class PostReference {\n");
+            sb.Append("  Id: ").Append(Id).Append("\n");
+            sb.Append("  Url: ").Append(Url).Append("\n");
+            sb.Append("}\n");
+            return sb.ToString();
+        }
+
+        /// <summary>
+        ///     Returns the JSON string presentation of the object
+        /// </summary>
+        /// <returns>JSON string presentation of the object</returns>
+        public string ToJson()
+        {
+            return JsonConvert.SerializeObject(this, Formatting.Indented);
+        }
+
+        /// <summary>
+        ///     Returns true if objects are equal
+        /// </summary>
+        /// <param name="obj">Object to be compared</param>
+        /// <returns>Boolean</returns>
+        public override bool Equals(object obj)
+        {
+            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            if (obj.GetType() != GetType()) return false;
+            return Equals((PostReference)obj);
+        }
+
+        /// <summary>
+        ///     Gets the hash code
         /// </summary>
         /// <returns>Hash code</returns>
         public override int GetHashCode()

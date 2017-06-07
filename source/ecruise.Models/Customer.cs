@@ -2,10 +2,9 @@
 using System.ComponentModel.DataAnnotations;
 using System.Text;
 using System.Threading.Tasks;
-using Newtonsoft.Json;
 using MailKit.Net.Smtp;
 using MimeKit;
-
+using Newtonsoft.Json;
 
 namespace ecruise.Models
 {
@@ -13,7 +12,7 @@ namespace ecruise.Models
         : IEquatable<Customer>
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="Customer" /> class.
+        ///     Initializes a new instance of the <see cref="Customer" /> class.
         /// </summary>
         /// <param name="customerId">CustomerId (required)</param>
         /// <param name="email">Email (required)</param>
@@ -26,9 +25,15 @@ namespace ecruise.Models
         /// <param name="zipCode">ZipCode</param>
         /// <param name="street">Street</param>
         /// <param name="houseNumber">HouseNumber</param>
-        /// <param name="addressExtraLine">Extra line for the user's address. Can contain various detail information about the user's address. (required)</param>
+        /// <param name="addressExtraLine">
+        ///     Extra line for the user's address. Can contain various detail information about the
+        ///     user's address. (required)
+        /// </param>
         /// <param name="activated">True if the user has activated his account by clicking on the link in the activation email.</param>
-        /// <param name="verified">True if the user has verified his account at our head-quarter by bringing us his driver's license.</param>
+        /// <param name="verified">
+        ///     True if the user has verified his account at our head-quarter by bringing us his driver's
+        ///     license.
+        /// </param>
         public Customer(uint customerId, string email, string phoneNumber, string chipCardUid, string firstName,
             string lastName, string country, string city, uint? zipCode, string street, string houseNumber,
             string addressExtraLine, bool activated = false, bool verified = false)
@@ -51,92 +56,124 @@ namespace ecruise.Models
 
 
         /// <summary>
-        /// Gets or Sets a CustomerId
+        ///     Gets or Sets a CustomerId
         /// </summary>
-        [Required, Range(0, uint.MaxValue)]
+        [Required]
+        [Range(0, uint.MaxValue)]
         public uint CustomerId { get; }
 
         /// <summary>
-        /// Gets or Sets Email
+        ///     Gets or Sets Email
         /// </summary>
-        [Required, StringLength(64), EmailAddress]
+        [Required]
+        [StringLength(64)]
+        [EmailAddress]
         public string Email { get; set; }
 
         /// <summary>
-        /// Gets or Sets PhoneNumber
+        ///     Gets or Sets PhoneNumber
         /// </summary>
         [StringLength(16)]
         public string ChipCardUid { get; set; }
 
         /// <summary>
-        /// Gets or Sets PhoneNumber
+        ///     Gets or Sets PhoneNumber
         /// </summary>
         [StringLength(32)]
         public string PhoneNumber { get; set; }
 
         /// <summary>
-        /// Gets or Sets FirstName
+        ///     Gets or Sets FirstName
         /// </summary>
-        [Required, StringLength(48)]
+        [Required]
+        [StringLength(48)]
         public string FirstName { get; set; }
 
         /// <summary>
-        /// Gets or Sets LastName
+        ///     Gets or Sets LastName
         /// </summary>
-        [Required, StringLength(48)]
+        [Required]
+        [StringLength(48)]
         public string LastName { get; set; }
 
         /// <summary>
-        /// Gets or Sets Country
+        ///     Gets or Sets Country
         /// </summary>
         [StringLength(2, MinimumLength = 2)]
         public string Country { get; set; }
 
         /// <summary>
-        /// Gets or Sets City
+        ///     Gets or Sets City
         /// </summary>
         [StringLength(64)]
         public string City { get; set; }
 
         /// <summary>
-        /// Gets or Sets ZipCode
+        ///     Gets or Sets ZipCode
         /// </summary>
         [Range(1001, 99999)]
         public uint? ZipCode { get; set; }
 
         /// <summary>
-        /// Gets or Sets Street
+        ///     Gets or Sets Street
         /// </summary>
         [StringLength(128)]
         public string Street { get; set; }
 
         /// <summary>
-        /// Gets or Sets HouseNumber
+        ///     Gets or Sets HouseNumber
         /// </summary>
         [StringLength(8)]
         public string HouseNumber { get; set; }
 
         /// <summary>
-        /// Extra line for the user's address. Can contain various detail information about the user's address. 
+        ///     Extra line for the user's address. Can contain various detail information about the user's address.
         /// </summary>
         /// <value>Extra line for the user's address. Can contain various detail information about the user's address. </value>
         [StringLength(64)]
         public string AddressExtraLine { get; set; }
 
         /// <summary>
-        /// True if the user has activated his account by clicking on the link in the activation email. 
+        ///     True if the user has activated his account by clicking on the link in the activation email.
         /// </summary>
         /// <value>True if the user has activated his account by clicking on the link in the activation email. </value>
         public bool Activated { get; set; }
 
         /// <summary>
-        /// True if the user has verified his account at our head-quarter by bringing us his driver's license. 
+        ///     True if the user has verified his account at our head-quarter by bringing us his driver's license.
         /// </summary>
         /// <value>True if the user has verified his account at our head-quarter by bringing us his driver's license.</value>
         public bool Verified { get; set; }
 
         /// <summary>
-        /// Sends a mail with the specified subject and body to the customer
+        ///     Returns true if Customer instances are equal
+        /// </summary>
+        /// <param name="other">Instance of Customer to be compared</param>
+        /// <returns>Boolean</returns>
+        public bool Equals(Customer other)
+        {
+            if (ReferenceEquals(null, other)) return false;
+            if (ReferenceEquals(this, other)) return true;
+
+            return
+                (CustomerId == other.CustomerId || CustomerId.Equals(other.CustomerId)) &&
+                (Email == other.Email || Email.Equals(other.Email)) &&
+                (PhoneNumber == other.PhoneNumber || PhoneNumber.Equals(other.PhoneNumber)) &&
+                (ChipCardUid == other.ChipCardUid || ChipCardUid.Equals(other.ChipCardUid)) &&
+                (FirstName == other.FirstName || FirstName.Equals(other.FirstName)) &&
+                (LastName == other.LastName || LastName.Equals(other.LastName)) &&
+                (Country == other.Country || Country.Equals(other.Country)) &&
+                (City == other.City || City.Equals(other.City)) &&
+                (ZipCode == other.ZipCode || ZipCode.Equals(other.ZipCode)) &&
+                (Street == other.Street || Street.Equals(other.Street)) &&
+                (HouseNumber == other.HouseNumber || HouseNumber.Equals(other.HouseNumber)) &&
+                (AddressExtraLine == other.AddressExtraLine || AddressExtraLine.Equals(other.AddressExtraLine)) &&
+                (Activated == other.Activated || Activated.Equals(other.Activated)) &&
+                (Verified == other.Verified || Verified.Equals(other.Verified));
+        }
+
+        /// <summary>
+        ///     Sends a mail with the specified subject and body to the customer
         /// </summary>
         /// <param name="subject">The subject for the mail</param>
         /// <param name="body">The body for the mail</param>
@@ -189,7 +226,7 @@ namespace ecruise.Models
         }
 
         /// <summary>
-        /// Returns the string presentation of the object
+        ///     Returns the string presentation of the object
         /// </summary>
         /// <returns>String presentation of the object</returns>
         public override string ToString()
@@ -215,7 +252,7 @@ namespace ecruise.Models
         }
 
         /// <summary>
-        /// Returns the JSON string presentation of the object
+        ///     Returns the JSON string presentation of the object
         /// </summary>
         /// <returns>JSON string presentation of the object</returns>
         public string ToJson()
@@ -224,7 +261,7 @@ namespace ecruise.Models
         }
 
         /// <summary>
-        /// Returns true if objects are equal
+        ///     Returns true if objects are equal
         /// </summary>
         /// <param name="obj">Object to be compared</param>
         /// <returns>Boolean</returns>
@@ -237,34 +274,7 @@ namespace ecruise.Models
         }
 
         /// <summary>
-        /// Returns true if Customer instances are equal
-        /// </summary>
-        /// <param name="other">Instance of Customer to be compared</param>
-        /// <returns>Boolean</returns>
-        public bool Equals(Customer other)
-        {
-            if (ReferenceEquals(null, other)) return false;
-            if (ReferenceEquals(this, other)) return true;
-
-            return
-                (CustomerId == other.CustomerId || CustomerId.Equals(other.CustomerId)) &&
-                (Email == other.Email || Email.Equals(other.Email)) &&
-                (PhoneNumber == other.PhoneNumber || PhoneNumber.Equals(other.PhoneNumber)) &&
-                (ChipCardUid == other.ChipCardUid || ChipCardUid.Equals(other.ChipCardUid)) &&
-                (FirstName == other.FirstName || FirstName.Equals(other.FirstName)) &&
-                (LastName == other.LastName || LastName.Equals(other.LastName)) &&
-                (Country == other.Country || Country.Equals(other.Country)) &&
-                (City == other.City || City.Equals(other.City)) &&
-                (ZipCode == other.ZipCode || ZipCode.Equals(other.ZipCode)) &&
-                (Street == other.Street || Street.Equals(other.Street)) &&
-                (HouseNumber == other.HouseNumber || HouseNumber.Equals(other.HouseNumber)) &&
-                (AddressExtraLine == other.AddressExtraLine || AddressExtraLine.Equals(other.AddressExtraLine)) &&
-                (Activated == other.Activated || Activated.Equals(other.Activated)) &&
-                (Verified == other.Verified || Verified.Equals(other.Verified));
-        }
-
-        /// <summary>
-        /// Gets the hash code
+        ///     Gets the hash code
         /// </summary>
         /// <returns>Hash code</returns>
         public override int GetHashCode()
@@ -297,7 +307,7 @@ namespace ecruise.Models
     public class Address
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="Address" /> class.
+        ///     Initializes a new instance of the <see cref="Address" /> class.
         /// </summary>
         /// <param name="country">Country (required)</param>
         /// <param name="city">City (required)</param>
@@ -316,25 +326,30 @@ namespace ecruise.Models
             AddressExtraLine = addressExtraLine;
         }
 
-        [Required, StringLength(2, MinimumLength = 2)]
+        [Required]
+        [StringLength(2, MinimumLength = 2)]
         public string Country { get; }
 
-        [Required, StringLength(64)]
+        [Required]
+        [StringLength(64)]
         public string City { get; }
 
-        [Required, Range(1001, 99999)]
+        [Required]
+        [Range(1001, 99999)]
         public uint ZipCode { get; }
 
-        [Required, StringLength(128)]
+        [Required]
+        [StringLength(128)]
         public string Street { get; }
 
-        [Required, StringLength(8)]
+        [Required]
+        [StringLength(8)]
         public string HouseNumber { get; }
 
         public string AddressExtraLine { get; }
 
         /// <summary>
-        /// Returns the string presentation of the object
+        ///     Returns the string presentation of the object
         /// </summary>
         /// <returns>String presentation of the object</returns>
         public override string ToString()
@@ -352,7 +367,7 @@ namespace ecruise.Models
         }
 
         /// <summary>
-        /// Returns the JSON string presentation of the object
+        ///     Returns the JSON string presentation of the object
         /// </summary>
         /// <returns>JSON string presentation of the object</returns>
         public string ToJson()
@@ -361,7 +376,7 @@ namespace ecruise.Models
         }
 
         /// <summary>
-        /// Returns true if objects are equal
+        ///     Returns true if objects are equal
         /// </summary>
         /// <param name="obj">Object to be compared</param>
         /// <returns>Boolean</returns>
@@ -374,7 +389,7 @@ namespace ecruise.Models
         }
 
         /// <summary>
-        /// Returns true if Address instances are equal
+        ///     Returns true if Address instances are equal
         /// </summary>
         /// <param name="other">Instance of Address to be compared</param>
         /// <returns>Boolean</returns>
@@ -393,7 +408,7 @@ namespace ecruise.Models
         }
 
         /// <summary>
-        /// Gets the hash code
+        ///     Gets the hash code
         /// </summary>
         /// <returns>Hash code</returns>
         public override int GetHashCode()

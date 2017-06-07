@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using Trip = ecruise.Models.Trip;
 using DbTrip = ecruise.Database.Models.Trip;
 
 namespace ecruise.Models.Assemblers
@@ -45,8 +44,7 @@ namespace ecruise.Models.Assemblers
             if (setIdsNull)
                 return models.Select(e => AssembleEntity(0, e)).ToList();
 
-            else
-                return models.Select(e => AssembleEntity(e.TripId, e)).ToList();
+            return models.Select(e => AssembleEntity(e.TripId, e)).ToList();
         }
     }
 }

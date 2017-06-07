@@ -9,7 +9,7 @@ namespace ecruise.Models
         : IEquatable<Invoice>
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="Invoice" /> class.
+        ///     Initializes a new instance of the <see cref="Invoice" /> class.
         /// </summary>
         /// <param name="invoiceId">InvoiceItemId (required)</param>
         /// <param name="customerId">CustomerId (required)</param>
@@ -24,69 +24,33 @@ namespace ecruise.Models
         }
 
         /// <summary>
-        /// Gets InvoiceItemId
+        ///     Gets InvoiceItemId
         /// </summary>
-        [Required, Range(0, uint.MaxValue)]
+        [Required]
+        [Range(0, uint.MaxValue)]
         public uint InvoiceId { get; }
 
         /// <summary>
-        /// Gets CustomerId
+        ///     Gets CustomerId
         /// </summary>
-        [Required, Range(1, uint.MaxValue)]
+        [Required]
+        [Range(1, uint.MaxValue)]
         public uint CustomerId { get; }
 
         /// <summary>
-        /// Gets or Sets TotalAmount
+        ///     Gets or Sets TotalAmount
         /// </summary>
         [Required]
         public double TotalAmount { get; set; }
 
         /// <summary>
-        /// Gets or Sets Paid
+        ///     Gets or Sets Paid
         /// </summary>
         [Required]
         public bool Paid { get; set; }
 
         /// <summary>
-        /// Returns the string presentation of the object
-        /// </summary>
-        /// <returns>String presentation of the object</returns>
-        public override string ToString()
-        {
-            var sb = new StringBuilder();
-            sb.Append("class Invoice {\n");
-            sb.Append("  InvoiceItemId: ").Append(InvoiceId).Append("\n");
-            sb.Append("  CustomerId: ").Append(CustomerId).Append("\n");
-            sb.Append("  TotalAmount: ").Append(TotalAmount).Append("\n");
-            sb.Append("  Paid: ").Append(Paid).Append("\n");
-            sb.Append("}\n");
-            return sb.ToString();
-        }
-
-        /// <summary>
-        /// Returns the JSON string presentation of the object
-        /// </summary>
-        /// <returns>JSON string presentation of the object</returns>
-        public string ToJson()
-        {
-            return JsonConvert.SerializeObject(this, Formatting.Indented);
-        }
-
-        /// <summary>
-        /// Returns true if objects are equal
-        /// </summary>
-        /// <param name="obj">Object to be compared</param>
-        /// <returns>Boolean</returns>
-        public override bool Equals(object obj)
-        {
-            if (ReferenceEquals(null, obj)) return false;
-            if (ReferenceEquals(this, obj)) return true;
-            if (obj.GetType() != GetType()) return false;
-            return Equals((Invoice)obj);
-        }
-
-        /// <summary>
-        /// Returns true if Invoice instances are equal
+        ///     Returns true if Invoice instances are equal
         /// </summary>
         /// <param name="other">Instance of Invoice to be compared</param>
         /// <returns>Boolean</returns>
@@ -103,7 +67,45 @@ namespace ecruise.Models
         }
 
         /// <summary>
-        /// Gets the hash code
+        ///     Returns the string presentation of the object
+        /// </summary>
+        /// <returns>String presentation of the object</returns>
+        public override string ToString()
+        {
+            var sb = new StringBuilder();
+            sb.Append("class Invoice {\n");
+            sb.Append("  InvoiceItemId: ").Append(InvoiceId).Append("\n");
+            sb.Append("  CustomerId: ").Append(CustomerId).Append("\n");
+            sb.Append("  TotalAmount: ").Append(TotalAmount).Append("\n");
+            sb.Append("  Paid: ").Append(Paid).Append("\n");
+            sb.Append("}\n");
+            return sb.ToString();
+        }
+
+        /// <summary>
+        ///     Returns the JSON string presentation of the object
+        /// </summary>
+        /// <returns>JSON string presentation of the object</returns>
+        public string ToJson()
+        {
+            return JsonConvert.SerializeObject(this, Formatting.Indented);
+        }
+
+        /// <summary>
+        ///     Returns true if objects are equal
+        /// </summary>
+        /// <param name="obj">Object to be compared</param>
+        /// <returns>Boolean</returns>
+        public override bool Equals(object obj)
+        {
+            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            if (obj.GetType() != GetType()) return false;
+            return Equals((Invoice)obj);
+        }
+
+        /// <summary>
+        ///     Gets the hash code
         /// </summary>
         /// <returns>Hash code</returns>
         public override int GetHashCode()
