@@ -1,0 +1,566 @@
+﻿<!DOCTYPE html>
+<!--[if IE]><![endif]-->
+<html>
+  
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>Class BookingsController
+   </title>
+    <meta name="viewport" content="width=device-width">
+    <meta name="title" content="Class BookingsController
+   ">
+    <meta name="generator" content="docfx 2.18.2.0">
+    
+    <link rel="shortcut icon" href="../favicon.ico">
+    <link rel="stylesheet" href="../styles/docfx.vendor.css">
+    <link rel="stylesheet" href="../styles/docfx.css">
+    <link rel="stylesheet" href="../styles/main.css">
+    <meta property="docfx:navrel" content="../toc.html">
+    <meta property="docfx:tocrel" content="toc.html">
+    
+    
+  </head>
+  <body data-spy="scroll" data-target="#affix">
+    <div id="wrapper">
+      <header>
+        
+        <nav id="autocollapse" class="navbar navbar-inverse ng-scope" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+              
+              <a class="navbar-brand" href="../index.html">
+                <img id="logo" class="svg" src="../logo.svg" alt="">
+              </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar">
+              <form class="navbar-form navbar-right" role="search" id="search">
+                <div class="form-group">
+                  <input type="text" class="form-control" id="search-query" placeholder="Search" autocomplete="off">
+                </div>
+              </form>
+            </div>
+          </div>
+        </nav>
+        
+        <div class="subnav navbar navbar-default">
+          <div class="container hide-when-search" id="breadcrumb">
+            <ul class="breadcrumb">
+              <li></li>
+            </ul>
+          </div>
+        </div>
+      </header>
+      <div role="main" class="container body-content hide-when-search">
+        
+        <div class="sidenav hide-when-search">
+          <a class="btn toc-toggle collapse" data-toggle="collapse" href="#sidetoggle" aria-expanded="false" aria-controls="sidetoggle">Show / Hide Table of Contents</a>
+          <div class="sidetoggle collapse" id="sidetoggle">
+            <div id="sidetoc"></div>
+          </div>
+        </div>
+        <div class="article row grid-right">
+          <div class="col-md-10">
+            <article class="content wrap" id="_content" data-uid="ecruise.Api.Controllers.BookingsController">
+  
+  
+  <h1 id="ecruise_Api_Controllers_BookingsController" data-uid="ecruise.Api.Controllers.BookingsController">Class BookingsController
+  </h1>
+  <div class="markdown level0 summary"><p>This class handles all requestes related to bookings.
+That means that it handles all web requests to /bookings</p>
+</div>
+  <div class="markdown level0 conceptual"></div>
+  <div class="inheritance">
+    <h5>Inheritance</h5>
+    <div class="level0"><span class="xref">System.Object</span></div>
+    <div class="level1"><a class="xref" href="ecruise.Api.Controllers.BaseController.html">BaseController</a></div>
+    <div class="level2"><span class="xref">BookingsController</span></div>
+  </div>
+  <div class="inheritedMembers">
+    <h5>Inherited Members</h5>
+    <div>
+      <a class="xref" href="ecruise.Api.Controllers.BaseController.html#ecruise_Api_Controllers_BaseController_BasePath">BaseController.BasePath</a>
+    </div>
+    <div>
+      <a class="xref" href="ecruise.Api.Controllers.BaseController.html#ecruise_Api_Controllers_BaseController_Context">BaseController.Context</a>
+    </div>
+    <div>
+      <a class="xref" href="ecruise.Api.Controllers.BaseController.html#ecruise_Api_Controllers_BaseController_AuthenticatedCustomerId">BaseController.AuthenticatedCustomerId</a>
+    </div>
+    <div>
+      <a class="xref" href="ecruise.Api.Controllers.BaseController.html#ecruise_Api_Controllers_BaseController_GetModelStateErrorString">BaseController.GetModelStateErrorString()</a>
+    </div>
+    <div>
+      <a class="xref" href="ecruise.Api.Controllers.BaseController.html#ecruise_Api_Controllers_BaseController_OnActionExecuting_ActionExecutingContext_">BaseController.OnActionExecuting(ActionExecutingContext)</a>
+    </div>
+    <div>
+      <a class="xref" href="ecruise.Api.Controllers.BaseController.html#ecruise_Api_Controllers_BaseController_HasAccess_System_UInt64_">BaseController.HasAccess(UInt64)</a>
+    </div>
+    <div>
+      <a class="xref" href="ecruise.Api.Controllers.BaseController.html#ecruise_Api_Controllers_BaseController_HasAccess_System_UInt32_">BaseController.HasAccess(UInt32)</a>
+    </div>
+  </div>
+  <h6><strong>Namespace</strong>: <a class="xref" href="ecruise.Api.Controllers.html">ecruise.Api.Controllers</a></h6>
+  <h6><strong>Assembly</strong>: ecruise.Api.dll</h6>
+  <h5 id="ecruise_Api_Controllers_BookingsController_syntax">Syntax</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public class BookingsController : BaseController</code></pre>
+  </div>
+  <h3 id="constructors">Constructors
+  </h3>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/hso-ecruise/ecruise-backend/new/inline-documentation/apiSpec/new?filename=ecruise_Api_Controllers_BookingsController__ctor_ecruise_Database_Models_EcruiseContext_.md&amp;value=---%0Auid%3A%20ecruise.Api.Controllers.BookingsController.%23ctor(ecruise.Database.Models.EcruiseContext)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/hso-ecruise/ecruise-backend/blob/inline-documentation/source/ecruise.Api/Controllers/BookingsController.cs/#L26">View Source</a>
+  </span>
+  <a id="ecruise_Api_Controllers_BookingsController__ctor_" data-uid="ecruise.Api.Controllers.BookingsController.#ctor*"></a>
+  <h4 id="ecruise_Api_Controllers_BookingsController__ctor_ecruise_Database_Models_EcruiseContext_" data-uid="ecruise.Api.Controllers.BookingsController.#ctor(ecruise.Database.Models.EcruiseContext)">BookingsController(EcruiseContext)</h4>
+  <div class="markdown level1 summary"><p>The constructor for the <a class="xref" href="ecruise.Api.Controllers.BookingsController.html">BookingsController</a> class.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public BookingsController(EcruiseContext context)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">ecruise.Database.Models.EcruiseContext</span></td>
+        <td><span class="parametername">context</span></td>
+        <td><p>The database context that gets injected by the framework.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h3 id="methods">Methods
+  </h3>
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/hso-ecruise/ecruise-backend/new/inline-documentation/apiSpec/new?filename=ecruise_Api_Controllers_BookingsController_GetAllAsync.md&amp;value=---%0Auid%3A%20ecruise.Api.Controllers.BookingsController.GetAllAsync%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/hso-ecruise/ecruise-backend/blob/inline-documentation/source/ecruise.Api/Controllers/BookingsController.cs/#L42">View Source</a>
+  </span>
+  <a id="ecruise_Api_Controllers_BookingsController_GetAllAsync_" data-uid="ecruise.Api.Controllers.BookingsController.GetAllAsync*"></a>
+  <h4 id="ecruise_Api_Controllers_BookingsController_GetAllAsync" data-uid="ecruise.Api.Controllers.BookingsController.GetAllAsync">GetAllAsync()</h4>
+  <div class="markdown level1 summary"><p>Queries all bookings in the database and returns a http response that indicates if results were found.
+Additionally, if there are any results, it returns a list of <span class="xref">ecruise.Models.Booking</span>s.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public Task&lt;IActionResult&gt; GetAllAsync()</code></pre>
+  </div>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">Task</span>&lt;<span class="xref">IActionResult</span>&gt;</td>
+        <td><p>HTTP 200 Ok: Returns a List of <span class="xref">ecruise.Models.Booking</span>s if <span class="xref">ecruise.Models.Booking</span>s everything&#39;s okay.<br>
+HTTP 204 No Content: There are no <span class="xref">ecruise.Models.Booking</span>s.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="ecruise_Api_Controllers_BookingsController_GetAllAsync_examples">Examples</h5>
+  <p>GET /bookings</p>
+
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/hso-ecruise/ecruise-backend/new/inline-documentation/apiSpec/new?filename=ecruise_Api_Controllers_BookingsController_GetAsync_System_UInt64_.md&amp;value=---%0Auid%3A%20ecruise.Api.Controllers.BookingsController.GetAsync(System.UInt64)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/hso-ecruise/ecruise-backend/blob/inline-documentation/source/ecruise.Api/Controllers/BookingsController.cs/#L72">View Source</a>
+  </span>
+  <a id="ecruise_Api_Controllers_BookingsController_GetAsync_" data-uid="ecruise.Api.Controllers.BookingsController.GetAsync*"></a>
+  <h4 id="ecruise_Api_Controllers_BookingsController_GetAsync_System_UInt64_" data-uid="ecruise.Api.Controllers.BookingsController.GetAsync(System.UInt64)">GetAsync(UInt64)</h4>
+  <div class="markdown level1 summary"><p>Queries one <span class="xref">ecruise.Models.Booking</span> identified by <span class="paramref">id</span> and returns it, if existent.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public Task&lt;IActionResult&gt; GetAsync(ulong id)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.UInt64</span></td>
+        <td><span class="parametername">id</span></td>
+        <td><p>The booking id to search for</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">Task</span>&lt;<span class="xref">IActionResult</span>&gt;</td>
+        <td><p>HTTP 200 Ok: Returns the <span class="xref">ecruise.Models.Booking</span> if everything&#39;s okay.<br>
+HTTP 400 Bad Request: The provided parameters are malformed.<br>
+HTTP 401 Unauthorized: The authenticated customer has no access to the requested <span class="xref">ecruise.Models.Booking</span>.<br>
+HTTP 404 Not Found: There is no booking with such an <span class="paramref">id</span>.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="ecruise_Api_Controllers_BookingsController_GetAsync_System_UInt64__examples">Examples</h5>
+  <p>GET /bookings/5</p>
+
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/hso-ecruise/ecruise-backend/new/inline-documentation/apiSpec/new?filename=ecruise_Api_Controllers_BookingsController_GetByBookingDateAsync_System_String_.md&amp;value=---%0Auid%3A%20ecruise.Api.Controllers.BookingsController.GetByBookingDateAsync(System.String)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/hso-ecruise/ecruise-backend/blob/inline-documentation/source/ecruise.Api/Controllers/BookingsController.cs/#L245">View Source</a>
+  </span>
+  <a id="ecruise_Api_Controllers_BookingsController_GetByBookingDateAsync_" data-uid="ecruise.Api.Controllers.BookingsController.GetByBookingDateAsync*"></a>
+  <h4 id="ecruise_Api_Controllers_BookingsController_GetByBookingDateAsync_System_String_" data-uid="ecruise.Api.Controllers.BookingsController.GetByBookingDateAsync(System.String)">GetByBookingDateAsync(String)</h4>
+  <div class="markdown level1 summary"><p>Find all <span class="xref">ecruise.Models.Booking</span> that were booked at a certain <span class="paramref">date</span>.
+An error response is set if there&#39;s was <span class="xref">ecruise.Models.Booking</span> on that date.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public Task&lt;IActionResult&gt; GetByBookingDateAsync(string date)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.String</span></td>
+        <td><span class="parametername">date</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">Task</span>&lt;<span class="xref">IActionResult</span>&gt;</td>
+        <td><p>HTTP 200 Ok: Returns the <span class="xref">ecruise.Models.Booking</span> booked at the requested <span class="paramref">date</span>.<br>
+HTTP 203 No Content: There is no <span class="xref">ecruise.Models.Booking</span> that was booked on that date.<br>
+HTTP 400 Bad Request: The provided parameters are malformed.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="ecruise_Api_Controllers_BookingsController_GetByBookingDateAsync_System_String__examples">Examples</h5>
+  <p>GET: /Bookings/by-booking-date/{date}</p>
+
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/hso-ecruise/ecruise-backend/new/inline-documentation/apiSpec/new?filename=ecruise_Api_Controllers_BookingsController_GetByCustomerIdAsync_System_UInt64_.md&amp;value=---%0Auid%3A%20ecruise.Api.Controllers.BookingsController.GetByCustomerIdAsync(System.UInt64)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/hso-ecruise/ecruise-backend/blob/inline-documentation/source/ecruise.Api/Controllers/BookingsController.cs/#L211">View Source</a>
+  </span>
+  <a id="ecruise_Api_Controllers_BookingsController_GetByCustomerIdAsync_" data-uid="ecruise.Api.Controllers.BookingsController.GetByCustomerIdAsync*"></a>
+  <h4 id="ecruise_Api_Controllers_BookingsController_GetByCustomerIdAsync_System_UInt64_" data-uid="ecruise.Api.Controllers.BookingsController.GetByCustomerIdAsync(System.UInt64)">GetByCustomerIdAsync(UInt64)</h4>
+  <div class="markdown level1 summary"><p>Find all <span class="xref">ecruise.Models.Booking</span> that belongs to a associated <span class="xref">ecruise.Models.Customer</span> 
+identified by it&#39;s <span class="paramref">customerId</span>.
+An error response is set if there&#39;s no such related <span class="xref">ecruise.Models.Booking</span>.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public IActionResult GetByCustomerIdAsync(ulong customerId)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.UInt64</span></td>
+        <td><span class="parametername">customerId</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">IActionResult</span></td>
+        <td><p>HTTP 200 Ok: Returns the <span class="xref">ecruise.Models.Booking</span> associated with the requested <param name="customerId">.<br>
+HTTP 203 No Content: There is no <span class="xref">ecruise.Models.Booking</span> that the current customer can access associated with 
+                 the requested <span class="paramref">customerId</span>.<br>
+HTTP 400 Bad Request: The provided parameters are malformed.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="ecruise_Api_Controllers_BookingsController_GetByCustomerIdAsync_System_UInt64__examples">Examples</h5>
+  <p>GET: /bookings/by-customer/5</p>
+
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/hso-ecruise/ecruise-backend/new/inline-documentation/apiSpec/new?filename=ecruise_Api_Controllers_BookingsController_GetByPlannedDateAsync_System_String_.md&amp;value=---%0Auid%3A%20ecruise.Api.Controllers.BookingsController.GetByPlannedDateAsync(System.String)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/hso-ecruise/ecruise-backend/blob/inline-documentation/source/ecruise.Api/Controllers/BookingsController.cs/#L283">View Source</a>
+  </span>
+  <a id="ecruise_Api_Controllers_BookingsController_GetByPlannedDateAsync_" data-uid="ecruise.Api.Controllers.BookingsController.GetByPlannedDateAsync*"></a>
+  <h4 id="ecruise_Api_Controllers_BookingsController_GetByPlannedDateAsync_System_String_" data-uid="ecruise.Api.Controllers.BookingsController.GetByPlannedDateAsync(System.String)">GetByPlannedDateAsync(String)</h4>
+  <div class="markdown level1 summary"><p>Find all <span class="xref">ecruise.Models.Booking</span> that were/are planned at a certain <span class="paramref">date</span>.
+An error response is set if there&#39;s was <span class="xref">ecruise.Models.Booking</span> on that date.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public Task&lt;IActionResult&gt; GetByPlannedDateAsync(string date)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.String</span></td>
+        <td><span class="parametername">date</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">Task</span>&lt;<span class="xref">IActionResult</span>&gt;</td>
+        <td><p>HTTP 200 Ok: Returns the <span class="xref">ecruise.Models.Booking</span> planned at the requested <span class="paramref">date</span>.<br>
+HTTP 203 No Content: There is no <span class="xref">ecruise.Models.Booking</span> that was/is planned on that date.<br>
+HTTP 400 Bad Request: The provided parameters are malformed.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="ecruise_Api_Controllers_BookingsController_GetByPlannedDateAsync_System_String__examples">Examples</h5>
+  <p>GET: /Bookings/by-planned-date/{date}</p>
+
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/hso-ecruise/ecruise-backend/new/inline-documentation/apiSpec/new?filename=ecruise_Api_Controllers_BookingsController_GetByTripIdAsync_System_UInt64_.md&amp;value=---%0Auid%3A%20ecruise.Api.Controllers.BookingsController.GetByTripIdAsync(System.UInt64)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/hso-ecruise/ecruise-backend/blob/inline-documentation/source/ecruise.Api/Controllers/BookingsController.cs/#L175">View Source</a>
+  </span>
+  <a id="ecruise_Api_Controllers_BookingsController_GetByTripIdAsync_" data-uid="ecruise.Api.Controllers.BookingsController.GetByTripIdAsync*"></a>
+  <h4 id="ecruise_Api_Controllers_BookingsController_GetByTripIdAsync_System_UInt64_" data-uid="ecruise.Api.Controllers.BookingsController.GetByTripIdAsync(System.UInt64)">GetByTripIdAsync(UInt64)</h4>
+  <div class="markdown level1 summary"><p>Find all <span class="xref">ecruise.Models.Booking</span> that belongs to a associated <span class="xref">ecruise.Models.Trip</span> 
+identified by it&#39;s <span class="paramref">tripId</span>.
+An error response is set if there&#39;s no such related <span class="xref">ecruise.Models.Booking</span>.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public Task&lt;IActionResult&gt; GetByTripIdAsync(ulong tripId)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">System.UInt64</span></td>
+        <td><span class="parametername">tripId</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">Task</span>&lt;<span class="xref">IActionResult</span>&gt;</td>
+        <td><p>HTTP 200 Ok: Returns the <span class="xref">ecruise.Models.Booking</span> associated with the requested <param name="tripId">.<br>
+HTTP 203 No Content: There is no <span class="xref">ecruise.Models.Booking</span> that the current customer can access
+                 associated with the requested <span class="paramref">tripId</span>.<br>
+HTTP 400 Bad Request: The provided parameters are malformed.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="ecruise_Api_Controllers_BookingsController_GetByTripIdAsync_System_UInt64__examples">Examples</h5>
+  <p>GET: /bookings/by-trip/5</p>
+
+  <span class="small pull-right mobile-hide">
+    <span class="divider">|</span>
+    <a href="https://github.com/hso-ecruise/ecruise-backend/new/inline-documentation/apiSpec/new?filename=ecruise_Api_Controllers_BookingsController_PostAsync_ecruise_Models_Booking_.md&amp;value=---%0Auid%3A%20ecruise.Api.Controllers.BookingsController.PostAsync(ecruise.Models.Booking)%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A">Improve this Doc</a>
+  </span>
+  <span class="small pull-right mobile-hide">
+    <a href="https://github.com/hso-ecruise/ecruise-backend/blob/inline-documentation/source/ecruise.Api/Controllers/BookingsController.cs/#L108">View Source</a>
+  </span>
+  <a id="ecruise_Api_Controllers_BookingsController_PostAsync_" data-uid="ecruise.Api.Controllers.BookingsController.PostAsync*"></a>
+  <h4 id="ecruise_Api_Controllers_BookingsController_PostAsync_ecruise_Models_Booking_" data-uid="ecruise.Api.Controllers.BookingsController.PostAsync(ecruise.Models.Booking)">PostAsync(Booking)</h4>
+  <div class="markdown level1 summary"><p>Try to create a new <span class="xref">ecruise.Models.Booking</span> with the data provided by <span class="paramref">booking</span>.</p>
+</div>
+  <div class="markdown level1 conceptual"></div>
+  <h5 class="decalaration">Declaration</h5>
+  <div class="codewrapper">
+    <pre><code class="lang-csharp hljs">public Task&lt;IActionResult&gt; PostAsync(Booking booking)</code></pre>
+  </div>
+  <h5 class="parameters">Parameters</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Name</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">ecruise.Models.Booking</span></td>
+        <td><span class="parametername">booking</span></td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 class="returns">Returns</h5>
+  <table class="table table-bordered table-striped table-condensed">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="xref">Task</span>&lt;<span class="xref">IActionResult</span>&gt;</td>
+        <td><p>HTTP 201 Created: Returns a <span class="xref">ecruise.Models.PostReference</span> to the created object on success.<br>
+HTTP 400 Bad Request: The provided parameters are malformed.<br>
+HTTP 401 Unauthorized: The authenticated customer has no access to create the provided <span class="xref">ecruise.Models.Booking</span>.<br>
+HTTP 404 Not Found: There is no customer with CustomerId provided in <span class="paramref">booking</span>.</p>
+</td>
+      </tr>
+    </tbody>
+  </table>
+  <h5 id="ecruise_Api_Controllers_BookingsController_PostAsync_ecruise_Models_Booking__examples">Examples</h5>
+  <p>POST /bookings</p>
+
+</article>
+          </div>
+          
+          <div class="hidden-sm col-md-2" role="complementary">
+            <div class="sideaffix">
+              <div class="contribution">
+                <ul class="nav">
+                  <li>
+                    <a href="https://github.com/hso-ecruise/ecruise-backend/new/inline-documentation/apiSpec/new?filename=ecruise_Api_Controllers_BookingsController.md&amp;value=---%0Auid%3A%20ecruise.Api.Controllers.BookingsController%0Asummary%3A%20'*You%20can%20override%20summary%20for%20the%20API%20here%20using%20*MARKDOWN*%20syntax'%0A---%0A%0A*Please%20type%20below%20more%20information%20about%20this%20API%3A*%0A%0A" class="contribution-link">Improve this Doc</a>
+                  </li>
+                  <li>
+                    <a href="https://github.com/hso-ecruise/ecruise-backend/blob/inline-documentation/source/ecruise.Api/Controllers/BookingsController.cs/#L20" class="contribution-link">View Source</a>
+                  </li>
+                </ul>
+              </div>
+              <nav class="bs-docs-sidebar hidden-print hidden-xs hidden-sm affix" id="affix">
+              <!-- <p><a class="back-to-top" href="#top">Back to top</a><p> -->
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <footer>
+        <div class="grad-bottom"></div>
+        <div class="footer">
+          <div class="container">
+            <span class="pull-right">
+              <a href="#top">Back to top</a>
+            </span>
+            
+            <span>Copyright © 2015-2017 Microsoft<br>Generated by <strong>DocFX</strong></span>
+          </div>
+        </div>
+      </footer>
+    </div>
+    
+    <script type="text/javascript" src="../styles/docfx.vendor.js"></script>
+    <script type="text/javascript" src="../styles/docfx.js"></script>
+    <script type="text/javascript" src="../styles/main.js"></script>
+  </body>
+</html>
