@@ -20,7 +20,7 @@ namespace ecruise.Api.Controllers
     public class PublicController : BaseController
     {
         private readonly IRazorLightEngine _razorEngine;
-        
+
         public PublicController(EcruiseContext context, IRazorLightEngine razorEngine) : base(context)
         {
             _razorEngine = razorEngine;
@@ -166,13 +166,12 @@ namespace ecruise.Api.Controllers
             string activationToken = BitConverter.ToString(randBytes).ToLowerInvariant().Replace("-", "");
             crypt.Dispose();
 
-            await Context.CustomerTokens.AddAsync(
-                CustomerTokenAssembler.AssembleEntity(0,
-                    new CustomerToken(0, (uint)insert.Entity.CustomerId, CustomerToken.TokenTypeEnum.EmailActivation,
-                        activationToken, DateTime.UtcNow, null)
-                )
-            );
-            
+            var newCustomer = CustomerTokenAssembler.AssembleEntity(0,
+                new CustomerToken(0, (uint)insert.Entity.CustomerId, CustomerToken.TokenTypeEnum.EmailActivation,
+                    activationToken, DateTime.UtcNow, null));
+
+            await Context.CustomerTokens.AddAsync(newCustomer);
+
             var save = Context.SaveChangesAsync();
 
             await CustomerAssembler.AssembleModel(insert.Entity).SendMail("Deine Registrierung bei eCruise",
@@ -190,7 +189,8 @@ namespace ecruise.Api.Controllers
             DbInvoice newInvoice = new DbInvoice
             {
                 Paid = false,
-                TotalAmount = 0.0
+                TotalAmount = 0.0,
+                CustomerId = newCustomer.CustomerId
             };
 
             // Change the new invoice to the database
