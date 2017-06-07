@@ -27,8 +27,6 @@
       },
       {
         "files": [
-          "articles/**.md",
-          "articles/**/toc.yml",
           "toc.yml",
           "*.md"
         ],
@@ -63,7 +61,6 @@
     "externalReference": [
       {
         "files": [
-          "swagger-api.json"
         ]
       }
     ],
