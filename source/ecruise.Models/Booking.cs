@@ -9,7 +9,7 @@ namespace ecruise.Models
         : IEquatable<Booking>
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="Booking" /> class.
+        ///     Initializes a new instance of the <see cref="Booking" /> class.
         /// </summary>
         /// <param name="bookingId">BookingId (required)</param>
         /// <param name="customerId">CustomerId (required)</param>
@@ -19,7 +19,8 @@ namespace ecruise.Models
         /// <param name="bookingPositionLongitude">BookingPositionLongitude (required)</param>
         /// <param name="bookingDate">BookingDate (required)</param>
         /// <param name="plannedDate">PlannedDate</param>
-        public Booking(uint bookingId, uint customerId, uint? tripId, uint? invoiceItemId, double bookingPositionLatitude,
+        public Booking(uint bookingId, uint customerId, uint? tripId, uint? invoiceItemId,
+            double bookingPositionLatitude,
             double bookingPositionLongitude, DateTime bookingDate, DateTime? plannedDate)
         {
             BookingId = bookingId;
@@ -32,10 +33,12 @@ namespace ecruise.Models
             PlannedDate = plannedDate;
         }
 
-        [Required, Range(0, uint.MaxValue)]
+        [Required]
+        [Range(0, uint.MaxValue)]
         public uint BookingId { get; }
 
-        [Required, Range(1, uint.MaxValue)]
+        [Required]
+        [Range(1, uint.MaxValue)]
         public uint CustomerId { get; }
 
         [Range(1, uint.MaxValue)]
@@ -50,11 +53,39 @@ namespace ecruise.Models
         [Required]
         public double BookingPositionLongitude { get; }
 
-        [Required, DataType(DataType.DateTime)]
+        [Required]
+        [DataType(DataType.DateTime)]
         public DateTime BookingDate { get; }
 
         [DataType(DataType.DateTime)]
         public DateTime? PlannedDate { get; }
+
+        /// <summary>
+        ///     Returns true if Booking instances are equal
+        /// </summary>
+        /// <param name="other">Instance of Booking to be compared</param>
+        /// <returns>Boolean</returns>
+        public bool Equals(Booking other)
+        {
+            if (ReferenceEquals(null, other)) return false;
+            if (ReferenceEquals(this, other)) return true;
+
+            return
+                (BookingId == other.BookingId || BookingId.Equals(other.BookingId)) &&
+                (CustomerId == other.CustomerId || CustomerId.Equals(other.CustomerId)) &&
+                (TripId == other.TripId || TripId.HasValue && TripId.Equals(other.TripId)) &&
+                (InvoiceItemId == other.InvoiceItemId || InvoiceItemId.Equals(other.InvoiceItemId)) &&
+                (
+                    Math.Abs(BookingPositionLatitude - other.BookingPositionLatitude) < 0.00001 ||
+                    BookingPositionLatitude.Equals(other.BookingPositionLatitude)
+                ) &&
+                (
+                    Math.Abs(BookingPositionLongitude - other.BookingPositionLongitude) < 0.00001 ||
+                    BookingPositionLongitude.Equals(other.BookingPositionLongitude)
+                ) &&
+                (BookingDate == other.BookingDate || BookingDate.Equals(other.BookingDate)) &&
+                (PlannedDate == other.PlannedDate || PlannedDate.HasValue && PlannedDate.Equals(other.PlannedDate));
+        }
 
         public override string ToString()
         {
@@ -73,7 +104,7 @@ namespace ecruise.Models
         }
 
         /// <summary>
-        /// Returns the JSON string presentation of the object
+        ///     Returns the JSON string presentation of the object
         /// </summary>
         /// <returns>JSON string presentation of the object</returns>
         public string ToJson()
@@ -82,7 +113,7 @@ namespace ecruise.Models
         }
 
         /// <summary>
-        /// Returns true if objects are equal
+        ///     Returns true if objects are equal
         /// </summary>
         /// <param name="obj">Object to be compared</param>
         /// <returns>Boolean</returns>
@@ -95,34 +126,7 @@ namespace ecruise.Models
         }
 
         /// <summary>
-        /// Returns true if Booking instances are equal
-        /// </summary>
-        /// <param name="other">Instance of Booking to be compared</param>
-        /// <returns>Boolean</returns>
-        public bool Equals(Booking other)
-        {
-            if (ReferenceEquals(null, other)) return false;
-            if (ReferenceEquals(this, other)) return true;
-
-            return
-                (BookingId == other.BookingId || BookingId.Equals(other.BookingId)) &&
-                (CustomerId == other.CustomerId || CustomerId.Equals(other.CustomerId)) &&
-                (TripId == other.TripId || (TripId.HasValue && TripId.Equals(other.TripId))) &&
-                (InvoiceItemId == other.InvoiceItemId || InvoiceItemId.Equals(other.InvoiceItemId)) &&
-                (
-                    Math.Abs(BookingPositionLatitude - other.BookingPositionLatitude) < 0.00001 ||
-                    BookingPositionLatitude.Equals(other.BookingPositionLatitude)
-                ) &&
-                (
-                    Math.Abs(BookingPositionLongitude - other.BookingPositionLongitude) < 0.00001 ||
-                    BookingPositionLongitude.Equals(other.BookingPositionLongitude)
-                ) &&
-                (BookingDate == other.BookingDate || BookingDate.Equals(other.BookingDate)) &&
-                (PlannedDate == other.PlannedDate || (PlannedDate.HasValue && PlannedDate.Equals(other.PlannedDate)));
-        }
-
-        /// <summary>
-        /// Gets the hash code
+        ///     Gets the hash code
         /// </summary>
         /// <returns>Hash code</returns>
         public override int GetHashCode()

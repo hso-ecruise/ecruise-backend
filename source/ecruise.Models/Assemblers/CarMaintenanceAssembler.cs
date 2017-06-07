@@ -1,7 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-
-using CarMaintenance = ecruise.Models.CarMaintenance;
 using DbCarMaintenance = ecruise.Database.Models.CarMaintenance;
 
 namespace ecruise.Models.Assemblers
@@ -43,8 +41,7 @@ namespace ecruise.Models.Assemblers
             if (setIdsNull)
                 return models.Select(e => AssembleEntity(0, e)).ToList();
 
-            else
-                return models.Select(e => AssembleEntity(e.CarMaintenanceId, e)).ToList();
+            return models.Select(e => AssembleEntity(e.CarMaintenanceId, e)).ToList();
         }
     }
 }

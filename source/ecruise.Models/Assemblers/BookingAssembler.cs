@@ -1,7 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-
-using Booking = ecruise.Models.Booking;
 using DbBooking = ecruise.Database.Models.Booking;
 
 namespace ecruise.Models.Assemblers
@@ -47,11 +45,10 @@ namespace ecruise.Models.Assemblers
 
         public static List<DbBooking> AssembleEntityList(bool setIdsNull, IList<Booking> models)
         {
-            if(setIdsNull)
+            if (setIdsNull)
                 return models.Select(e => AssembleEntity(0, e)).ToList();
 
-            else
-                return models.Select(e => AssembleEntity(e.BookingId, e)).ToList();
+            return models.Select(e => AssembleEntity(e.BookingId, e)).ToList();
         }
     }
 }

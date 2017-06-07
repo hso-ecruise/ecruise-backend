@@ -1,18 +1,19 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-
-using CarChargingStation = ecruise.Models.CarChargingStation;
 using DbCarChargingStation = ecruise.Database.Models.CarChargingStation;
 
 namespace ecruise.Models.Assemblers
 {
     public static class CarChargingStationAssembler
     {
-        public static DbCarChargingStation AssembleEntity(ulong carChargingStationId, CarChargingStation carChargingStationModel)
+        public static DbCarChargingStation AssembleEntity(ulong carChargingStationId,
+            CarChargingStation carChargingStationModel)
         {
             return new DbCarChargingStation
             {
-                CarChargingStationId = carChargingStationId != 0 ? carChargingStationId : carChargingStationModel.CarChargingStationId,
+                CarChargingStationId = carChargingStationId != 0
+                    ? carChargingStationId
+                    : carChargingStationModel.CarChargingStationId,
                 CarId = carChargingStationModel.CarId,
                 ChargeEnd = carChargingStationModel.ChargeEnd,
                 ChargeStart = carChargingStationModel.ChargeStart,
@@ -41,9 +42,7 @@ namespace ecruise.Models.Assemblers
             if (setIdsNull)
                 return models.Select(e => AssembleEntity(0, e)).ToList();
 
-            else
-                return models.Select(e => AssembleEntity(e.CarChargingStationId, e)).ToList();
+            return models.Select(e => AssembleEntity(e.CarChargingStationId, e)).ToList();
         }
     }
 }
-

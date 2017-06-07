@@ -9,7 +9,7 @@ namespace ecruise.Models
         : IEquatable<Trip>
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="Trip" /> class.
+        ///     Initializes a new instance of the <see cref="Trip" /> class.
         /// </summary>
         /// <param name="tripId">TripId (required)</param>
         /// <param name="carId">See #/definitions/Car</param>
@@ -33,101 +33,64 @@ namespace ecruise.Models
         }
 
         /// <summary>
-        /// Gets TripId
+        ///     Gets TripId
         /// </summary>
-        [Required, Range(0, uint.MaxValue)]
+        [Required]
+        [Range(0, uint.MaxValue)]
         public uint TripId { get; }
 
         /// <summary>
-        /// See #/definitions/Car
+        ///     See #/definitions/Car
         /// </summary>
         /// <value>See '#/definitions/Car'</value>
-        [Required, Range(1, uint.MaxValue)]
+        [Required]
+        [Range(1, uint.MaxValue)]
         public uint CarId { get; }
 
         /// <summary>
-        /// See '#/definitions/Customer'
+        ///     See '#/definitions/Customer'
         /// </summary>
         /// <value>See '#/definitions/Customer'</value>
-        [Required, Range(1, uint.MaxValue)]
+        [Required]
+        [Range(1, uint.MaxValue)]
         public uint CustomerId { get; }
 
         /// <summary>
-        /// Date and time when the trip started
+        ///     Date and time when the trip started
         /// </summary>
         /// <value>Date and time when the trip started</value>
-        [Required, DataType(DataType.DateTime)]
+        [Required]
+        [DataType(DataType.DateTime)]
         public DateTime StartDate { get; }
 
         /// <summary>
-        /// Date and time when the trip ended
+        ///     Date and time when the trip ended
         /// </summary>
         /// <value>Date and time when the trip ended</value>
         [DataType(DataType.DateTime)]
         public DateTime? EndDate { get; set; }
 
         /// <summary>
-        /// Gets StartPositionLatitude
+        ///     Gets StartPositionLatitude
         /// </summary>
-        [Required, Range(1, uint.MaxValue)]
+        [Required]
+        [Range(1, uint.MaxValue)]
         public uint StartChargingStationId { get; }
 
         /// <summary>
-        /// Gets StartPositionLongitude
+        ///     Gets StartPositionLongitude
         /// </summary>
         [Range(1, uint.MaxValue)]
         public uint? EndChargingStationId { get; set; }
 
         /// <summary>
-        /// Gets DistanceTravelled
+        ///     Gets DistanceTravelled
         /// </summary>
         [Range(0, double.MaxValue)]
         public double? DistanceTravelled { get; set; }
 
         /// <summary>
-        /// Returns the string presentation of the object
-        /// </summary>
-        /// <returns>String presentation of the object</returns>
-        public override string ToString()
-        {
-            var sb = new StringBuilder();
-            sb.Append("class Trip {\n");
-            sb.Append("  TripId: ").Append(TripId).Append("\n");
-            sb.Append("  CarId: ").Append(CarId).Append("\n");
-            sb.Append("  CustomerId: ").Append(CustomerId).Append("\n");
-            sb.Append("  StartDate: ").Append(StartDate).Append("\n");
-            sb.Append("  EndDate: ").Append(EndDate).Append("\n");
-            sb.Append("  StartChargingStationId: ").Append(StartChargingStationId).Append("\n");
-            sb.Append("  EndChargingStationId: ").Append(EndChargingStationId).Append("\n");
-            sb.Append("  DistanceTravelled: ").Append(DistanceTravelled).Append("\n");
-            sb.Append("}\n");
-            return sb.ToString();
-        }
-
-        /// <summary>
-        /// Returns the JSON string presentation of the object
-        /// </summary>
-        /// <returns>JSON string presentation of the object</returns>
-        public string ToJson()
-        {
-            return JsonConvert.SerializeObject(this, Formatting.Indented);
-        }
-
-        /// <summary>
-        /// Returns true if objects are equal
-        /// </summary>
-        /// <param name="obj">Object to be compared</param>
-        /// <returns>Boolean</returns>
-        public override bool Equals(object obj)
-        {
-            if (ReferenceEquals(null, obj)) return false;
-            if (ReferenceEquals(this, obj)) return true;
-            if (obj.GetType() != GetType()) return false;
-            return Equals((Trip)obj);
-        }
-
-        /// <summary>
-        /// Returns true if Trip instances are equal
+        ///     Returns true if Trip instances are equal
         /// </summary>
         /// <param name="other">Instance of Trip to be compared</param>
         /// <returns>Boolean</returns>
@@ -148,14 +111,56 @@ namespace ecruise.Models
                 (EndChargingStationId == other.EndChargingStationId ||
                  EndChargingStationId.Equals(other.EndChargingStationId)
                 ) &&
-                ((DistanceTravelled.HasValue && other.DistanceTravelled.HasValue) &&
-                 (Math.Abs(DistanceTravelled.Value - other.DistanceTravelled.Value) < 0.001) ||
+                (DistanceTravelled.HasValue && other.DistanceTravelled.HasValue &&
+                 Math.Abs(DistanceTravelled.Value - other.DistanceTravelled.Value) < 0.001 ||
                  DistanceTravelled.Equals(other.DistanceTravelled)
                 );
         }
 
         /// <summary>
-        /// Gets the hash code
+        ///     Returns the string presentation of the object
+        /// </summary>
+        /// <returns>String presentation of the object</returns>
+        public override string ToString()
+        {
+            var sb = new StringBuilder();
+            sb.Append("class Trip {\n");
+            sb.Append("  TripId: ").Append(TripId).Append("\n");
+            sb.Append("  CarId: ").Append(CarId).Append("\n");
+            sb.Append("  CustomerId: ").Append(CustomerId).Append("\n");
+            sb.Append("  StartDate: ").Append(StartDate).Append("\n");
+            sb.Append("  EndDate: ").Append(EndDate).Append("\n");
+            sb.Append("  StartChargingStationId: ").Append(StartChargingStationId).Append("\n");
+            sb.Append("  EndChargingStationId: ").Append(EndChargingStationId).Append("\n");
+            sb.Append("  DistanceTravelled: ").Append(DistanceTravelled).Append("\n");
+            sb.Append("}\n");
+            return sb.ToString();
+        }
+
+        /// <summary>
+        ///     Returns the JSON string presentation of the object
+        /// </summary>
+        /// <returns>JSON string presentation of the object</returns>
+        public string ToJson()
+        {
+            return JsonConvert.SerializeObject(this, Formatting.Indented);
+        }
+
+        /// <summary>
+        ///     Returns true if objects are equal
+        /// </summary>
+        /// <param name="obj">Object to be compared</param>
+        /// <returns>Boolean</returns>
+        public override bool Equals(object obj)
+        {
+            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            if (obj.GetType() != GetType()) return false;
+            return Equals((Trip)obj);
+        }
+
+        /// <summary>
+        ///     Gets the hash code
         /// </summary>
         /// <returns>Hash code</returns>
         public override int GetHashCode()
@@ -201,55 +206,21 @@ namespace ecruise.Models
         }
 
         /// <summary>
-        /// Gets StartPositionLongitude
+        ///     Gets StartPositionLongitude
         /// </summary>
-        [Required, Range(1, uint.MaxValue)]
+        [Required]
+        [Range(1, uint.MaxValue)]
         public uint EndChargingStationId { get; }
 
         /// <summary>
-        /// Gets DistanceTravelled
+        ///     Gets DistanceTravelled
         /// </summary>
-        [Required, Range(0, double.MaxValue)]
+        [Required]
+        [Range(0, double.MaxValue)]
         public double DistanceTravelled { get; }
 
         /// <summary>
-        /// Returns the string presentation of the object
-        /// </summary>
-        /// <returns>String presentation of the object</returns>
-        public override string ToString()
-        {
-            var sb = new StringBuilder();
-            sb.Append("class TripUpdate {\n");
-            sb.Append("  EndChargingStationId: ").Append(EndChargingStationId).Append("\n");
-            sb.Append("  DistanceTravelled: ").Append(DistanceTravelled).Append("\n");
-            sb.Append("}\n");
-            return sb.ToString();
-        }
-
-        /// <summary>
-        /// Returns the JSON string presentation of the object
-        /// </summary>
-        /// <returns>JSON string presentation of the object</returns>
-        public string ToJson()
-        {
-            return JsonConvert.SerializeObject(this, Formatting.Indented);
-        }
-
-        /// <summary>
-        /// Returns true if objects are equal
-        /// </summary>
-        /// <param name="obj">Object to be compared</param>
-        /// <returns>Boolean</returns>
-        public override bool Equals(object obj)
-        {
-            if (ReferenceEquals(null, obj)) return false;
-            if (ReferenceEquals(this, obj)) return true;
-            if (obj.GetType() != GetType()) return false;
-            return Equals((Trip)obj);
-        }
-
-        /// <summary>
-        /// Returns true if Trip instances are equal
+        ///     Returns true if Trip instances are equal
         /// </summary>
         /// <param name="other">Instance of Trip to be compared</param>
         /// <returns>Boolean</returns>
@@ -270,7 +241,43 @@ namespace ecruise.Models
         }
 
         /// <summary>
-        /// Gets the hash code
+        ///     Returns the string presentation of the object
+        /// </summary>
+        /// <returns>String presentation of the object</returns>
+        public override string ToString()
+        {
+            var sb = new StringBuilder();
+            sb.Append("class TripUpdate {\n");
+            sb.Append("  EndChargingStationId: ").Append(EndChargingStationId).Append("\n");
+            sb.Append("  DistanceTravelled: ").Append(DistanceTravelled).Append("\n");
+            sb.Append("}\n");
+            return sb.ToString();
+        }
+
+        /// <summary>
+        ///     Returns the JSON string presentation of the object
+        /// </summary>
+        /// <returns>JSON string presentation of the object</returns>
+        public string ToJson()
+        {
+            return JsonConvert.SerializeObject(this, Formatting.Indented);
+        }
+
+        /// <summary>
+        ///     Returns true if objects are equal
+        /// </summary>
+        /// <param name="obj">Object to be compared</param>
+        /// <returns>Boolean</returns>
+        public override bool Equals(object obj)
+        {
+            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            if (obj.GetType() != GetType()) return false;
+            return Equals((Trip)obj);
+        }
+
+        /// <summary>
+        ///     Gets the hash code
         /// </summary>
         /// <returns>Hash code</returns>
         public override int GetHashCode()

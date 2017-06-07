@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using Maintenance = ecruise.Models.Maintenance;
 using DbMaintenance = ecruise.Database.Models.Maintenance;
 
 namespace ecruise.Models.Assemblers
@@ -26,6 +25,7 @@ namespace ecruise.Models.Assemblers
                 maintenanceEntity.AtMileage,
                 maintenanceEntity.AtDate);
         }
+
         public static List<Maintenance> AssembleModelList(IList<DbMaintenance> entities)
         {
             return entities.Select(AssembleModel).ToList();
@@ -36,8 +36,7 @@ namespace ecruise.Models.Assemblers
             if (setIdsNull)
                 return models.Select(e => AssembleEntity(0, e)).ToList();
 
-            else
-                return models.Select(e => AssembleEntity(e.MaintenanceId, e)).ToList();
+            return models.Select(e => AssembleEntity(e.MaintenanceId, e)).ToList();
         }
     }
 }

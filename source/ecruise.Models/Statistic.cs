@@ -8,7 +8,7 @@ namespace ecruise.Models
     public class Statistic
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="Statistic" /> class.
+        ///     Initializes a new instance of the <see cref="Statistic" /> class.
         /// </summary>
         /// <param name="date">The date of the statistic</param>
         /// <param name="bookings">The number of bookings for the day</param>
@@ -25,37 +25,41 @@ namespace ecruise.Models
         }
 
         /// <summary>
-        /// Gets Date
+        ///     Gets Date
         /// </summary>
         [DataType(DataType.DateTime)]
         public DateTime Date { get; }
 
         /// <summary>
-        /// Gets Bookings
+        ///     Gets Bookings
         /// </summary>
-        [Required, Range(0, uint.MaxValue)]
+        [Required]
+        [Range(0, uint.MaxValue)]
         public uint Bookings { get; }
 
         /// <summary>
-        /// Gets AverageChargeLevel
+        ///     Gets AverageChargeLevel
         /// </summary>
-        [Required, Range(0.0, 100.0)]
-        public double AverageChargeLevel { get;}
+        [Required]
+        [Range(0.0, 100.0)]
+        public double AverageChargeLevel { get; }
 
         /// <summary>
-        /// Gets CarsInUse
+        ///     Gets CarsInUse
         /// </summary>
-        [Required, Range(0, uint.MaxValue)]
+        [Required]
+        [Range(0, uint.MaxValue)]
         public uint CarsInUse { get; }
 
         /// <summary>
-        /// Gets CarsCharging
+        ///     Gets CarsCharging
         /// </summary>
-        [Required, Range(0, uint.MaxValue)]
+        [Required]
+        [Range(0, uint.MaxValue)]
         public uint CarsCharging { get; }
 
         /// <summary>
-        /// Returns the string presentation of the object
+        ///     Returns the string presentation of the object
         /// </summary>
         /// <returns>String presentation of the object</returns>
         public override string ToString()
@@ -72,7 +76,7 @@ namespace ecruise.Models
         }
 
         /// <summary>
-        /// Returns the JSON string presentation of the object
+        ///     Returns the JSON string presentation of the object
         /// </summary>
         /// <returns>JSON string presentation of the object</returns>
         public string ToJson()
@@ -81,7 +85,7 @@ namespace ecruise.Models
         }
 
         /// <summary>
-        /// Returns true if objects are equal
+        ///     Returns true if objects are equal
         /// </summary>
         /// <param name="obj">Object to be compared</param>
         /// <returns>Boolean</returns>
@@ -94,7 +98,7 @@ namespace ecruise.Models
         }
 
         /// <summary>
-        /// Returns true if Statistic instances are equal
+        ///     Returns true if Statistic instances are equal
         /// </summary>
         /// <param name="other">Instance of Statistic to be compared</param>
         /// <returns>Boolean</returns>
@@ -106,14 +110,14 @@ namespace ecruise.Models
             return
                 (Date == other.Date || Date.Equals(other.Date)) &&
                 (Bookings == other.Bookings || Bookings.Equals(other.Bookings)) &&
-                ((Math.Abs(AverageChargeLevel - other.AverageChargeLevel) < 0.001) ||
-                AverageChargeLevel.Equals(other.AverageChargeLevel)) &&
+                (Math.Abs(AverageChargeLevel - other.AverageChargeLevel) < 0.001 ||
+                 AverageChargeLevel.Equals(other.AverageChargeLevel)) &&
                 (CarsInUse == other.CarsInUse || CarsInUse.Equals(other.CarsInUse)) &&
                 (CarsCharging == other.CarsCharging || CarsCharging.Equals(other.CarsCharging));
         }
 
         /// <summary>
-        /// Gets the hash code
+        ///     Gets the hash code
         /// </summary>
         /// <returns>Hash code</returns>
         public override int GetHashCode()

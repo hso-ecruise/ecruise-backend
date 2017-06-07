@@ -9,7 +9,7 @@ namespace ecruise.Models
         : IEquatable<CarMaintenance>
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="CarMaintenance" /> class.
+        ///     Initializes a new instance of the <see cref="CarMaintenance" /> class.
         /// </summary>
         /// <param name="carMaintenanceId">CarMaintenanceId (required)</param>
         /// <param name="carId">See #/definitions/Car  (required)</param>
@@ -29,86 +29,49 @@ namespace ecruise.Models
         }
 
         /// <summary>
-        /// Gets or Sets CarMaintenanceId
+        ///     Gets or Sets CarMaintenanceId
         /// </summary>
-        [Required, Range(0, uint.MaxValue)]
+        [Required]
+        [Range(0, uint.MaxValue)]
         public uint CarMaintenanceId { get; }
 
         /// <summary>
-        /// See #/definitions/Car
+        ///     See #/definitions/Car
         /// </summary>
         /// <value>See #/definitions/Car</value>
-        [Required, Range(1, uint.MaxValue)]
+        [Required]
+        [Range(1, uint.MaxValue)]
         public uint CarId { get; }
 
         /// <summary>
-        /// See #/definitions/Maintenance
+        ///     See #/definitions/Maintenance
         /// </summary>
         /// <value>See #/definitions/Maintenance</value>
-        [Required, Range(1, uint.MaxValue)]
+        [Required]
+        [Range(1, uint.MaxValue)]
         public uint MaintenanceId { get; }
 
         /// <summary>
-        /// See #/definitions/InvoiceItem
+        ///     See #/definitions/InvoiceItem
         /// </summary>
         /// <value>See #/definitions/InvoiceItem</value>
         [Range(1, uint.MaxValue)]
         public uint? InvoiceItemId { get; set; }
 
         /// <summary>
-        /// Gets or Sets PlannedDate
+        ///     Gets or Sets PlannedDate
         /// </summary>
         [DataType(DataType.DateTime)]
         public DateTime? PlannedDate { get; }
 
         /// <summary>
-        /// Gets or Sets CompletedDate
+        ///     Gets or Sets CompletedDate
         /// </summary>
         [DataType(DataType.DateTime)]
         public DateTime? CompletedDate { get; set; }
 
         /// <summary>
-        /// Returns the string presentation of the object
-        /// </summary>
-        /// <returns>String presentation of the object</returns>
-        public override string ToString()
-        {
-            var sb = new StringBuilder();
-            sb.Append("class CarMaintenance {\n");
-            sb.Append("  CarMaintenanceId: ").Append(CarMaintenanceId).Append("\n");
-            sb.Append("  CarId: ").Append(CarId).Append("\n");
-            sb.Append("  MaintenanceId: ").Append(MaintenanceId).Append("\n");
-            sb.Append("  InvoiceItemId: ").Append(InvoiceItemId).Append("\n");
-            sb.Append("  PlannedDate: ").Append(PlannedDate).Append("\n");
-            sb.Append("  CompletedDate: ").Append(CompletedDate).Append("\n");
-            sb.Append("}\n");
-            return sb.ToString();
-        }
-
-        /// <summary>
-        /// Returns the JSON string presentation of the object
-        /// </summary>
-        /// <returns>JSON string presentation of the object</returns>
-        public string ToJson()
-        {
-            return JsonConvert.SerializeObject(this, Formatting.Indented);
-        }
-
-        /// <summary>
-        /// Returns true if objects are equal
-        /// </summary>
-        /// <param name="obj">Object to be compared</param>
-        /// <returns>Boolean</returns>
-        public override bool Equals(object obj)
-        {
-            if (ReferenceEquals(null, obj)) return false;
-            if (ReferenceEquals(this, obj)) return true;
-            if (obj.GetType() != GetType()) return false;
-            return Equals((CarMaintenance)obj);
-        }
-
-        /// <summary>
-        /// Returns true if CarMaintenance instances are equal
+        ///     Returns true if CarMaintenance instances are equal
         /// </summary>
         /// <param name="other">Instance of CarMaintenance to be compared</param>
         /// <returns>Boolean</returns>
@@ -130,7 +93,47 @@ namespace ecruise.Models
         }
 
         /// <summary>
-        /// Gets the hash code
+        ///     Returns the string presentation of the object
+        /// </summary>
+        /// <returns>String presentation of the object</returns>
+        public override string ToString()
+        {
+            var sb = new StringBuilder();
+            sb.Append("class CarMaintenance {\n");
+            sb.Append("  CarMaintenanceId: ").Append(CarMaintenanceId).Append("\n");
+            sb.Append("  CarId: ").Append(CarId).Append("\n");
+            sb.Append("  MaintenanceId: ").Append(MaintenanceId).Append("\n");
+            sb.Append("  InvoiceItemId: ").Append(InvoiceItemId).Append("\n");
+            sb.Append("  PlannedDate: ").Append(PlannedDate).Append("\n");
+            sb.Append("  CompletedDate: ").Append(CompletedDate).Append("\n");
+            sb.Append("}\n");
+            return sb.ToString();
+        }
+
+        /// <summary>
+        ///     Returns the JSON string presentation of the object
+        /// </summary>
+        /// <returns>JSON string presentation of the object</returns>
+        public string ToJson()
+        {
+            return JsonConvert.SerializeObject(this, Formatting.Indented);
+        }
+
+        /// <summary>
+        ///     Returns true if objects are equal
+        /// </summary>
+        /// <param name="obj">Object to be compared</param>
+        /// <returns>Boolean</returns>
+        public override bool Equals(object obj)
+        {
+            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            if (obj.GetType() != GetType()) return false;
+            return Equals((CarMaintenance)obj);
+        }
+
+        /// <summary>
+        ///     Gets the hash code
         /// </summary>
         /// <returns>Hash code</returns>
         public override int GetHashCode()
@@ -176,55 +179,20 @@ namespace ecruise.Models
         }
 
         /// <summary>
-        /// Gets InvoiceItemId
+        ///     Gets InvoiceItemId
         /// </summary>
-        [Required, Range(1, uint.MaxValue)]
+        [Required]
+        [Range(1, uint.MaxValue)]
         public uint InvoiceItemId { get; }
 
         /// <summary>
-        /// Gets CompletedDate
+        ///     Gets CompletedDate
         /// </summary>
         [DataType(DataType.DateTime)]
         public DateTime CompletedDate { get; }
 
         /// <summary>
-        /// Returns the string presentation of the object
-        /// </summary>
-        /// <returns>String presentation of the object</returns>
-        public override string ToString()
-        {
-            var sb = new StringBuilder();
-            sb.Append("class CarMaintenanceUpdate {\n");
-            sb.Append("  InvoiceItemId: ").Append(InvoiceItemId).Append("\n");
-            sb.Append("  CompletedDate: ").Append(CompletedDate).Append("\n");
-            sb.Append("}\n");
-            return sb.ToString();
-        }
-
-        /// <summary>
-        /// Returns the JSON string presentation of the object
-        /// </summary>
-        /// <returns>JSON string presentation of the object</returns>
-        public string ToJson()
-        {
-            return JsonConvert.SerializeObject(this, Formatting.Indented);
-        }
-
-        /// <summary>
-        /// Returns true if objects are equal
-        /// </summary>
-        /// <param name="obj">Object to be compared</param>
-        /// <returns>Boolean</returns>
-        public override bool Equals(object obj)
-        {
-            if (ReferenceEquals(null, obj)) return false;
-            if (ReferenceEquals(this, obj)) return true;
-            if (obj.GetType() != GetType()) return false;
-            return Equals((Trip)obj);
-        }
-
-        /// <summary>
-        /// Returns true if Trip instances are equal
+        ///     Returns true if Trip instances are equal
         /// </summary>
         /// <param name="other">Instance of Trip to be compared</param>
         /// <returns>Boolean</returns>
@@ -245,7 +213,43 @@ namespace ecruise.Models
         }
 
         /// <summary>
-        /// Gets the hash code
+        ///     Returns the string presentation of the object
+        /// </summary>
+        /// <returns>String presentation of the object</returns>
+        public override string ToString()
+        {
+            var sb = new StringBuilder();
+            sb.Append("class CarMaintenanceUpdate {\n");
+            sb.Append("  InvoiceItemId: ").Append(InvoiceItemId).Append("\n");
+            sb.Append("  CompletedDate: ").Append(CompletedDate).Append("\n");
+            sb.Append("}\n");
+            return sb.ToString();
+        }
+
+        /// <summary>
+        ///     Returns the JSON string presentation of the object
+        /// </summary>
+        /// <returns>JSON string presentation of the object</returns>
+        public string ToJson()
+        {
+            return JsonConvert.SerializeObject(this, Formatting.Indented);
+        }
+
+        /// <summary>
+        ///     Returns true if objects are equal
+        /// </summary>
+        /// <param name="obj">Object to be compared</param>
+        /// <returns>Boolean</returns>
+        public override bool Equals(object obj)
+        {
+            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            if (obj.GetType() != GetType()) return false;
+            return Equals((Trip)obj);
+        }
+
+        /// <summary>
+        ///     Gets the hash code
         /// </summary>
         /// <returns>Hash code</returns>
         public override int GetHashCode()

@@ -9,7 +9,7 @@ namespace ecruise.Models
         : IEquatable<CarChargingStation>
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="CarChargingStation" /> class.
+        ///     Initializes a new instance of the <see cref="CarChargingStation" /> class.
         /// </summary>
         /// <param name="carChargingStationId">CarChargingStationId (required)</param>
         /// <param name="carId">CarId (required)</param>
@@ -27,76 +27,41 @@ namespace ecruise.Models
         }
 
         /// <summary>
-        /// Gets or Sets CarChargingStationId
+        ///     Gets or Sets CarChargingStationId
         /// </summary>
-        [Required, Range(0, uint.MaxValue)]
+        [Required]
+        [Range(0, uint.MaxValue)]
         public uint CarChargingStationId { get; }
 
         /// <summary>
-        /// Gets or Sets CarId
+        ///     Gets or Sets CarId
         /// </summary>
-        [Required, Range(1, uint.MaxValue)]
+        [Required]
+        [Range(1, uint.MaxValue)]
         public uint CarId { get; }
 
         /// <summary>
-        /// Gets or Sets ChargingStationId
+        ///     Gets or Sets ChargingStationId
         /// </summary>
-        [Required, Range(1, uint.MaxValue)]
+        [Required]
+        [Range(1, uint.MaxValue)]
         public uint ChargingStationId { get; }
 
         /// <summary>
-        /// Gets or Sets ChargeStart
+        ///     Gets or Sets ChargeStart
         /// </summary>
-        [Required, DataType(DataType.DateTime)]
+        [Required]
+        [DataType(DataType.DateTime)]
         public DateTime ChargeStart { get; }
 
         /// <summary>
-        /// Gets or Sets ChargeEnd
+        ///     Gets or Sets ChargeEnd
         /// </summary>
         [DataType(DataType.DateTime)]
         public DateTime? ChargeEnd { get; set; }
 
         /// <summary>
-        /// Returns the string presentation of the object
-        /// </summary>
-        /// <returns>String presentation of the object</returns>
-        public override string ToString()
-        {
-            var sb = new StringBuilder();
-            sb.Append("class CarChargingStation {\n");
-            sb.Append("  CarChargingStationId: ").Append(CarChargingStationId).Append("\n");
-            sb.Append("  CarId: ").Append(CarId).Append("\n");
-            sb.Append("  ChargingStationId: ").Append(ChargingStationId).Append("\n");
-            sb.Append("  ChargeStart: ").Append(ChargeStart).Append("\n");
-            sb.Append("  ChargeEnd: ").Append(ChargeEnd).Append("\n");
-            sb.Append("}\n");
-            return sb.ToString();
-        }
-
-        /// <summary>
-        /// Returns the JSON string presentation of the object
-        /// </summary>
-        /// <returns>JSON string presentation of the object</returns>
-        public string ToJson()
-        {
-            return JsonConvert.SerializeObject(this, Formatting.Indented);
-        }
-
-        /// <summary>
-        /// Returns true if objects are equal
-        /// </summary>
-        /// <param name="obj">Object to be compared</param>
-        /// <returns>Boolean</returns>
-        public override bool Equals(object obj)
-        {
-            if (ReferenceEquals(null, obj)) return false;
-            if (ReferenceEquals(this, obj)) return true;
-            if (obj.GetType() != GetType()) return false;
-            return Equals((CarChargingStation)obj);
-        }
-
-        /// <summary>
-        /// Returns true if CarChargingStation instances are equal
+        ///     Returns true if CarChargingStation instances are equal
         /// </summary>
         /// <param name="other">Instance of CarChargingStation to be compared</param>
         /// <returns>Boolean</returns>
@@ -117,7 +82,46 @@ namespace ecruise.Models
         }
 
         /// <summary>
-        /// Gets the hash code
+        ///     Returns the string presentation of the object
+        /// </summary>
+        /// <returns>String presentation of the object</returns>
+        public override string ToString()
+        {
+            var sb = new StringBuilder();
+            sb.Append("class CarChargingStation {\n");
+            sb.Append("  CarChargingStationId: ").Append(CarChargingStationId).Append("\n");
+            sb.Append("  CarId: ").Append(CarId).Append("\n");
+            sb.Append("  ChargingStationId: ").Append(ChargingStationId).Append("\n");
+            sb.Append("  ChargeStart: ").Append(ChargeStart).Append("\n");
+            sb.Append("  ChargeEnd: ").Append(ChargeEnd).Append("\n");
+            sb.Append("}\n");
+            return sb.ToString();
+        }
+
+        /// <summary>
+        ///     Returns the JSON string presentation of the object
+        /// </summary>
+        /// <returns>JSON string presentation of the object</returns>
+        public string ToJson()
+        {
+            return JsonConvert.SerializeObject(this, Formatting.Indented);
+        }
+
+        /// <summary>
+        ///     Returns true if objects are equal
+        /// </summary>
+        /// <param name="obj">Object to be compared</param>
+        /// <returns>Boolean</returns>
+        public override bool Equals(object obj)
+        {
+            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            if (obj.GetType() != GetType()) return false;
+            return Equals((CarChargingStation)obj);
+        }
+
+        /// <summary>
+        ///     Gets the hash code
         /// </summary>
         /// <returns>Hash code</returns>
         public override int GetHashCode()

@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-
-using Car = ecruise.Models.Car;
 using DbCar = ecruise.Database.Models.Car;
 
 namespace ecruise.Models.Assemblers
@@ -24,6 +22,7 @@ namespace ecruise.Models.Assemblers
                     throw new NotImplementedException();
             }
         }
+
         public static Car.BookingStateEnum StringToEnumBookingState(string e)
         {
             switch (e)
@@ -53,8 +52,8 @@ namespace ecruise.Models.Assemblers
                 default:
                     throw new NotImplementedException();
             }
-
         }
+
         public static Car.ChargingStateEnum StringToEnumChargingState(string e)
         {
             switch (e)
@@ -69,7 +68,6 @@ namespace ecruise.Models.Assemblers
                     throw new NotImplementedException();
             }
         }
-
 
 
         public static DbCar AssembleEntity(ulong carId, Car carModel)
@@ -123,8 +121,7 @@ namespace ecruise.Models.Assemblers
             if (setIdsNull)
                 return models.Select(e => AssembleEntity(0, e)).ToList();
 
-            else
-                return models.Select(e => AssembleEntity(e.CarId, e)).ToList();
+            return models.Select(e => AssembleEntity(e.CarId, e)).ToList();
         }
     }
 }

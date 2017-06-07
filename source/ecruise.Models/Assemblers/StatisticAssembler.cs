@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Statistic = ecruise.Models.Statistic;
 using DbStatistic = ecruise.Database.Models.Statistic;
 
 namespace ecruise.Models.Assemblers
@@ -44,8 +43,7 @@ namespace ecruise.Models.Assemblers
             if (setIdsNull)
                 return models.Select(e => AssembleEntity(null, e)).ToList();
 
-            else
-                return models.Select(e => AssembleEntity(e.Date, e)).ToList();
+            return models.Select(e => AssembleEntity(e.Date, e)).ToList();
         }
     }
 }
