@@ -13,15 +13,34 @@ using Booking = ecruise.Models.Booking;
 
 namespace ecruise.Api.Controllers
 {
+    /// <summary>
+    ///     This class handles all requestes related to bookings.
+    ///     That means that it handles all web requests to /bookings
+    /// </summary>
     public class BookingsController : BaseController
     {
-        public BookingsController(EcruiseContext context) : base(context)
+        /// <summary>
+        ///     The constructor for the <see cref="BookingsController"/> class.
+        /// </summary>
+        /// <param name="context">The database context that gets injected by the framework.</param>
+        public BookingsController(EcruiseContext context)
+            : base(context)
         {
         }
 
-        // GET: /Bookings
-        [HttpGet(Name = "GetAllBookings")]
-        public async Task<IActionResult> GetAll()
+        /// <summary>
+        ///     Queries all bookings in the database and returns a http response that indicates if results were found.
+        ///     Additionally, if there are any results, it returns a list of <see cref="Booking"/>s.
+        /// </summary>
+        /// <example>
+        ///     GET /bookings
+        /// </example>
+        /// <returns>
+        ///     HTTP 200 Ok: Returns a List of <see cref="Booking"/>s if <see cref="Booking"/>s everything's okay.
+        ///     HTTP 204 No Content: There are no <see cref="Booking"/>s.
+        /// </returns>
+        [HttpGet(Name = "GetAllBookingsAsync")]
+        public async Task<IActionResult> GetAllAsync()
         {
             // Get all bookings from database
             var bookings = await Context.Bookings
@@ -37,18 +56,32 @@ namespace ecruise.Api.Controllers
             return Ok(BookingAssembler.AssembleModelList(bookings));
         }
 
-        // GET: /Bookings/5
-        [HttpGet("{id}", Name = "GetBooking")]
-        public async Task<IActionResult> Get(ulong id)
+        /// <summary>
+        ///     Queries one <see cref="Booking"/> identified by <paramref name="id"/> and returns it, if existent.
+        /// </summary>
+        /// <param name="id">The booking id to search for</param>
+        /// <example>
+        ///     GET /bookings/5
+        /// </example>
+        /// <returns>
+        ///     HTTP 200 Ok: Returns the <see cref="Booking"/> if everything's okay.
+        ///     HTTP 400 Bad Request: The provided parameters are malformed.
+        ///     HTTP 401 Unauthorized: The authenticated customer has no access to the requested <see cref="Booking"/>.
+        ///     HTTP 404 Not Found: There is no booking with such an <paramref name="id"/>.
+        /// </returns>
+        [HttpGet("{id}", Name = "GetBookingAsync")]
+        public async Task<IActionResult> GetAsync(ulong id)
         {
             // Check for correct value
             if (!ModelState.IsValid)
-                return BadRequest(new Error(1, "The id given was not formatted correctly. Id must be unsigned int",
+                return BadRequest(new Error(1,
+                    "The id given was not formatted correctly. Id must be unsigned int",
                     "An error occured. Please check the message for further information."));
 
             // Get booking from database
             var booking = await Context.Bookings.FindAsync(id);
 
+            // return error if booking was not found
             if (booking == null)
                 return NotFound(new Error(201, "Booking with requested booking id does not exist.",
                     "An error occured. Please check the message for further information."));
@@ -60,9 +93,20 @@ namespace ecruise.Api.Controllers
             return Ok(BookingAssembler.AssembleModel(booking));
         }
 
-        // POST: /Bookings
-        [HttpPost(Name = "PostBooking")]
-        public async Task<IActionResult> Post([FromBody] Booking booking)
+        /// <summary>
+        ///     Try to create a new <see cref="Booking"/> with the data provided by <paramref name="booking"/>.
+        /// </summary>
+        /// <example>
+        ///     POST /bookings
+        /// </example>
+        /// <returns>
+        ///     HTTP 201 Created: Returns a <see cref="PostReference"/> to the created object on success.
+        ///     HTTP 400 Bad Request: The provided parameters are malformed.
+        ///     HTTP 401 Unauthorized: The authenticated customer has no access to create the provided <see cref="Booking"/>.
+        ///     HTTP 404 Not Found: There is no customer with CustomerId provided in <paramref name="booking"/>.
+        /// </returns>
+        [HttpPost(Name = "PostBookingAsync")]
+        public async Task<IActionResult> PostAsync([FromBody] Booking booking)
         {
             // Check if new bookings are allowed
             var config = Context.Configurations.Find((ulong)1);
@@ -114,9 +158,22 @@ namespace ecruise.Api.Controllers
             return Created($"{BasePath}/bookings/{bookingEntity.BookingId}", pr);
         }
 
-        // GET: /Bookings/by-trip/5
-        [HttpGet("by-trip/{tripId}", Name = "GetBookingsByTrip")]
-        public async Task<IActionResult> GetByTripId(ulong tripId)
+        /// <summary>
+        ///     Find all <see cref="Booking"/> that belongs to a associated <see cref="Models.Trip"/> 
+        ///     identified by it's <paramref name="tripId"/>.
+        ///     An error response is set if there's no such related <see cref="Models.Booking"/>.
+        /// </summary>
+        /// <example>
+        ///     GET: /bookings/by-trip/5
+        /// </example>
+        /// <returns>
+        ///     HTTP 200 Ok: Returns the <see cref="Models.Booking"/> associated with the requested <param name="tripId"></param>.
+        ///     HTTP 203 No Content: There is no <see cref="Models.Booking"/> that the current customer can access
+        ///                          associated with the requested <paramref name="tripId"/>.
+        ///     HTTP 400 Bad Request: The provided parameters are malformed.
+        /// </returns>
+        [HttpGet("by-trip/{tripId}", Name = "GetBookingsByTripAsync")]
+        public async Task<IActionResult> GetByTripIdAsync(ulong tripId)
         {
             // Check for correct value
             if (!ModelState.IsValid)
@@ -137,9 +194,22 @@ namespace ecruise.Api.Controllers
             return Ok(BookingAssembler.AssembleModelList(bookingEntities));
         }
 
-        // GET: /Bookings/by-customer/5
-        [HttpGet("by-customer/{customerId}", Name = "GetBookingsByCustomer")]
-        public IActionResult GetByCustomerId(ulong customerId)
+        /// <summary>
+        ///     Find all <see cref="Booking"/> that belongs to a associated <see cref="Models.Customer"/> 
+        ///     identified by it's <paramref name="customerId"/>.
+        ///     An error response is set if there's no such related <see cref="Models.Booking"/>.
+        /// </summary>
+        /// <example>
+        ///     GET: /bookings/by-customer/5
+        /// </example>
+        /// <returns>
+        ///     HTTP 200 Ok: Returns the <see cref="Models.Booking"/> associated with the requested <param name="customerId"></param>.
+        ///     HTTP 203 No Content: There is no <see cref="Models.Booking"/> that the current customer can access associated with 
+        ///                          the requested <paramref name="customerId"/>.
+        ///     HTTP 400 Bad Request: The provided parameters are malformed.
+        /// </returns>
+        [HttpGet("by-customer/{customerId}", Name = "GetBookingsByCustomerAsync")]
+        public IActionResult GetByCustomerIdAsync(ulong customerId)
         {
             // Check for correct value
             if (!ModelState.IsValid)
@@ -160,9 +230,20 @@ namespace ecruise.Api.Controllers
             return Ok(BookingAssembler.AssembleModelList(bookingEntities));
         }
 
-        // GET: /Bookings/by-booking-date/<date>
-        [HttpGet("by-booking-date/{date}", Name = "GetBookingsByBookingDate")]
-        public async Task<IActionResult> GetByBookingDate(string date)
+        /// <summary>
+        ///     Find all <see cref="Booking"/> that were booked at a certain <paramref name="date"/>.
+        ///     An error response is set if there's was <see cref="Models.Booking"/> on that date.
+        /// </summary>
+        /// <example>
+        ///     GET: /Bookings/by-booking-date/{date}
+        /// </example>
+        /// <returns>
+        ///     HTTP 200 Ok: Returns the <see cref="Models.Booking"/> booked at the requested <paramref name="date"/>.
+        ///     HTTP 203 No Content: There is no <see cref="Models.Booking"/> that was booked on that date.
+        ///     HTTP 400 Bad Request: The provided parameters are malformed.
+        /// </returns>
+        [HttpGet("by-booking-date/{date}", Name = "GetBookingsByBookingDateAsync")]
+        public async Task<IActionResult> GetByBookingDateAsync(string date)
         {
             // Transform string to date
             DateTime requestedDateTime;
@@ -188,8 +269,20 @@ namespace ecruise.Api.Controllers
         }
 
         // GET: /Bookings/by-planned-date/<date>
-        [HttpGet("by-planned-date/{date}", Name = "GetBookingsByPlannedDate")]
-        public async Task<IActionResult> GetByPlannedDate(string date)
+        /// <summary>
+        ///     Find all <see cref="Booking"/> that were/are planned at a certain <paramref name="date"/>.
+        ///     An error response is set if there's was <see cref="Models.Booking"/> on that date.
+        /// </summary>
+        /// <example>
+        ///     GET: /Bookings/by-planned-date/{date}
+        /// </example>
+        /// <returns>
+        ///     HTTP 200 Ok: Returns the <see cref="Models.Booking"/> planned at the requested <paramref name="date"/>.
+        ///     HTTP 203 No Content: There is no <see cref="Models.Booking"/> that was/is planned on that date.
+        ///     HTTP 400 Bad Request: The provided parameters are malformed.
+        /// </returns>
+        [HttpGet("by-planned-date/{date}", Name = "GetBookingsByPlannedDateAsync")]
+        public async Task<IActionResult> GetByPlannedDateAsync(string date)
         {
             // Transform string to date
             DateTime requestedDateTime;
