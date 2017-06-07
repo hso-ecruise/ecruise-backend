@@ -26,7 +26,8 @@ namespace ecruise.Api.Middleware
         public async Task Invoke(HttpContext context)
         {
             // only apply to non-public routes
-            if (!context.Request.Path.StartsWithSegments("/v1/public", StringComparison.OrdinalIgnoreCase))
+            if (!context.Request.Path.StartsWithSegments("/v1/public", StringComparison.OrdinalIgnoreCase) &&
+                !context.Request.Path.ToString().Contains("/confirm-email/"))
             {
                 string authToken = context.Request.Headers["access_token"];
 
