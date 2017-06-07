@@ -20,7 +20,7 @@ namespace ecruise.Api.Controllers
 
         // GET: /car-charging-stations
         [HttpGet(Name = "GetAllCarChargingStations")]
-        public async Task<IActionResult> GetAllCharChargingStations()
+        public async Task<IActionResult> GetAllCarChargingStations()
         {
             // forbid if not admin
             if (!HasAccess())
