@@ -13,7 +13,6 @@ using Microsoft.EntityFrameworkCore;
 using RazorLight;
 using Customer = ecruise.Models.Customer;
 using DbCustomer = ecruise.Database.Models.Customer;
-using DbTokenType = ecruise.Database.Models.TokenType;
 using DbCustomerToken = ecruise.Database.Models.CustomerToken;
 
 namespace ecruise.Api.Controllers
