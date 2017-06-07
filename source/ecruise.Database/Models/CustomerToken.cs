@@ -3,7 +3,7 @@ using Newtonsoft.Json;
 
 namespace ecruise.Database.Models
 {
-    public partial class CustomerToken
+    public class CustomerToken
     {
         public ulong CustomerTokenId { get; set; }
         public ulong CustomerId { get; set; }
