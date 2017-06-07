@@ -3,8 +3,13 @@ using Microsoft.EntityFrameworkCore.Metadata;
 
 namespace ecruise.Database.Models
 {
-    public partial class EcruiseContext : DbContext
+    public class EcruiseContext : DbContext
     {
+        public EcruiseContext(DbContextOptions options)
+            : base(options)
+        {
+        }
+
         public virtual DbSet<Booking> Bookings { get; set; }
         public virtual DbSet<Car> Cars { get; set; }
         public virtual DbSet<CarChargingStation> CarChargingStations { get; set; }
@@ -18,11 +23,6 @@ namespace ecruise.Database.Models
         public virtual DbSet<Maintenance> Maintenances { get; set; }
         public virtual DbSet<Statistic> Statistics { get; set; }
         public virtual DbSet<Trip> Trips { get; set; }
-
-        public EcruiseContext(DbContextOptions options)
-            : base(options)
-        {
-        }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

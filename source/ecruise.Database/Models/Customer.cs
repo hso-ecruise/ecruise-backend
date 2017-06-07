@@ -3,7 +3,7 @@ using Newtonsoft.Json;
 
 namespace ecruise.Database.Models
 {
-    public partial class Customer
+    public class Customer
     {
         public Customer()
         {

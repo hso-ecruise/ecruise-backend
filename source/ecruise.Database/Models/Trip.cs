@@ -4,7 +4,7 @@ using Newtonsoft.Json;
 
 namespace ecruise.Database.Models
 {
-    public partial class Trip
+    public class Trip
     {
         public Trip()
         {

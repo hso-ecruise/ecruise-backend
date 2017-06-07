@@ -4,7 +4,7 @@ using Newtonsoft.Json;
 
 namespace ecruise.Database.Models
 {
-    public partial class Maintenance
+    public class Maintenance
     {
         public Maintenance()
         {
