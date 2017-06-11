@@ -230,7 +230,10 @@ namespace ecruise.Api.Controllers
                     $"There is no invoice item that has the id {invoiceItemId}."));
 
             // forbid if current customer is accessing a different user's invoice item
-            if (!HasAccess(invoiceItem.Invoice.CustomerId))
+            // Get matching invoice
+            var invoice = await Context.Invoices.FindAsync(invoiceItem.InvoiceId);
+
+            if (!HasAccess(invoice.CustomerId))
                 return Unauthorized();
 
             return Ok(InvoiceItemAssembler.AssembleModel(invoiceItem));

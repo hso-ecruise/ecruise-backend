@@ -35,7 +35,7 @@ namespace ecruise.Api.Controllers
 
             DbCustomer customer = await Context.Customers
                 .Where(c => c.Activated)
-                .FirstAsync(c => c.Email == email);
+                .FirstOrDefaultAsync(c => c.Email == email);
 
             if (customer == null)
                 return Unauthorized();

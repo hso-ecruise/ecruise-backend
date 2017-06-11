@@ -75,7 +75,7 @@ namespace ecruise.Api.Controllers
                     "An error occured. Please check the message for further information."));
 
             // Forbid if current customer is creating a different user's trip
-            if (!HasAccess(trip.CustomerId))
+            if (!HasAccess())
                 return Unauthorized();
 
             // Create db trip to be inserted
@@ -126,6 +126,10 @@ namespace ecruise.Api.Controllers
                 return BadRequest(new Error(400, GetModelStateErrorString(),
                     "An error occured. Please check the message for further information."));
 
+            // forbid if current customer is accessing a different user's trip
+            if (!HasAccess())
+                return Unauthorized();
+
             // find the requested trip
             DbTrip dbtrip = await Context.Trips.FindAsync(id);
 
@@ -133,10 +137,6 @@ namespace ecruise.Api.Controllers
             if (dbtrip == null)
                 return NotFound(new Error(201, "Trip with requested id does not exist.",
                     $"There is no trip that has the id {id}."));
-
-            // forbid if current customer is accessing a different user's trip
-            if (!HasAccess(dbtrip.CustomerId))
-                return Unauthorized();
 
             // update trip end data using a transaction
             using (var transaction = await Context.Database.BeginTransactionAsync())
