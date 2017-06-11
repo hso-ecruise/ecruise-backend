@@ -48,9 +48,11 @@ namespace ecruise.Models
         public uint? InvoiceItemId { get; set; }
 
         [Required]
+        [Range(-90.0, 90.0)]
         public double BookingPositionLatitude { get; }
 
         [Required]
+        [Range(-180.0, 180.0)]
         public double BookingPositionLongitude { get; }
 
         [Required]
