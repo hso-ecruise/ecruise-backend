@@ -152,24 +152,6 @@ namespace ecruise.Api.Controllers
                 double calculatedAmount = trip.DistanceTravelled * 0.15 +
                                           2.40 * (dbtrip.EndDate.Value - dbtrip.StartDate).TotalHours;
 
-                // Check if invoice found
-                if (matchingInvoice == null)
-                {
-                    // Create new invoice
-                    DbInvoice newInvoice = new DbInvoice
-                    {
-                        CustomerId = AuthenticatedCustomerId,
-                        Paid = false,
-                        TotalAmount = 0.0
-                    };
-
-                    var insert = await Context.Invoices.AddAsync(newInvoice);
-
-                    await Context.SaveChangesAsync();
-
-                    matchingInvoice = insert.Entity;
-                }
-
                 // Add the invoice item amount to the total amount of the invoice
                 matchingInvoice.TotalAmount += calculatedAmount;
 
