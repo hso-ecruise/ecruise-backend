@@ -17,7 +17,7 @@ namespace ecruise.Models.Assemblers
                 CarId = carChargingStationModel.CarId,
                 ChargeEnd = carChargingStationModel.ChargeEnd,
                 ChargeStart = carChargingStationModel.ChargeStart,
-                ChargingStationId = carChargingStationModel.CarChargingStationId
+                ChargingStationId = carChargingStationModel.ChargingStationId
             };
         }
 
