@@ -153,28 +153,7 @@ namespace ecruise.Api.Controllers
 
             return Ok(InvoiceItemAssembler.AssembleModelList(items));
         }
-
-        // POST: /Invoices
-        [HttpPost(Name = "CreateInvoice")]
-        public async Task<IActionResult> PostInvoice([FromBody] Invoice invoice)
-        {
-            // forbid if not admin
-            if (!HasAccess())
-                return Unauthorized();
-
-            if (!ModelState.IsValid)
-                return BadRequest(new Error(400, GetModelStateErrorString(),
-                    "An error occured. Please check the message for further information."));
-
-            DbInvoice insertInvoice = InvoiceAssembler.AssembleEntity(0, invoice);
-
-            var inserted = await Context.Invoices.AddAsync(insertInvoice);
-            await Context.SaveChangesAsync();
-
-            return Created($"{BasePath}/invoices/{inserted.Entity.InvoiceId}",
-                new PostReference((uint)inserted.Entity.InvoiceId, $"{BasePath}/invoices/{inserted.Entity.InvoiceId}"));
-        }
-
+        
         // POST: /Invoices/1/items
         [HttpPost("{id}/items", Name = "CreateNewInvoiceItem")]
         public async Task<IActionResult> Post(ulong id, [FromBody] InvoiceItem invoiceItem)
