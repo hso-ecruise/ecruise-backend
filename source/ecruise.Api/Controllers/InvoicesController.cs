@@ -70,8 +70,11 @@ namespace ecruise.Api.Controllers
                 return NotFound(new Error(201, "Invoice-Item with requested id does not exist.",
                     $"There is no invoice that has the id {id}."));
 
+            // Get matching invoice from database
+            var invoice = await Context.Invoices.FindAsync(item.InvoiceItemId);
+
             // forbid if current customer is accessing a different user's invoice
-            if (!HasAccess(item.Invoice.CustomerId))
+            if (!HasAccess(invoice.CustomerId))
                 return Unauthorized();
 
             return Ok(InvoiceAssembler.AssembleModel(item.Invoice));
