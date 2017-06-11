@@ -275,17 +275,22 @@ namespace ecruise.Api.Controllers
         public async Task<IActionResult> GetClosestCarChargingStation(double latitude, double longitude,
             [FromQuery] int radius)
         {
-            // validate user input
+            // Validate user input
             if (!ModelState.IsValid)
                 return BadRequest(new Error(400, GetModelStateErrorString(),
                     "An error occured. Please check the message for further information."));
 
-            // get a list of all cars with a known position
+            // Get a list of all cars with a known position
             List<DbCar> dbcars = await Context.Cars
                 .Where(c => c.LastKnownPositionLatitude != null && c.LastKnownPositionLongitude != null)
                 .ToListAsync();
 
-            // render cars ordered by distance
+            // Return 404 No Content if there are no matching cars
+            if (dbcars.Count == 0)
+                return NotFound(new Error(201, "There are no cars in the database.",
+                    $"There is no cars in the database."));
+
+            // Render cars ordered by distance
             // if radius == 0: get only closest car
             // else if radius > 0: get all cars within radius
             GeoCoordinate destination = new GeoCoordinate(latitude, longitude);
@@ -297,11 +302,13 @@ namespace ecruise.Api.Controllers
                         c.LastKnownPositionLongitude.Value)))
                     .ToImmutableList();
 
-            // return 203 No Content if there are no matching cars
-            if (dbcars.Count == 0)
+            // Check if any found
+            if (closest.Count == 0)
+            {
                 return NoContent();
+            }
 
-            // if radius is zero (or not set) get only first element
+            // If radius is zero (or not set) get only first element
             if (radius == 0)
                 return Ok(CarAssembler.AssembleModelList(new List<DbCar> {closest.FirstOrDefault()}));
 
