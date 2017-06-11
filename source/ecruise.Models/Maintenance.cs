@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Text;
 using Newtonsoft.Json;
@@ -6,7 +7,7 @@ using Newtonsoft.Json;
 namespace ecruise.Models
 {
     public class Maintenance
-        : IEquatable<Maintenance>
+        : IEquatable<Maintenance>, IValidatableObject
     {
         /// <summary>
         ///     Initializes a new instance of the <see cref="Maintenance" /> class.
@@ -17,13 +18,6 @@ namespace ecruise.Models
         /// <param name="atDate">AtDate</param>
         public Maintenance(uint maintenenaceId, bool spontaneously, uint? atMileage, DateTime? atDate)
         {
-            if (spontaneously && (atMileage.HasValue || atDate.HasValue))
-                throw new ArgumentException("Neither " + nameof(atMileage) + " nor " + nameof(atDate) +
-                                            " can have a value if the Maintenance is spontaneous.");
-            if (!spontaneously && !atMileage.HasValue && !atDate.HasValue)
-                throw new ArgumentException("Either " + nameof(atMileage) + " or " + nameof(atDate) +
-                                            " is required to have a value if the Maintenance is planned");
-
             MaintenanceId = maintenenaceId;
             Spontaneously = spontaneously;
             AtMileage = atMileage;
@@ -144,5 +138,17 @@ namespace ecruise.Models
         }
 
         #endregion Operators
+
+        #region Validators
+        public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
+        {
+            if (Spontaneously && (AtMileage.HasValue || AtDate.HasValue))
+                yield return new ValidationResult("Neither " + nameof(AtMileage) + " nor " + nameof(AtDate) +
+                                            " can have a value if the Maintenance is spontaneous.");
+            if (!Spontaneously && !AtMileage.HasValue && !AtDate.HasValue)
+                yield return new ValidationResult("Either " + nameof(AtMileage) + " or " + nameof(AtDate) +
+                                            " is required to have a value if the Maintenance is planned");
+        }
+        #endregion
     }
 }
