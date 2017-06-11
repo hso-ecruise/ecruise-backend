@@ -89,12 +89,8 @@ namespace ecruise.Api.Controllers
         [HttpGet("activate/{email}/{token}", Name = "ActivateAccount")]
         public async Task<IActionResult> Activate([FromRoute] string email, [FromRoute] string token)
         {
-            if (!ModelState.IsValid)
-                return BadRequest(new Error(401, GetModelStateErrorString(),
-                    "An error occured. Please check the message for further information."));
-
-            // find matching customer
-            DbCustomer customer = await Context.Customers.FirstAsync(c => c.Email == email);
+            // Find matching customer
+            DbCustomer customer = await Context.Customers.FirstOrDefaultAsync(c => c.Email == email);
             if (customer == null)
                 return Redirect("https://ecruise.me/nocustomer");
 
