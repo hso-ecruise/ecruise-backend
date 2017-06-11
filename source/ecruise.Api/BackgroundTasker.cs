@@ -256,10 +256,19 @@ namespace ecruise.Api
                 var allCars = await context.Cars.ToListAsync();
 
                 // Calculate avarage charge level
-                double averageChargeLevel = allCars
-                    .Where(c => c.ChargingState != "DISCHARGING")
-                    .Select(c => c.ChargeLevel)
-                    .Average();
+                double averageChargeLevel = 0.0;
+
+                try
+                {
+                    averageChargeLevel = allCars
+                        .Where(c => c.ChargingState != "DISCHARGING")
+                        .Select(c => c.ChargeLevel)
+                        .Average();
+                }
+                catch (Exception e)
+                {
+                    Debug.WriteLine($"{DateTime.Now}: {nameof(StatisticCreator)} has caught an exception when calculating the average charge level: {e.Message}");
+                }
 
                 // Calculate cars in use
                 uint carsInUse = (uint)allCars.Count(c => c.ChargingState == "DISCHARGING");
