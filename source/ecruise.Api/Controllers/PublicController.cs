@@ -73,7 +73,7 @@ namespace ecruise.Api.Controllers
             // create matching customer token
             DbCustomerToken newCustomerToken = CustomerTokenAssembler.AssembleEntity(0,
                 new CustomerToken(0, (uint)customer.CustomerId, CustomerToken.TokenTypeEnum.Login, newToken,
-                    DateTime.UtcNow, null));
+                    DateTime.UtcNow, DateTime.UtcNow + TimeSpan.FromMinutes(20)));
 
             await Context.CustomerTokens.AddAsync(newCustomerToken);
             await Context.SaveChangesAsync();
