@@ -308,11 +308,6 @@ namespace ecruise.Api.Controllers
         [HttpGet("by-lastname/{name}", Name = "GetCustomerByLastName")]
         public async Task<IActionResult> GetCustomerByLastName(string name)
         {
-            // validate user input
-            if (!ModelState.IsValid)
-                return BadRequest(new Error(400, GetModelStateErrorString(),
-                    "An error occured. Please check the message for further information."));
-
             List<DbCustomer> customers = await Context.Customers
                 // only query customers, the current customer has access to
                 .Where(c => HasAccess(c.CustomerId))
