@@ -120,7 +120,7 @@ namespace ecruise.Api.Controllers
 
             if (carChargingStation.ChargeEnd.HasValue)
                 return BadRequest(new Error(302, "Charge end date cannot be set.",
-                    "The charge end date cannot already be set when creating the "));
+                    "The charge end date cannot already be set when creating the car charging station"));
 
             // Set the position because the car is connected now
             car.LastKnownPositionDate = DateTime.UtcNow;
