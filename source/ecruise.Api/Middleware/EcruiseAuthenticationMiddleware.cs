@@ -41,10 +41,22 @@ namespace ecruise.Api.Middleware
                 bool hasValidToken;
                 using (var dbContext = new EcruiseContext(_dbContextOptions))
                 {
-                    hasValidToken = await dbContext.CustomerTokens
+                    var tokens = await dbContext.CustomerTokens
                         .Where(t => t.ExpireDate == null || t.ExpireDate > DateTime.UtcNow)
                         .Where(t => t.Type == "LOGIN")
-                        .AnyAsync(t => t.Token == authToken);
+                        .Where(t => t.Token == authToken).ToListAsync();
+
+                    // Check if any
+                    hasValidToken = tokens.Any();
+
+                    // Touch token(s) to be valid 20 more minutes when still in use
+                    if (tokens.Any())
+                    {
+                        tokens.ForEach(t => t.ExpireDate = DateTime.UtcNow.AddMinutes(20));
+
+                        await dbContext.SaveChangesAsync();
+                    }
+
                 }
 
                 // no valid customer token found
