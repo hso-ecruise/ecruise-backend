@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -81,7 +82,7 @@ namespace ecruise.Api.Controllers
 
         // GET: /ChargingStations/closest-to/58/8
         [HttpGet("closest-to/{latitude}/{longitude}", Name = "GetClosestChargingStation")]
-        public async Task<IActionResult> GetClosestChargingStation(double latitude, double longitude)
+        public async Task<IActionResult> GetClosestChargingStation(double latitude, double longitude, [FromQuery] uint minFreeSlots, [FromQuery] uint radius)
         {
             // validate user input
             if (!ModelState.IsValid)
@@ -89,21 +90,59 @@ namespace ecruise.Api.Controllers
                     "An error occured. Please check the message for further information."));
 
             // get a list of all charging stations
-            List<DbChargingStation> dbcs = await Context.ChargingStations.ToListAsync();
+            List<DbChargingStation> chargingStations = await Context.ChargingStations.ToListAsync();
 
             // check if there are any charging stations
-            if (dbcs.Count == 0)
+            if (chargingStations.Count == 0)
                 return NoContent();
+
+            // only return closest if radius equals 0
+            if (radius == 0)
+            {
+                DbChargingStation closest = null;
+
+                // Find first matching entry
+                if (minFreeSlots == 0)
+                {
+                    // Dont filter. Only return closest
+                    closest = chargingStations
+                        .FirstOrDefault();
+                }
+                else // minFreeSlots != 0
+                {
+                    // Filter by free slots
+                    closest = chargingStations
+                        .FirstOrDefault(cs => cs.Slots - cs.SlotsOccupied >= minFreeSlots);
+                }
+
+                // Check if any found
+                if (closest == null)
+                    return NoContent();
+
+                // Return found entry
+                return Ok(ChargingStationAssembler.AssembleModel(closest));
+            }
 
             // create a location object of the requested location
             GeoCoordinate destination = new GeoCoordinate(latitude, longitude);
 
-            // find the closest charging station
-            DbChargingStation closest =
-                dbcs.OrderBy(cs => destination.GetDistanceTo(new GeoCoordinate(cs.Latitude, cs.Longitude)))
-                    .FirstOrDefault();
+            // Get only entries in the given radius
+            var chargingStationsInRadius = chargingStations.Where(
+                cs => destination.GetDistanceTo(new GeoCoordinate(cs.Latitude, cs.Longitude)) <= radius).ToList();
 
-            return Ok(ChargingStationAssembler.AssembleModel(closest));
+            // If filter by min free slots is set
+            if (minFreeSlots > 0)
+            {
+                // Remove charging stations with less than the desired count
+                chargingStationsInRadius.RemoveAll(cs => cs.Slots - cs.SlotsOccupied < minFreeSlots);
+            }
+
+            // Check if any left
+            if (chargingStationsInRadius.Count == 0)
+                return NoContent();
+
+            // Return matching entries
+            return Ok(ChargingStationAssembler.AssembleModelList(chargingStationsInRadius));
         }
     }
 }

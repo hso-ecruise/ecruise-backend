@@ -251,7 +251,7 @@ namespace ecruise.Api.Controllers
         public async Task<IActionResult> UpdateVerified(ulong id, [FromBody] bool verified)
         {
             // forbid if user is accessing different user's ressources
-            if (!HasAccess(id))
+            if (!HasAccess())
                 return Unauthorized();
 
             // validate user input
@@ -280,7 +280,7 @@ namespace ecruise.Api.Controllers
         public async Task<IActionResult> UpdateChipCardUid(ulong id, [FromBody] string chipCardUid)
         {
             // forbid if user is accessing different user's ressources
-            if (!HasAccess(id))
+            if (!HasAccess())
                 return Unauthorized();
 
             // validate user input
