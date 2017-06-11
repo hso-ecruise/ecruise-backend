@@ -171,12 +171,16 @@ namespace ecruise.Api.Controllers
                 return BadRequest(new Error(301, "The date given was not formatted correctly.",
                     "Date must always be in following format: 'yyyy-MM-ddTHH:mm:ss.zzzZ'"));
 
+            // Set under and upper limit for the day
+            DateTime startDate = requestedDateTime.Date;
+            DateTime endDate = startDate.AddDays(1).AddMilliseconds(-1);
+
             // Get all bookings booked at the specified day
             var matchingbookings = await Context.Bookings
                 // query only bookings the current customer has access to
                 .Where(b => HasAccess(b.CustomerId))
                 // filter by date
-                .Where(b => b.BookingDate.ToUniversalTime() == requestedDateTime.ToUniversalTime())
+                .Where(b => b.BookingDate.ToUniversalTime() >= startDate.ToUniversalTime() && b.BookingDate.ToUniversalTime() <= endDate.ToUniversalTime())
                 .ToListAsync();
 
             // Check if any matches were found
@@ -198,13 +202,16 @@ namespace ecruise.Api.Controllers
                 return BadRequest(new Error(301, "The date given was not formatted correctly.",
                     "Date must always be in following format: 'yyyy-MM-ddTHH:mm:ss.zzzZ'"));
 
+            // Set under and upper limit for the day
+            DateTime startDate = requestedDateTime.Date;
+            DateTime endDate = startDate.AddDays(1).AddMilliseconds(-1);
+
             // Get all bookings booked at the specified day
             var matchingbookings = await Context.Bookings
                 // query only bookings the current customer has access to
                 .Where(b => HasAccess(b.CustomerId))
                 // filter by planned date
-                .Where(b => b.PlannedDate.HasValue && b.PlannedDate.Value.ToUniversalTime() ==
-                            requestedDateTime.ToUniversalTime())
+                .Where(b => b.BookingDate.ToUniversalTime() >= startDate.ToUniversalTime() && b.BookingDate.ToUniversalTime() <= endDate.ToUniversalTime())
                 .ToListAsync();
 
             // Check if any matches were found
