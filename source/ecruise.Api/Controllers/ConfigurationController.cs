@@ -28,7 +28,7 @@ namespace ecruise.Api.Controllers
                 return Unauthorized();
 
             // Get the configuration from the database
-            var configuration = await Context.Configurations.FindAsync(1);
+            var configuration = await Context.Configurations.FindAsync((ulong)1);
 
             if (configuration == null)
                 // Return that the configuration was not found
@@ -47,7 +47,7 @@ namespace ecruise.Api.Controllers
                 return Unauthorized();
 
             // Get current configuration from database
-            var configuration = await Context.Configurations.FindAsync(1);
+            var configuration = await Context.Configurations.FindAsync((ulong)1);
 
             // Set the attribute to the given value
             configuration.AllowNewBookings = allowNewBookings;
