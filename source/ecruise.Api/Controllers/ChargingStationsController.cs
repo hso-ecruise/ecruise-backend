@@ -75,9 +75,46 @@ namespace ecruise.Api.Controllers
             // return error if charging station was not found
             if (chargingStation == null)
                 return NotFound(new Error(201, "ChargingStation with requested id does not exist.",
-                    $"There is no maintenance that has the id {id}."));
+                    $"There is no charging station that has the id {id}."));
 
             return Ok(chargingStation);
+        }
+
+        // PATCH: /ChargingStations/5/slots-occupied
+        [HttpPatch("{id}/slots-occupied")]
+        public async Task<IActionResult> PatchSlotsOccupied(ulong id, [FromBody] uint slotsOccupied)
+        {
+            // Forbid if not admin
+            if (!HasAccess())
+                return Unauthorized();
+
+            // Validate user input
+            if (!ModelState.IsValid)
+                return BadRequest(new Error(400, GetModelStateErrorString(),
+                    "An error occured. Please check the message for further information."));
+
+            // Get the charging station from the database
+            var chargingStation = await Context.ChargingStations.FindAsync(id);
+
+            // Check if charging station was found
+            if (chargingStation == null)
+                return NotFound(new Error(201, "ChargingStation with requested id does not exist.",
+                    $"There is no chargin station that has the id {id}."));
+
+            if (slotsOccupied > chargingStation.Slots)
+            {
+                return BadRequest(new Error(303, "The number of slots occupied is not possible",
+                    $"The referenced charging station only has {chargingStation.Slots} slots."));
+            }
+
+            // Change the value
+            chargingStation.SlotsOccupied = slotsOccupied;
+
+            // Save the change to the database
+            await Context.SaveChangesAsync();
+
+            return Ok(new PostReference(chargingStation.ChargingStationId,
+                    $"{BasePath}/ChargingStations/{chargingStation.ChargingStationId}"));
         }
 
         // GET: /ChargingStations/closest-to/58/8
