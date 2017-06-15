@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -21,8 +22,8 @@ namespace ecruise.Api.Controllers
         }
 
         // GET: /Invoices
-        [HttpGet(Name = "GetAllInvoices")]
-        public async Task<IActionResult> Get()
+        [HttpGet(Name = "GetAllInvoicesAsync")]
+        public async Task<IActionResult> GetAllInvoicesAsync()
         {
             List<DbInvoice> invoices = await Context.Invoices
                 // query only invoices the current customer has access to
@@ -36,8 +37,8 @@ namespace ecruise.Api.Controllers
         }
 
         // GET: /invoices/1
-        [HttpGet("{id}", Name = "GetInvoiceByInvoiceId")]
-        public async Task<IActionResult> Get(ulong id)
+        [HttpGet("{id}", Name = "GetInvoiceByInvoiceIdAsync")]
+        public async Task<IActionResult> GetAsync(ulong id)
         {
             if (!ModelState.IsValid)
                 return BadRequest(new Error(400, GetModelStateErrorString(),
@@ -57,8 +58,8 @@ namespace ecruise.Api.Controllers
         }
 
         // GET: /invoices/by-invoice-item/1
-        [HttpGet("by-invoice-item/{id}", Name = "GetInvoiceByInvoiceItemId")]
-        public async Task<IActionResult> GetByInvoiceItemId(ulong id)
+        [HttpGet("by-invoice-item/{id}", Name = "GetInvoiceByInvoiceItemIdAsync")]
+        public async Task<IActionResult> GetByInvoiceItemIdAsync(ulong id)
         {
             if (!ModelState.IsValid)
                 return BadRequest(new Error(400, GetModelStateErrorString(),
@@ -81,8 +82,8 @@ namespace ecruise.Api.Controllers
         }
 
         // GET: /invoices/by-customer/{customerId}
-        [HttpGet("by-customer/{customerId}", Name = "GetInvoiceByCustomerId")]
-        public async Task<IActionResult> GetInvoiceByCustomerId(ulong customerId)
+        [HttpGet("by-customer/{customerId}", Name = "GetInvoiceByCustomerIdAsync")]
+        public async Task<IActionResult> GetInvoiceByCustomerIdAsync(ulong customerId)
         {
             if (!ModelState.IsValid)
                 return BadRequest(new Error(400, GetModelStateErrorString(),
@@ -103,8 +104,8 @@ namespace ecruise.Api.Controllers
         }
 
         // PATCH: /invoices/1/paid
-        [HttpPatch("{id}/paid")]
-        public async Task<IActionResult> Patch(ulong id, [FromBody] bool paid)
+        [HttpPatch("{id}/paid", Name = "UpdateInvoiceAsync")]
+        public async Task<IActionResult> PatchAsync(ulong id, [FromBody] bool paid)
         {
             // forbid if not admin
             if (!HasAccess())
@@ -127,8 +128,8 @@ namespace ecruise.Api.Controllers
         }
 
         // GET: /invoices/1/items
-        [HttpGet("{id}/items", Name = "GetAllInvoiceItems")]
-        public async Task<IActionResult> GetAllInvoiceItems(ulong id)
+        [HttpGet("{id}/items", Name = "GetAllInvoiceItemsAsync")]
+        public async Task<IActionResult> GetAllInvoiceItemsAsync(ulong id)
         {
             if (!ModelState.IsValid)
                 return BadRequest(new Error(400, GetModelStateErrorString(),
@@ -155,8 +156,8 @@ namespace ecruise.Api.Controllers
         }
         
         // POST: /Invoices/1/items
-        [HttpPost("{id}/items", Name = "CreateNewInvoiceItem")]
-        public async Task<IActionResult> Post(ulong id, [FromBody] InvoiceItem invoiceItem)
+        [HttpPost("{id}/items", Name = "CreateNewInvoiceItemAsync")]
+        public async Task<IActionResult> PostAsync(ulong id, [FromBody] InvoiceItem invoiceItem)
         {
             // forbid if not admin
             if (!HasAccess())
@@ -183,7 +184,18 @@ namespace ecruise.Api.Controllers
                 var inserted = await Context.InvoiceItems.AddAsync(insertItem);
 
                 // update invoice total amount
-                Context.Invoices.Find(insertItem.InvoiceId).TotalAmount += insertItem.Amount;
+                switch (invoiceItem.Type)
+                {
+                    case InvoiceItem.TypeEnum.Debit:
+                        invoice.TotalAmount += insertItem.Amount;
+                        break;
+                    case InvoiceItem.TypeEnum.Credit:
+                        invoice.TotalAmount -= insertItem.Amount;
+                        break;
+                    default:
+                        return BadRequest(new Error(400, "The provided invoice item type is invalid",
+                            "An error occured. Please check the message for further information."));
+                }
 
                 transaction.Commit();
                 await Context.SaveChangesAsync();
@@ -195,8 +207,8 @@ namespace ecruise.Api.Controllers
         }
 
         // GET: /invoices/items/1
-        [HttpGet("items/{invoiceItemId}", Name = "GetInvoiceItem")]
-        public async Task<IActionResult> GetInvoiceItem(ulong invoiceItemId)
+        [HttpGet("items/{invoiceItemId}", Name = "GetInvoiceItemAsync")]
+        public async Task<IActionResult> GetInvoiceItemAsync(ulong invoiceItemId)
         {
             if (!ModelState.IsValid)
                 return BadRequest(new Error(400, GetModelStateErrorString(),
