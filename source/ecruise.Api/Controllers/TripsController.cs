@@ -93,6 +93,11 @@ namespace ecruise.Api.Controllers
                     "The action is not allowed with this resource",
                     "You were trying to use a non fully loaded car for a trip. Cars must be fully loaded to use for a trip"));
 
+            if(car.BookingState != "AVAILABLE")
+                return StatusCode(StatusCodes.Status409Conflict, new Error(303,
+                   "The action is not allowed with this resource",
+                   "You were trying to use a car that is currently not available."));
+
             // Check if the charging station extists
             var chargingStation = await Context.ChargingStations.FindAsync((ulong)trip.StartChargingStationId);
 
