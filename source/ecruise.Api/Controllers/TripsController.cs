@@ -9,6 +9,7 @@ using ecruise.Models.Assemblers;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using DbCarChargingStation = ecruise.Database.Models.CarChargingStation;
 using DbTrip = ecruise.Database.Models.Trip;
 using DbInvoice = ecruise.Database.Models.Invoice;
 using DbInvoiceItem = ecruise.Database.Models.InvoiceItem;
@@ -158,6 +159,13 @@ namespace ecruise.Api.Controllers
                 dbtrip.EndChargingStationId = trip.EndChargingStationId;
                 dbtrip.DistanceTravelled = trip.DistanceTravelled;
 
+                // Check if end charging station exists
+                var endChargingStation = await Context.ChargingStations.FindAsync(dbtrip.EndChargingStationId);
+
+                if(endChargingStation == null)
+                    return NotFound(new Error(201, "Charging station with requested id does not exist.",
+                        $"A charging station with id {id} does not exist."));
+
                 // Get last invoice for the customer (means the invoice of the current month)
                 DbInvoice matchingInvoice = Context.Invoices.OrderBy(i => i.InvoiceId)
                     .LastOrDefault(i => i.CustomerId == dbtrip.CustomerId);
@@ -192,6 +200,25 @@ namespace ecruise.Api.Controllers
 
                 booking.InvoiceItemId = insertedInvoiceItem.Entity.InvoiceItemId;
 
+                // Connect the car to the charging station given in endChargingStation
+                var carChargingStation = new DbCarChargingStation
+                {
+                    CarChargingStationId = 0,
+                    CarId = (ulong)dbtrip.CarId,
+                    ChargeStart = DateTime.UtcNow,
+                    ChargingStationId = (ulong)dbtrip.EndChargingStationId
+                };
+
+                // Add the new connection to the database
+                await Context.CarChargingStations.AddAsync(carChargingStation);
+
+                // Patch the car to have correct values
+                // Get the car
+                var car = await Context.Cars.FindAsync(dbtrip.CarId);
+
+                car.BookingState = "AVAILABLE";
+                car.ChargingState = "CHARGING";
+                // Charge level and mileage will be changed separately by the car itself
 
                 // Check if the car must be locked due to a pending maintenance
                 // Check if there is a maintenance for the car
@@ -201,9 +228,6 @@ namespace ecruise.Api.Controllers
 
                 if (carMaintenancesForCar.Count > 0)
                 {
-                    // Get the car
-                    var car = await Context.Cars.FindAsync(dbtrip.CarId);
-
                     // Get average time for a trip
                     var allTrips = await Context.Trips.Where(t => t.EndDate.HasValue && t.DistanceTravelled.HasValue)
                         .ToListAsync();
