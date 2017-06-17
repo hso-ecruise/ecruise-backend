@@ -78,6 +78,14 @@ namespace ecruise.Api.Controllers
             if (!HasAccess())
                 return Unauthorized();
 
+            // Check if new bookings are allowed
+            var config = await Context.Configurations.FindAsync(1);
+
+            if(config == null || config.AllowNewBookings == false)
+                return StatusCode(StatusCodes.Status503ServiceUnavailable,
+                    new Error(501, "Currently are no new bookings allowed",
+                        "An error occured.Please check the message for further information."));
+
             // Create db trip to be inserted
             DbTrip insertTrip = TripAssembler.AssembleEntity(0, trip);
 
