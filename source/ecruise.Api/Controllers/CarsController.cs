@@ -109,11 +109,39 @@ namespace ecruise.Api.Controllers
                 .ToListAsync();
 
             if (trips.Count > 0)
+            {
                 if (trips.FirstOrDefault(t => t.CarId == id) != null)
                 {
                     // Ask the car for its current location
-                    // TODO Ask car for current location and update on database
+                    // TODO Felix: Write car into database to get its location
+
+                    // Wait for car to set its location
+
+                    
                 }
+            }
+
+            return Ok(CarAssembler.AssembleModel(car));
+        }
+
+        // GET: /Cars/1
+        [HttpGet("{id}/is-wanted", Name = "CheckCarIsWanted")]
+        public async Task<IActionResult> CheckCarIsWanted(ulong id)
+        {
+            // validate user input
+            if (!ModelState.IsValid)
+                return BadRequest(new Error(400, GetModelStateErrorString(),
+                    "An error occured. Please check the message for further information."));
+
+            // find the requested car
+            DbCar car = await Context.Cars.FindAsync(id);
+
+            // return error if car was not found
+            if (car == null)
+                return NotFound(new Error(201, "Car with requested id does not exist.",
+                    $"There is no maintenance that has the id {id}."));
+
+            // TODO Felix: Add check if car is searched
 
             return Ok(CarAssembler.AssembleModel(car));
         }
@@ -262,6 +290,8 @@ namespace ecruise.Api.Controllers
                 car.LastKnownPositionLongitude = longitude;
                 car.LastKnownPositionDate = DateTime.UtcNow;
 
+                // TODO Felix: Check if car was searched
+
                 transaction.Commit();
                 await Context.SaveChangesAsync();
             }
@@ -270,7 +300,7 @@ namespace ecruise.Api.Controllers
         }
 
         // GET: /Cars/closest-to/58/8?radius=100
-// ReSharper disable PossibleInvalidOperationException
+        // ReSharper disable PossibleInvalidOperationException
         [HttpGet(@"closest-to/{latitude}/{longitude}", Name = "GetClosestCar")]
         public async Task<IActionResult> GetClosestCarChargingStation(double latitude, double longitude,
             [FromQuery] int radius)
@@ -310,7 +340,7 @@ namespace ecruise.Api.Controllers
 
             // If radius is zero (or not set) get only first element
             if (radius == 0)
-                return Ok(CarAssembler.AssembleModelList(new List<DbCar> {closest.FirstOrDefault()}));
+                return Ok(CarAssembler.AssembleModelList(new List<DbCar> { closest.FirstOrDefault() }));
 
             return Ok(CarAssembler.AssembleModelList(closest));
         }
