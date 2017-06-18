@@ -96,7 +96,7 @@ namespace ecruise.Api.Controllers
             if (booking.TripId != null && booking.TripId != 0)
             {
                 // Get the trip
-                var trip = await Context.Trips.FindAsync(booking.TripId);
+                var trip = await Context.Trips.FindAsync((ulong)booking.TripId);
                 
                 if(trip == null)
                     return NotFound(new Error(202, "The trip id referenced in the booking does not exist.",
