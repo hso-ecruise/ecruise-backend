@@ -92,8 +92,19 @@ namespace ecruise.Api.Controllers
                 return BadRequest(new Error(302, "PlannedDate must be in the future.",
                     "The DateTime wasn't set properly. Please check the message for further information."));
 
-            // Force null on items that cant already be set
-            booking.TripId = null;
+            // Check if the trip already exists
+            if (booking.TripId != null && booking.TripId != 0)
+            {
+                // Get the trip
+                var trip = await Context.Trips.FindAsync(booking.TripId);
+                
+                if(trip == null)
+                    return NotFound(new Error(202, "The trip id referenced in the booking does not exist.",
+                        "An error occured. Please check the message for further information."));
+            }
+            else if (booking.TripId == 0)
+                booking.TripId = null;
+            
             booking.InvoiceItemId = null;
 
             // Construct entity from model
