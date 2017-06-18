@@ -80,7 +80,7 @@ namespace ecruise.Api.Controllers
                 return Unauthorized();
 
             // Check if new bookings are allowed
-            var config = await Context.Configurations.FindAsync(1);
+            var config = await Context.Configurations.FindAsync((ulong)1);
 
             if(config == null || config.AllowNewBookings == false)
                 return StatusCode(StatusCodes.Status503ServiceUnavailable,
