@@ -166,6 +166,10 @@ namespace ecruise.Api.Controllers
                     return NotFound(new Error(201, "Charging station with requested id does not exist.",
                         $"A charging station with id {id} does not exist."));
 
+                // Increment the occupied slots
+                if (endChargingStation.SlotsOccupied < endChargingStation.Slots)
+                    endChargingStation.SlotsOccupied++;
+
                 // Get last invoice for the customer (means the invoice of the current month)
                 DbInvoice matchingInvoice = Context.Invoices.OrderBy(i => i.InvoiceId)
                     .LastOrDefault(i => i.CustomerId == dbtrip.CustomerId);
