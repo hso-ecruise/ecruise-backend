@@ -167,6 +167,10 @@ namespace ecruise.Api.Controllers
         [HttpGet("{id}/is-wanted", Name = "CheckCarIsWanted")]
         public async Task<IActionResult> CheckCarIsWanted(ulong id)
         {
+            // forbid if not admin
+            if (!HasAccess())
+                return Unauthorized();
+
             // validate user input
             if (!ModelState.IsValid)
                 return BadRequest(new Error(400, GetModelStateErrorString(),
@@ -180,9 +184,23 @@ namespace ecruise.Api.Controllers
                 return NotFound(new Error(201, "Car with requested id does not exist.",
                     $"There is no maintenance that has the id {id}."));
 
-            // TODO Felix: Add check if car is searched
+            // Get the configuration
+            var config = await Context.Configurations.FindAsync((ulong) 1);
 
-            return Ok(CarAssembler.AssembleModel(car));
+            var searchedCarsString = config.SearchedCars;
+
+            // Split the string and convert to ulongs
+            if (searchedCarsString == string.Empty)
+                return Ok(false);
+
+            var splittedSearchedCarIds = searchedCarsString.Split(',');
+            var searchedCarIds = splittedSearchedCarIds.Select(ulong.Parse).ToList();
+
+            if (searchedCarIds.Contains(id))
+                return Ok(true);
+
+            return Ok(false);
+
         }
 
         // PATCH: /Cars/1/chargingState
