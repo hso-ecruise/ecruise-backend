@@ -78,7 +78,7 @@ namespace ecruise.Api.Controllers
             if (!HasAccess(invoice.CustomerId))
                 return Unauthorized();
 
-            return Ok(InvoiceAssembler.AssembleModel(item.Invoice));
+            return Ok(InvoiceAssembler.AssembleModel(invoice));
         }
 
         // GET: /invoices/by-customer/{customerId}
