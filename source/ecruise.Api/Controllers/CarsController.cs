@@ -105,7 +105,7 @@ namespace ecruise.Api.Controllers
                 return NotFound(new Error(201, "Car with requested id does not exist.",
                     $"There is no car that has the id {id}."));
 
-            // Check if the user is allowed to get the data
+            // Get the trips where the customer is allowed to seach for the car
             var trips = await Context.Trips.Where(t => t.CustomerId == AuthenticatedCustomerId && t.EndDate == null)
                 .ToListAsync();
 
@@ -127,17 +127,22 @@ namespace ecruise.Api.Controllers
             // Write the car in the search list
             var config = await Context.Configurations.FindAsync((ulong)1);
             var searchedCarsString = config.SearchedCars;
+            
+            List<ulong> listOfSearchedCarIds = new List<ulong>();
 
-            var listOfSearchedCars = searchedCarsString.Split(',').ToList();
-
-            // Convert list to list of ulongs
-            List<ulong> listOfSearchCarIds = listOfSearchedCars.Select(ulong.Parse).ToList();
+            if(searchedCarsString != string.Empty)
+                listOfSearchedCarIds = searchedCarsString.Split(',').Select(ulong.Parse).ToList();
 
             // Check if car not already in (e.g. by multiple same requests)
-            if (listOfSearchCarIds.All(carId => carId != id))
+            // ReSharper disable once SimplifyLinqExpression
+            if (!listOfSearchedCarIds.Any(carId => carId == id))
             {
+                // Check if the string is empty (no comma needed than)
+                if (searchedCarsString != string.Empty)
+                    searchedCarsString += ",";
+
                 // Add the car to search
-                searchedCarsString += $",{id}";
+                searchedCarsString += id.ToString();
 
                 // Update the entity
                 config.SearchedCars = searchedCarsString;
@@ -154,8 +159,10 @@ namespace ecruise.Api.Controllers
 
                 // Check if the lastKnownPositionDate has changed
                 // Get current car from db
-                var currentCar = await Context.Cars.FindAsync(id);
-                if (currentCar.LastKnownPositionDate != lastKnownPositionDate)
+                Context.Entry(car).Reload();
+
+                // Check if the date has changed
+                if (car.LastKnownPositionDate != lastKnownPositionDate)
                 {
                     // The date has changed so the update must have been done
                     return Ok(CarAssembler.AssembleModel(car));
