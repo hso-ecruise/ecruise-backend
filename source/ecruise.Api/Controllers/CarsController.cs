@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using ecruise.Database.Models;
 using ecruise.Models;
@@ -102,26 +103,64 @@ namespace ecruise.Api.Controllers
             // Return error if car was not found
             if (car == null)
                 return NotFound(new Error(201, "Car with requested id does not exist.",
-                    $"There is no maintenance that has the id {id}."));
+                    $"There is no car that has the id {id}."));
 
             // Check if the user is allowed to get the data
             var trips = await Context.Trips.Where(t => t.CustomerId == AuthenticatedCustomerId && t.EndDate == null)
                 .ToListAsync();
 
-            if (trips.Count > 0)
+            if (trips.Count == 0)
             {
-                if (trips.FirstOrDefault(t => t.CarId == id) != null)
-                {
-                    // Ask the car for its current location
-                    // TODO Felix: Write car into database to get its location
-
-                    // Wait for car to set its location
-
-                    
-                }
+                return NotFound(new Error(201, "Customer has no trips.",
+                    "There is no trip that belongs to this customer."));
             }
 
-            return Ok(CarAssembler.AssembleModel(car));
+            if (trips.FirstOrDefault(t => t.CarId == id) == null)
+            {
+                return NotFound(new Error(201, "Car with requested id has no trips.",
+                    "There is no trip that belongs to the car with the requested id."));
+            }
+
+            // Remember lastKnownPositionDate
+            var lastKnownPositionDate = car.LastKnownPositionDate;
+
+            // Write the car in the search list
+            var config = await Context.Configurations.FindAsync((ulong)1);
+            var searchedCarsString = config.SearchedCars;
+
+            var listOfSearchedCars = searchedCarsString.Split(',').ToList();
+
+            // Convert list to list of ulongs
+            List<ulong> listOfSearchCarIds = listOfSearchedCars.Select(ulong.Parse).ToList();
+
+            // Check if car not already in (e.g. by multiple same requests)
+            if (listOfSearchCarIds.All(carId => carId != id))
+            {
+                // Add the car to search
+                searchedCarsString += $",{id}";
+
+                // Update the entity
+                config.SearchedCars = searchedCarsString;
+
+                // Save the changes
+                await Context.SaveChangesAsync();
+            }
+
+            // Wait for car to set its location
+            while (true)
+            {
+                // Wait 1 second
+                Thread.Sleep(1000);
+
+                // Check if the lastKnownPositionDate has changed
+                // Get current car from db
+                var currentCar = await Context.Cars.FindAsync(id);
+                if (currentCar.LastKnownPositionDate != lastKnownPositionDate)
+                {
+                    // The date has changed so the update must have been done
+                    return Ok(CarAssembler.AssembleModel(car));
+                }
+            }
         }
 
         // GET: /Cars/1
