@@ -1,15 +1,7 @@
-using System;
-using System.Collections.Immutable;
-using System.Globalization;
-using System.Linq;
 using System.Threading.Tasks;
 using ecruise.Database.Models;
 using ecruise.Models;
-using ecruise.Models.Assemblers;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using ecruise.Database.Models;
 
 namespace ecruise.Api.Controllers
 {
