@@ -52,7 +52,7 @@ namespace ecruise.Api.Middleware
                     // Touch token(s) to be valid 20 more minutes when still in use
                     if (tokens.Any())
                     {
-                        tokens.ForEach(t => t.ExpireDate = DateTime.UtcNow.AddMinutes(20));
+                        tokens.ForEach(t => t.ExpireDate = DateTime.UtcNow.AddMinutes(60));
 
                         await dbContext.SaveChangesAsync();
                     }
