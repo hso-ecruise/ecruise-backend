@@ -197,14 +197,6 @@ namespace ecruise.Api
                     // Find matching customer
                     var customer = context.Customers.Find(invoice.CustomerId);
 
-                    // Check if found
-                    if (customer == null)
-                    {
-                        Debug.WriteLine(
-                            $"ERROR: The customer with id {invoice.CustomerId} for the invoice with id {invoice.CustomerId} was not found");
-                        continue;
-                    }
-
                     invoicePairs.Add(new Tuple<Invoice, Customer>(invoice, customer));
                 }
 
