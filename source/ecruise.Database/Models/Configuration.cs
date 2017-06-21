@@ -4,5 +4,6 @@
     {
         public ulong ConfigurationId { get; set; }
         public bool AllowNewBookings { get; set; }
+        public string SearchedCars { get; set; }
     }
 }
