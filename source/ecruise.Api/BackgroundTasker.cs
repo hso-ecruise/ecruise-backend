@@ -46,6 +46,9 @@ namespace ecruise.Api
             // Add invoice creation module
             registry.Schedule((Action)InvoiceCreator).ToRunEvery(0).Months().On(1).At(0, 0);
 
+            // Add CarCharger module
+            registry.Schedule((Action)CarCharger).ToRunEvery(1).Minutes();
+
             return registry;
         }
 
@@ -304,6 +307,34 @@ namespace ecruise.Api
                     });
 
                 await context.Invoices.AddRangeAsync(newInvoices);
+            }
+        }
+
+        /// <summary>
+        ///     Charges every car which has chargeState "Charging" until full
+        /// </summary>
+        private async void CarCharger()
+        {
+            using (EcruiseContext context = new EcruiseContext(_dbContextOptions))
+            {
+                // Get all charging cars
+                var chargingCars = await context.Cars.Where(c => c.ChargingState == "CHARGING").ToListAsync();
+
+                foreach(var chargingCar in chargingCars)
+                {
+                    // Add 1 percent charge level
+                    chargingCar.ChargeLevel += 1.0;
+
+                    // Check if car fully loaded
+                    if(chargingCar.ChargeLevel >= 100.0)
+                    {
+                        chargingCar.ChargeLevel = 100.0;
+                        chargingCar.ChargingState = "FULL";
+                    }
+                }
+
+                // Save the changes
+                await context.SaveChangesAsync();
             }
         }
     }
