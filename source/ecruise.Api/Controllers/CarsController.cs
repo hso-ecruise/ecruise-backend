@@ -196,18 +196,19 @@ namespace ecruise.Api.Controllers
 
             var searchedCarsString = config.SearchedCars;
 
-            // Split the string and convert to ulongs
+            // Check if any car is searched
             if (searchedCarsString == string.Empty)
-                return Ok(false);
+                return NoContent();
 
+            // Split the string and convert to ulongs
             var splittedSearchedCarIds = searchedCarsString.Split(',');
             var searchedCarIds = splittedSearchedCarIds.Select(ulong.Parse).ToList();
 
+            // Check if the given car is searched
             if (searchedCarIds.Contains(id))
                 return Ok(true);
 
-            return Ok(false);
-
+            return NoContent();
         }
 
         // PATCH: /Cars/1/chargingState
