@@ -119,6 +119,7 @@ namespace ecruise.Api.Controllers
 
             // Change the charging state to discharging
             car.ChargingState = "DISCHARGING";
+            car.BookingState = "BOOKED";
             car.LastKnownPositionDate = DateTime.UtcNow;
 
             // insert trip into database
