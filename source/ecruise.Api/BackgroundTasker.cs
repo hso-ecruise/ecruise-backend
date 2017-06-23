@@ -4,14 +4,12 @@ using System.Collections.Immutable;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
-using System.Threading.Tasks;
 using ecruise.Database.Models;
 using ecruise.Models.Assemblers;
 using FluentScheduler;
 using GeoCoordinatePortable;
 using MailKit.Net.Smtp;
 using Microsoft.EntityFrameworkCore;
-using DbCustomer = ecruise.Database.Models.Customer;
 using DbInvoice = ecruise.Database.Models.Invoice;
 using DbStatistic = ecruise.Database.Models.Statistic;
 using Trip = ecruise.Models.Trip;
@@ -156,9 +154,9 @@ namespace ecruise.Api
                                      $"Dein Auto hat die Nummer {closestCar.CarId}, das Kennzeichen \"{closestCar.LicensePlate}\" " +
                                      $"und steht an der Ladestation {matchingCarChargingStation.ChargingStationId}.<br/>" +
                                      $"Du findest es hier: <a href=" +
-                                     $"\"https://www.google.de/maps/place/{closestCar.LastKnownPositionLatitude.ToString().Replace(",",".")}" +
-                                     $",{closestCar.LastKnownPositionLongitude.ToString().Replace(",",".")}\">" +
-                                     $" {closestCar.LastKnownPositionLatitude.ToString().Replace(",",".")},{closestCar.LastKnownPositionLongitude.ToString().Replace(",",".")} </a>.<br/>" +
+                                     $"\"https://www.google.de/maps/place/{closestCar.LastKnownPositionLatitude.ToString().Replace(",", ".")}" +
+                                     $",{closestCar.LastKnownPositionLongitude.ToString().Replace(",", ".")}\">" +
+                                     $" {closestCar.LastKnownPositionLatitude.ToString().Replace(",", ".")},{closestCar.LastKnownPositionLongitude.ToString().Replace(",", ".")} </a>.<br/>" +
                                      "Viel Spaß wünscht dir<br/>" +
                                      "Dein eCruise-Team!" +
                                      "</div>" +
@@ -166,8 +164,14 @@ namespace ecruise.Api
                                      "</body>" +
                                      "</html> ";
 
-
-                    await customer.SendMail("eCruise: Auto zugewiesen", mailString);
+                    try
+                    {
+                        await customer.SendMail("eCruise: Auto zugewiesen", mailString);
+                    }
+                    catch (Exception e)
+                    {
+                        Debug.WriteLine($"Caught exception in CarReservator. The car {closestCar.CarId} was reserved, but the mail could not be sent to {customer.Email}. The full exception code: {e.Message}");
+                    }
 
                     // Set trip id of booking
                     booking.TripId = newtripEntity.TripId;
@@ -353,13 +357,13 @@ namespace ecruise.Api
                 // Get all charging cars
                 var chargingCars = await context.Cars.Where(c => c.ChargingState == "CHARGING").ToListAsync();
 
-                foreach(var chargingCar in chargingCars)
+                foreach (var chargingCar in chargingCars)
                 {
                     // Add 1 percent charge level
                     chargingCar.ChargeLevel += 1.0;
 
                     // Check if car fully loaded
-                    if(chargingCar.ChargeLevel >= 100.0)
+                    if (chargingCar.ChargeLevel >= 100.0)
                     {
                         chargingCar.ChargeLevel = 100.0;
                         chargingCar.ChargingState = "FULL";
