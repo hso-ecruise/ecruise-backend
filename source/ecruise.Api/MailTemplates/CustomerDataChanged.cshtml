@@ -1,15 +1,14 @@
 ﻿@{ Layout = "/_Layout.cshtml"; }
-@model ecruise.Models.Customer
 Hallo @Model.FirstName!
 
 Wie es aussieht, hast du deine Daten bei eCruise geändert.
 Damit du nochmal alles auf einen Blick hast, sind hier deine neuen Daten:
 
-<b>@Model.FirstName @Model.LastName
-    Tel. @Model.PhoneNumber
-    @Model.Street @Model.HouseNumber
-    @if (string.IsNullOrWhiteSpace(@Model.AddressExtraLine))
-    {  @Model.AddressExtraLine}
-    @Model.ZipCode @Model.City, @Model.Country</b>
+<b><br/>@Model.FirstName @Model.LastName<br/>
+    Tel. @Model.PhoneNumber<br/>
+    @Model.Street @Model.HouseNumber @Model.AddressExtraLine<br/>
+    @Model.ZipCode @Model.City, @Model.Country<br/></b>
+
+Liebe Grüße
 
 Dein eCruise-Team

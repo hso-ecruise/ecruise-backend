@@ -192,17 +192,34 @@ namespace ecruise.Api.Controllers
                     "An error occured. Please check the message for further information."));
 
             // find the requested customer
-            DbCustomer customer = await Context.Customers.FindAsync(id);
+            DbCustomer dbCustomer = await Context.Customers.FindAsync(id);
 
             // return error if customer was not found
-            if (customer == null)
+            if (dbCustomer == null)
                 return NotFound(new Error(201, "Customer with requested id does not exist.",
                     $"There is no customer that has the id {id}."));
 
             // update customer phone number
-            customer.PhoneNumber = phoneNumber;
+            dbCustomer.PhoneNumber = phoneNumber;
 
             await Context.SaveChangesAsync();
+
+            // send confirmation email
+            var customer = CustomerAssembler.AssembleModel(dbCustomer);
+
+            await customer.SendMail("Änderung deiner Daten",
+                _razorEngine.Parse("CustomerDataChanged.cshtml", new
+                {
+                    customer.FirstName,
+                    customer.LastName,
+                    customer.PhoneNumber,
+                    customer.Street,
+                    customer.HouseNumber,
+                    customer.AddressExtraLine,
+                    customer.ZipCode,
+                    customer.City,
+                    customer.Country
+                }));
 
             return Ok(new PostReference(id, $"{BasePath}/customer/{id}"));
         }
@@ -221,29 +238,47 @@ namespace ecruise.Api.Controllers
                     "An error occured. Please check the message for further information."));
 
             // find the requested customer
-            DbCustomer customer = await Context.Customers.FindAsync(id);
+            DbCustomer dbCustomer = await Context.Customers.FindAsync(id);
 
             // return error if customer was not found
-            if (customer == null)
+            if (dbCustomer == null)
                 return NotFound(new Error(201, "Customer with requested id does not exist.",
                     $"There is no customer that has the id {id}."));
 
             // update the customer address data
             using (var transaction = Context.Database.BeginTransaction())
             {
-                customer.Country = address.Country;
-                customer.City = address.City;
-                customer.ZipCode = address.ZipCode;
-                customer.Street = address.Street;
-                customer.HouseNumber = address.HouseNumber;
-                customer.AddressExtraLine = address.AddressExtraLine;
+                dbCustomer.Country = address.Country;
+                dbCustomer.City = address.City;
+                dbCustomer.ZipCode = address.ZipCode;
+                dbCustomer.Street = address.Street;
+                dbCustomer.HouseNumber = address.HouseNumber;
+                dbCustomer.AddressExtraLine = address.AddressExtraLine;
 
                 transaction.Commit();
 
                 await Context.SaveChangesAsync();
             }
 
-            return Ok(new PostReference(1, $"{BasePath}/customer/{customer.CustomerId}"));
+
+            // send confirmation email
+            var customer = CustomerAssembler.AssembleModel(dbCustomer);
+
+            await customer.SendMail("Änderung deiner Daten",
+                _razorEngine.Parse("CustomerDataChanged.cshtml", new
+                {
+                    customer.FirstName,
+                    customer.LastName,
+                    customer.PhoneNumber,
+                    customer.Street,
+                    customer.HouseNumber,
+                    customer.AddressExtraLine,
+                    customer.ZipCode,
+                    customer.City,
+                    customer.Country
+                }));
+
+            return Ok(new PostReference(1, $"{BasePath}/customer/{dbCustomer.CustomerId}"));
         }
 
         // PATCH: /Customers/5/verified
