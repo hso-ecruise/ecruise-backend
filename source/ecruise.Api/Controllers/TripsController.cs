@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Threading.Tasks;
@@ -123,12 +124,25 @@ namespace ecruise.Api.Controllers
             car.LastKnownPositionDate = DateTime.UtcNow;
 
             // insert trip into database
-            var inserted = await Context.Trips.AddAsync(insertTrip);
+            var insertedTrip = await Context.Trips.AddAsync(insertTrip);
 
             await Context.SaveChangesAsync();
 
-            return Created($"{BasePath}/trips/{inserted.Entity.TripId}",
-                new PostReference((uint)inserted.Entity.TripId, $"{BasePath}/trips/{inserted.Entity.TripId}"));
+            // Send a confirmation mail to customer
+            var dbCustomer = await Context.Customers.FindAsync(insertedTrip.Entity.CustomerId);
+
+            var customer = CustomerAssembler.AssembleModel(dbCustomer);
+            try
+            {
+                await customer.SendMail("eCruise: Beginn deiner Fahrt", $"Hallo {customer.FirstName}!<br/>Du hast gerade eine Fahrt mit einem unserer Fahrzeuge gestartet.<br/>Fahrtbeginn: {insertedTrip.Entity.StartDate:f}<br/>Viel Spaß und Gute Fahrt!<br/><br/>Liebe Grüße<br/>Dein eCruise-Team");
+            }
+            catch (Exception e)
+            {
+                Debug.WriteLine($"Trip with id {insertedTrip.Entity.TripId} created, but email sending to {customer.FirstName} {customer.LastName} with mail address {customer.Email} failed.\nComplete exception message: {e.Message}", "WARNING");
+            }
+
+            return Created($"{BasePath}/trips/{insertedTrip.Entity.TripId}",
+                new PostReference((uint)insertedTrip.Entity.TripId, $"{BasePath}/trips/{insertedTrip.Entity.TripId}"));
         }
 
         // PATCH: /trips/1
