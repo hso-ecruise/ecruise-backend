@@ -330,6 +330,13 @@ namespace ecruise.Api
                     {
                         chargingCar.ChargeLevel = 100.0;
                         chargingCar.ChargingState = "FULL";
+
+                        // Get the matching car-charging-station
+                        var carChargingStation = await context.CarChargingStations
+                            .LastAsync(ccs => ccs.CarId == chargingCar.CarId);
+
+                        // Set charge end date to now
+                        carChargingStation.ChargeEnd = DateTime.UtcNow;
                     }
                 }
 
