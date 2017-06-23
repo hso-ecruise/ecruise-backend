@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Immutable;
+using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
@@ -65,7 +66,7 @@ namespace ecruise.Api.Controllers
         public async Task<IActionResult> Post([FromBody] Booking booking)
         {
             // Check if new bookings are allowed
-            var config = Context.Configurations.Find((ulong)1);
+            var config = await Context.Configurations.FindAsync((ulong)1);
             if (!config.AllowNewBookings)
                 return StatusCode(StatusCodes.Status503ServiceUnavailable,
                     new Error(501, "Currently are no new bookings allowed",
@@ -78,7 +79,8 @@ namespace ecruise.Api.Controllers
 
             // Check booking for logical validity
             // Check customer
-            if (Context.Customers.Find((ulong)booking.CustomerId) == null)
+            var dbCustomer = await Context.Customers.FindAsync((ulong) booking.CustomerId);
+            if (dbCustomer == null)
                 return NotFound(new Error(202, "The customer id referenced in the booking does not exist.",
                     "An error occured. Please check the message for further information."));
 
@@ -116,6 +118,20 @@ namespace ecruise.Api.Controllers
             // Save to database
             await Context.Bookings.AddAsync(bookingEntity);
             await Context.SaveChangesAsync();
+
+            var customer = CustomerAssembler.AssembleModel(dbCustomer);
+
+            if (booking.PlannedDate.HasValue)
+            {
+                try
+                {
+                    await customer.SendMail("eCruise: Buchungsbestätigung", $"Hallo {customer.FirstName}!<br/>Hiermit bestätigen wir deine Buchung für {booking.PlannedDate.Value:D}<br/><br/> Liebe Grüße<br/> Dein eCruise-Team");
+                }
+                catch (Exception e)
+                {
+                    Debug.WriteLine($"Booking with id {booking.BookingId} created, but email sending to {customer.FirstName} {customer.LastName} with mail address {customer.Email} failed.\nComplete exception message: {e.Message}", "WARNING");
+                }
+            }
 
             // Get the reference to the newly created entity
             PostReference pr = new PostReference((uint)bookingEntity.BookingId,
