@@ -278,7 +278,7 @@ namespace ecruise.Api.Controllers
                     customer.Country
                 }));
 
-            return Ok(new PostReference(1, $"{BasePath}/customer/{dbCustomer.CustomerId}"));
+            return Ok(new PostReference(id, $"{BasePath}/customer/{id}"));
         }
 
         // PATCH: /Customers/5/verified
@@ -307,7 +307,7 @@ namespace ecruise.Api.Controllers
 
             await Context.SaveChangesAsync();
 
-            return Ok(new PostReference(1, $"{BasePath}/customer/{customer.CustomerId}"));
+            return Ok(new PostReference(id, $"{BasePath}/customer/{id}"));
         }
 
         // PATCH: /Customers/5/chipcarduid
@@ -336,7 +336,7 @@ namespace ecruise.Api.Controllers
 
             await Context.SaveChangesAsync();
 
-            return Ok(new PostReference(1, $"{BasePath}/customer/{customer.CustomerId}"));
+            return Ok(new PostReference(id, $"{BasePath}/customer/{id}"));
         }
 
         // GET: /Customers/by-lastname/5
