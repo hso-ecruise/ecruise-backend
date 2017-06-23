@@ -2,7 +2,9 @@
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
+using System.Threading.Tasks;
 using ecruise.Database.Models;
 using ecruise.Models.Assemblers;
 using FluentScheduler;
@@ -55,7 +57,8 @@ namespace ecruise.Api
         /// <summary>
         ///     Checks for bookings that start in less than 30 minutes, reserves a  car for the booking and creates the trip
         /// </summary>
-        private void CarReservator()
+        [SuppressMessage("ReSharper", "PossibleInvalidOperationException")]
+        private async void CarReservator()
         {
             using (EcruiseContext context = new EcruiseContext(_dbContextOptions))
             {
@@ -135,6 +138,36 @@ namespace ecruise.Api
 
                     // Save new trip and car state
                     context.SaveChanges();
+
+                    // Send mail to customer that a car was assigned
+                    var customer =
+                        CustomerAssembler.AssembleModel(await context.Customers.FindAsync(booking.CustomerId));
+
+                    var mailString = "<!DOCTYPE html>" +
+                                     "<html>" +
+                                     "<head>" +
+                                     "<meta charset = \"utf-8\">" +
+                                     "</head>" +
+                                     "<body>" +
+                                     "<div>" +
+                                     "<div style = \"white-space: pre-line;\">" +
+                                     $"Hallo {customer.FirstName}!<br/>" +
+                                     $"Deiner Fahrt am {booking.PlannedDate.Value:f} wurde soeben ein Auto zugeordnet!<br/>" +
+                                     $"Dein Auto hat die Nummer {closestCar.CarId}, das Kennzeichen \"{closestCar.LicensePlate}\" " +
+                                     $"und steht an der Ladestation {matchingCarChargingStation.ChargingStationId}.<br/>" +
+                                     $"Du findest es hier: <a href=" +
+                                     $"\"https://www.google.de/maps/place/{closestCar.LastKnownPositionLatitude.ToString().Replace(",",".")}" +
+                                     $",{closestCar.LastKnownPositionLongitude.ToString().Replace(",",".")}\">" +
+                                     $" {closestCar.LastKnownPositionLatitude.ToString().Replace(",",".")},{closestCar.LastKnownPositionLongitude.ToString().Replace(",",".")} </a>.<br/>" +
+                                     "Viel Spaß wünscht dir<br/>" +
+                                     "Dein eCruise-Team!" +
+                                     "</div>" +
+                                     "</div>" +
+                                     "</body>" +
+                                     "</html> ";
+
+
+                    await customer.SendMail("eCruise: Auto zugewiesen", mailString);
 
                     // Set trip id of booking
                     booking.TripId = newtripEntity.TripId;
