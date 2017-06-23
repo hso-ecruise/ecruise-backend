@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Threading.Tasks;
 using ecruise.Database.Models;
@@ -62,6 +63,7 @@ namespace ecruise.Api.Controllers
 
         // POST: CarMaintenances
         [HttpPost]
+        [SuppressMessage("ReSharper", "PossibleInvalidOperationException")]
         public async Task<IActionResult> Post([FromBody] CarMaintenance carMaintenance)
         {
             // forbid if not admin
@@ -72,18 +74,22 @@ namespace ecruise.Api.Controllers
             {
                 // Check car maintenace for logical validity
                 // Check car
-                if (Context.Customers.Find((ulong)carMaintenance.CarId) == null)
+                var car = Context.Cars.Find((ulong)carMaintenance.CarId);
+
+                if (car == null)
                     return NotFound(new Error(202, "The car referenced in the given object does not exist.",
                         "The referenced car must already exist to create a new car maintenance."));
 
                 // Check maintenance
-                if (Context.Customers.Find((ulong)carMaintenance.MaintenanceId) == null)
+                var maintenance = Context.Maintenances.Find((ulong) carMaintenance.MaintenanceId);
+
+                if (maintenance == null)
                     return NotFound(new Error(202, "The maintenance referenced in the given object does not exist.",
                         "The referenced maintenace must already exist to create a new car maintenance."));
 
                 // Check invoice item if set
                 if (carMaintenance.InvoiceItemId != null)
-                    if (Context.Customers.Find((ulong)carMaintenance.MaintenanceId) == null)
+                    if (Context.InvoiceItems.Find((ulong)carMaintenance.InvoiceItemId) == null)
                         return NotFound(new Error(202,
                             "The invoice item referenced in the given object does not exist.",
                             "The referenced invoice item does not have to exist to create a new car maintenance."));
@@ -105,6 +111,45 @@ namespace ecruise.Api.Controllers
 
                 // Save to database
                 await Context.CarMaintenances.AddAsync(carMaintenanceEntity);
+
+                // Check the car has to be blocked immediately
+                // Check if it is in use right now
+                if (car.BookingState == "AVAILABLE")
+                {
+                    // Get average time for a trip
+                    var allTrips = await Context.Trips.Where(t => t.EndDate.HasValue && t.DistanceTravelled.HasValue)
+                        .ToListAsync();
+
+                    if (maintenance.Spontaneously)
+                    {
+                        car.BookingState = "BLOCKED";
+                    }
+                    else
+                    {
+                        // Check if car must be blocked by date
+                        if (maintenance.AtDate.HasValue)
+                        {
+                            // Get average duration of trip
+                            var averageTripDuration = allTrips.Average(t => t.EndDate.Value.Ticks - t.StartDate.Ticks);
+    
+                            if (DateTime.UtcNow + new TimeSpan((long)(averageTripDuration * 2)) > maintenance.AtDate)
+                                car.BookingState = "BLOCKED";
+                        }
+                        // Check if car needs to be blocked by mileage
+                        if (maintenance.AtMileage.HasValue)
+                        {
+                            // Get average mileage per trip
+                            var averageTripMileage = allTrips.Average(t => t.DistanceTravelled.Value);
+
+                            // Check if the next trip would make the car have more mileage than needed for the maintenance (+ 0.5 averageMileage to be sure)
+                            if (car.Milage + averageTripMileage * 1.5 > maintenance.AtMileage)
+                                car.BookingState = "BLOCKED";
+                        }
+                    }
+                    
+
+                }
+
                 await Context.SaveChangesAsync();
 
                 // Get the reference to the newly created entity
