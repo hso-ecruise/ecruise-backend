@@ -118,7 +118,7 @@ namespace ecruise.Api
                             $"ERROR: CarReservator has not found the matched car with id {closestCar.CarId} for booking with id {booking.BookingId}." +
                             $"Trying on next iteration.");
 
-                        return;
+                        continue;
                     }
 
                     // Create trip model
@@ -135,6 +135,12 @@ namespace ecruise.Api
                     closestCar.BookingState = "BOOKED";
 
                     // Save new trip and car state
+                    context.SaveChanges();
+
+                    // Set trip id of booking
+                    booking.TripId = newtripEntity.TripId;
+
+                    // Save trip id to booking
                     context.SaveChanges();
 
                     // Send mail to customer that a car was assigned
@@ -172,12 +178,6 @@ namespace ecruise.Api
                     {
                         Debug.WriteLine($"Caught exception in CarReservator. The car {closestCar.CarId} was reserved, but the mail could not be sent to {customer.Email}. The full exception code: {e.Message}");
                     }
-
-                    // Set trip id of booking
-                    booking.TripId = newtripEntity.TripId;
-
-                    // Save trip id to booking
-                    context.SaveChanges();
                 }
 
                 Debug.WriteLine($"INFO: Car reservator ausgeführt");
