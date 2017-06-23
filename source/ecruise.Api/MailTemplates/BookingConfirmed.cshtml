@@ -1,10 +1,11 @@
 ﻿@{Layout = "/_Layout.cshtml";}
 Hallo @Model.FirstName!
 
-Wir bestätigen dir hiermit deine Buchung vom @Model.BookingDate.ToString("U")
+Wir bestätigen dir hiermit deine Buchung vom @Model.BookingDate.ToString("f")
 
-Deine Buchung @(Model.PlannedDate == null ? "war spontan." : "ist für den " + Model.PlannedDate + " geplant.").
-Der Abfahtsort deiner Buchung ist an folgender Position: <a href="https://www.google.de/maps/place/@@@Model.BookedPositionLatitude,@Model.BookedPositionLongitude">@Model.BookedPositionLatitude,@Model.BookedPositionLongitude</a>.
+Deine Buchung @(Model.PlannedDate == null ? "war spontan." : "ist für den " + Model.PlannedDate.Value.ToString("f") + " geplant.").
+Die Buchung ist für diesen Ort geplant: <a href="https://www.google.de/maps/place/@@@Model.BookingPositionLatitude,@Model.BookingPositionLongitude">@Model.BookingPositionLatitude,@Model.BookingPositionLongitude</a>.
+Den genauen Standort des Fahrzeugs erhälst du von uns 30 Minuten bevor deine Fahrt beginnen soll.
 
 Viel Spaß wünscht dir
-dein eCruise-Team!
+Dein eCruise-Team!

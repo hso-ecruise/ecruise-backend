@@ -10,14 +10,18 @@ using ecruise.Models.Assemblers;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using RazorLight;
 using Booking = ecruise.Models.Booking;
 
 namespace ecruise.Api.Controllers
 {
     public class BookingsController : BaseController
     {
-        public BookingsController(EcruiseContext context) : base(context)
+        private readonly IRazorLightEngine _razorEngine;
+
+        public BookingsController(EcruiseContext context, IRazorLightEngine razorEngine) : base(context)
         {
+            _razorEngine = razorEngine;
         }
 
         // GET: /Bookings
@@ -125,7 +129,16 @@ namespace ecruise.Api.Controllers
             {
                 try
                 {
-                    await customer.SendMail("eCruise: Buchungsbestätigung", $"Hallo {customer.FirstName}!<br/>Hiermit bestätigen wir deine Buchung für {booking.PlannedDate.Value:D}<br/><br/> Liebe Grüße<br/> Dein eCruise-Team");
+                    await customer.SendMail("Deine Registrierung bei eCruise",
+                        _razorEngine.Parse("BookingConfirmed.cshtml", new
+                        {
+                            customer.FirstName,
+                            booking.BookingDate,
+                            booking.PlannedDate,
+                            booking.BookingPositionLatitude,
+                            booking.BookingPositionLongitude
+                        })
+                    );
                 }
                 catch (Exception e)
                 {
