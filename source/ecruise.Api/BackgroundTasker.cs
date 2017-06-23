@@ -101,7 +101,7 @@ namespace ecruise.Api
                             $"WARNING: CarReservator has not found a matching car for booking with id {booking.BookingId}." +
                             $"Trying on next iteration.");
 
-                        return;
+                        continue;
                     }
 
                     // Create trip to link car and booking
