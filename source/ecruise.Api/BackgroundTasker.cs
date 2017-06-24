@@ -152,7 +152,7 @@ namespace ecruise.Api
                     var mailString = "<!DOCTYPE html>" +
                                      "<html>" +
                                      "<head>" +
-                                     "<meta charset = \"utf-8\">" +
+                                     "<meta charset = \"iso-8859-1\">" +
                                      "</head>" +
                                      "<body>" +
                                      "<div>" +
@@ -254,7 +254,7 @@ namespace ecruise.Api
                             "<!DOCTYPE html>" +
                             "<html>" +
                             "<head>" +
-                            "<meta charset = \"utf-8\">" +
+                            "<meta charset = \"iso-8859-1\">" +
                             "</head>" +
                             "<body>" +
                             "<div>" +
