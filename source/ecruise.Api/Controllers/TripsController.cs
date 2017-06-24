@@ -286,31 +286,25 @@ namespace ecruise.Api.Controllers
                             carMaintenancesWithDate.Add(carMaintenance);
 
                         // Or the maintenance linked has a date
-                        if (allMaintenances.Any(m => m.MaintenanceId == carMaintenance.MaintenanceId &&
-                                                     m.AtDate.HasValue))
-                        {
-                            var maintenance = allMaintenances.FirstOrDefault(
-                                m => m.MaintenanceId == carMaintenance.MaintenanceId &&
-                                     m.AtDate.HasValue);
+                        if (!allMaintenances.Any(m => m.MaintenanceId == carMaintenance.MaintenanceId &&
+                                                      m.AtDate.HasValue))
+                            continue;
+                        
+                        var maintenance = allMaintenances.FirstOrDefault(
+                            m => m.MaintenanceId == carMaintenance.MaintenanceId &&
+                                    m.AtDate.HasValue);
 
-                            if (maintenance != null)
-                                maintenancesWithDate.Add(maintenance);
-                        }
+                        if (maintenance != null)
+                            maintenancesWithDate.Add(maintenance);
+                        
                     }
 
-                    List<DbCarMaintenance> carMaintenancesWithMileage = new List<DbCarMaintenance>();
-
-                    foreach (var carMaintenance in carMaintenancesForCar)
-                    {
-                        // Get the maintenance from the car maintenance
-                        var matchingMaintenance =
-                            allMaintenances.FirstOrDefault(m => m.MaintenanceId == carMaintenance.MaintenanceId);
-
-                        // Can't be null normally
-                        // If it has a mileage set -> Add it to the list
-                        if (matchingMaintenance?.AtMileage != null)
-                            carMaintenancesWithMileage.Add(carMaintenance);
-                    }
+                    // find car maintenance that has an mileage-associated maintenance
+                    List<DbCarMaintenance> carMaintenancesWithMileage = 
+                        (from carMaintenance in carMaintenancesForCar
+                         let matchingMaintenance = allMaintenances.FirstOrDefault(m => m.MaintenanceId == carMaintenance.MaintenanceId)
+                         where matchingMaintenance?.AtMileage != null
+                         select carMaintenance).ToList();
 
                     DateTime? maintenanceDate = null;
 
