@@ -165,7 +165,7 @@ namespace ecruise.Api
                                      $"\"https://www.google.de/maps/place/{closestCar.LastKnownPositionLatitude.ToString().Replace(",", ".")}" +
                                      $",{closestCar.LastKnownPositionLongitude.ToString().Replace(",", ".")}\">" +
                                      $" {closestCar.LastKnownPositionLatitude.ToString().Replace(",", ".")},{closestCar.LastKnownPositionLongitude.ToString().Replace(",", ".")} </a>.<br/>" +
-                                     "Viel Spaß wünscht dir<br/>" +
+                                     "Viel Spa&szlig; w&uuml;nscht dir<br/>" +
                                      "Dein eCruise-Team!" +
                                      "</div>" +
                                      "</div>" +
@@ -260,9 +260,9 @@ namespace ecruise.Api
                             "<div>" +
                             "<div id=\"content\">" +
                             $"Hallo {customerModel.FirstName}!<br/><br/>" +
-                            $"Dein Rechnungsbetrag für {monthStart:MMMM} beläuft sich auf: &euro;{tuple.Item1.TotalAmount}" +
-                            "Bitte überwese den Betrag innerhalb von 2 Wochen.<br/>" +
-                            "Freundliche Grüße<br/>" +
+                            $"Dein Rechnungsbetrag f&uuml;r {monthStart:MMMM} bel&auml;uft sich auf: &euro;{tuple.Item1.TotalAmount}" +
+                            "Bitte &uuml;berwese den Betrag innerhalb von 2 Wochen.<br/>" +
+                            "Freundliche Gr&uuml;&szlig;e<br/>" +
                             "Dein eCruise Team" +
                             "</div>" +
                             "</div>" +

@@ -151,8 +151,27 @@ namespace ecruise.Api.Controllers
             var customer = CustomerAssembler.AssembleModel(dbCustomer);
             try
             {
-                await customer.SendMail("eCruise: Beginn deiner Fahrt",
-                    $"Hallo {customer.FirstName}!<br/>Du hast gerade eine Fahrt mit einem unserer Fahrzeuge gestartet.<br/>Fahrtbeginn: {insertedTrip.Entity.StartDate:f}<br/>Viel Spaß und Gute Fahrt!<br/><br/>Liebe Grüße<br/>Dein eCruise-Team");
+                var mailString = "<!DOCTYPE html>" +
+                                 "<html>" +
+                                 "<head>" +
+                                 "<meta charset = \"utf-8\">" +
+                                 "</head>" +
+                                 "<body>" +
+                                 "<div>" +
+                                 "<div id=\"content\">" +
+                                 $"Hallo {customer.FirstName}!<br/>" +
+                                 "Du hast gerade eine Fahrt mit einem unserer Fahrzeuge gestartet.<br/>" + 
+                                 $"Fahrtbeginn: {insertedTrip.Entity.StartDate:f}<br/>" + 
+                                 "Viel Spaß und Gute Fahrt!<br/>"+
+                                 "<br/>" +
+                                 "Liebe Gr&uuml;&szlig;e<br/>"+
+                                 "Dein eCruise-Team" +
+                                 "</div>" +
+                                 "</div>" +
+                                 "</body>" +
+                                 "</html> ";
+
+                await customer.SendMail("eCruise: Beginn deiner Fahrt", mailString);
             }
             catch (Exception e)
             {
