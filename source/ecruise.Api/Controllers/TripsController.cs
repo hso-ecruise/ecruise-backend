@@ -10,6 +10,7 @@ using ecruise.Models.Assemblers;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Booking = ecruise.Models.Booking;
 using DbBooking = ecruise.Database.Models.Booking;
 using DbCarChargingStation = ecruise.Database.Models.CarChargingStation;
 using DbTrip = ecruise.Database.Models.Trip;
@@ -17,7 +18,6 @@ using DbInvoice = ecruise.Database.Models.Invoice;
 using DbInvoiceItem = ecruise.Database.Models.InvoiceItem;
 using DbCarMaintenance = ecruise.Database.Models.CarMaintenance;
 using DbMaintenance = ecruise.Database.Models.Maintenance;
-using Booking = ecruise.Models.Booking;
 using Trip = ecruise.Models.Trip;
 
 namespace ecruise.Api.Controllers
@@ -91,7 +91,7 @@ namespace ecruise.Api.Controllers
             // Check if new bookings are allowed
             var config = await Context.Configurations.FindAsync((ulong)1);
 
-            if(config == null || config.AllowNewBookings == false)
+            if (config == null || config.AllowNewBookings == false)
                 return StatusCode(StatusCodes.Status503ServiceUnavailable,
                     new Error(501, "Currently are no new bookings allowed",
                         "An error occured.Please check the message for further information."));
@@ -111,10 +111,10 @@ namespace ecruise.Api.Controllers
                     "The action is not allowed with this resource",
                     "You were trying to use a non fully loaded car for a trip. Cars must be fully loaded to use for a trip"));
 
-            if(car.BookingState != "AVAILABLE")
+            if (car.BookingState != "AVAILABLE")
                 return StatusCode(StatusCodes.Status409Conflict, new Error(303,
-                   "The action is not allowed with this resource",
-                   "You were trying to use a car that is currently not available."));
+                    "The action is not allowed with this resource",
+                    "You were trying to use a car that is currently not available."));
 
             // Check if the charging station extists
             var chargingStation = await Context.ChargingStations.FindAsync((ulong)trip.StartChargingStationId);
@@ -137,7 +137,8 @@ namespace ecruise.Api.Controllers
             await Context.SaveChangesAsync();
 
             // Create booking for trip
-            Booking booking = new Booking(0, trip.CustomerId, (uint)insertedTrip.Entity.TripId, null, chargingStation.Latitude, chargingStation.Longitude, insertedTrip.Entity.StartDate, null);
+            Booking booking = new Booking(0, trip.CustomerId, (uint)insertedTrip.Entity.TripId, null,
+                chargingStation.Latitude, chargingStation.Longitude, insertedTrip.Entity.StartDate, null);
 
             DbBooking dbBooking = BookingAssembler.AssembleEntity(0, booking);
 
@@ -150,11 +151,14 @@ namespace ecruise.Api.Controllers
             var customer = CustomerAssembler.AssembleModel(dbCustomer);
             try
             {
-                await customer.SendMail("eCruise: Beginn deiner Fahrt", $"Hallo {customer.FirstName}!<br/>Du hast gerade eine Fahrt mit einem unserer Fahrzeuge gestartet.<br/>Fahrtbeginn: {insertedTrip.Entity.StartDate:f}<br/>Viel Spaß und Gute Fahrt!<br/><br/>Liebe Grüße<br/>Dein eCruise-Team");
+                await customer.SendMail("eCruise: Beginn deiner Fahrt",
+                    $"Hallo {customer.FirstName}!<br/>Du hast gerade eine Fahrt mit einem unserer Fahrzeuge gestartet.<br/>Fahrtbeginn: {insertedTrip.Entity.StartDate:f}<br/>Viel Spaß und Gute Fahrt!<br/><br/>Liebe Grüße<br/>Dein eCruise-Team");
             }
             catch (Exception e)
             {
-                Debug.WriteLine($"Trip with id {insertedTrip.Entity.TripId} created, but email sending to {customer.FirstName} {customer.LastName} with mail address {customer.Email} failed.\nComplete exception message: {e.Message}", "WARNING");
+                Debug.WriteLine(
+                    $"Trip with id {insertedTrip.Entity.TripId} created, but email sending to {customer.FirstName} {customer.LastName} with mail address {customer.Email} failed.\nComplete exception message: {e.Message}",
+                    "WARNING");
             }
 
             return Created($"{BasePath}/trips/{insertedTrip.Entity.TripId}",
@@ -193,7 +197,7 @@ namespace ecruise.Api.Controllers
                 // Check if end charging station exists
                 var endChargingStation = await Context.ChargingStations.FindAsync(dbtrip.EndChargingStationId);
 
-                if(endChargingStation == null)
+                if (endChargingStation == null)
                     return NotFound(new Error(201, "Charging station with requested id does not exist.",
                         $"A charging station with id {id} does not exist."));
 
@@ -289,22 +293,22 @@ namespace ecruise.Api.Controllers
                         if (!allMaintenances.Any(m => m.MaintenanceId == carMaintenance.MaintenanceId &&
                                                       m.AtDate.HasValue))
                             continue;
-                        
+
                         var maintenance = allMaintenances.FirstOrDefault(
                             m => m.MaintenanceId == carMaintenance.MaintenanceId &&
-                                    m.AtDate.HasValue);
+                                 m.AtDate.HasValue);
 
                         if (maintenance != null)
                             maintenancesWithDate.Add(maintenance);
-                        
                     }
 
                     // find car maintenance that has an mileage-associated maintenance
-                    List<DbCarMaintenance> carMaintenancesWithMileage = 
-                        (from carMaintenance in carMaintenancesForCar
-                         let matchingMaintenance = allMaintenances.FirstOrDefault(m => m.MaintenanceId == carMaintenance.MaintenanceId)
-                         where matchingMaintenance?.AtMileage != null
-                         select carMaintenance).ToList();
+                    List<DbCarMaintenance> carMaintenancesWithMileage =
+                    (from carMaintenance in carMaintenancesForCar
+                     let matchingMaintenance =
+                     allMaintenances.FirstOrDefault(m => m.MaintenanceId == carMaintenance.MaintenanceId)
+                     where matchingMaintenance?.AtMileage != null
+                     select carMaintenance).ToList();
 
                     DateTime? maintenanceDate = null;
 

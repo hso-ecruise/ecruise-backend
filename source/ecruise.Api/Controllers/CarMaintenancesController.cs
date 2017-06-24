@@ -81,7 +81,7 @@ namespace ecruise.Api.Controllers
                         "The referenced car must already exist to create a new car maintenance."));
 
                 // Check maintenance
-                var maintenance = Context.Maintenances.Find((ulong) carMaintenance.MaintenanceId);
+                var maintenance = Context.Maintenances.Find((ulong)carMaintenance.MaintenanceId);
 
                 if (maintenance == null)
                     return NotFound(new Error(202, "The maintenance referenced in the given object does not exist.",
@@ -131,7 +131,7 @@ namespace ecruise.Api.Controllers
                         {
                             // Get average duration of trip
                             var averageTripDuration = allTrips.Average(t => t.EndDate.Value.Ticks - t.StartDate.Ticks);
-    
+
                             if (DateTime.UtcNow + new TimeSpan((long)(averageTripDuration * 2)) > maintenance.AtDate)
                                 car.BookingState = "BLOCKED";
                         }
@@ -146,8 +146,6 @@ namespace ecruise.Api.Controllers
                                 car.BookingState = "BLOCKED";
                         }
                     }
-                    
-
                 }
 
                 await Context.SaveChangesAsync();

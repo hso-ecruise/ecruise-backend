@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -102,7 +101,7 @@ namespace ecruise.Api.Controllers
                     $"There is no chargin station that has the id {id}."));
 
             // Check the slots occupied
-            if(chargingStation.Slots == 0)
+            if (chargingStation.Slots == 0)
                 return BadRequest(new Error(302, "SlotsOccupied is already zero",
                     "The occupied slots could not be decremented because there are already zero slots occupied"));
 
@@ -113,12 +112,13 @@ namespace ecruise.Api.Controllers
             await Context.SaveChangesAsync();
 
             return Ok(new PostReference(chargingStation.ChargingStationId,
-                    $"{BasePath}/ChargingStations/{chargingStation.ChargingStationId}"));
+                $"{BasePath}/ChargingStations/{chargingStation.ChargingStationId}"));
         }
 
         // GET: /ChargingStations/closest-to/58/8
         [HttpGet("closest-to/{latitude}/{longitude}", Name = "GetClosestChargingStation")]
-        public async Task<IActionResult> GetClosestChargingStationAsync(double latitude, double longitude, [FromQuery] uint minFreeSlots, [FromQuery] uint radius)
+        public async Task<IActionResult> GetClosestChargingStationAsync(double latitude, double longitude,
+            [FromQuery] uint minFreeSlots, [FromQuery] uint radius)
         {
             // validate user input
             if (!ModelState.IsValid)
@@ -135,16 +135,15 @@ namespace ecruise.Api.Controllers
             // only return closest if radius equals 0
             if (radius == 0)
             {
-                DbChargingStation closest = null;
+                DbChargingStation closest;
 
                 // Find first matching entry
                 if (minFreeSlots == 0)
                 {
                     // Dont filter. Only return closest
-                    closest = chargingStations
-                        .FirstOrDefault();
+                    closest = chargingStations.FirstOrDefault();
                 }
-                else // minFreeSlots != 0
+                else
                 {
                     // Filter by free slots
                     closest = chargingStations
@@ -167,11 +166,9 @@ namespace ecruise.Api.Controllers
                 cs => destination.GetDistanceTo(new GeoCoordinate(cs.Latitude, cs.Longitude)) <= radius).ToList();
 
             // If filter by min free slots is set
+            //   remove charging stations with less than the desired count
             if (minFreeSlots > 0)
-            {
-                // Remove charging stations with less than the desired count
                 chargingStationsInRadius.RemoveAll(cs => cs.Slots - cs.SlotsOccupied < minFreeSlots);
-            }
 
             // Check if any left
             if (chargingStationsInRadius.Count == 0)

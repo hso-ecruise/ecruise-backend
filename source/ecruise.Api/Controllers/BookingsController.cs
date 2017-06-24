@@ -83,7 +83,7 @@ namespace ecruise.Api.Controllers
 
             // Check booking for logical validity
             // Check customer
-            var dbCustomer = await Context.Customers.FindAsync((ulong) booking.CustomerId);
+            var dbCustomer = await Context.Customers.FindAsync((ulong)booking.CustomerId);
             if (dbCustomer == null)
                 return NotFound(new Error(202, "The customer id referenced in the booking does not exist.",
                     "An error occured. Please check the message for further information."));
@@ -106,14 +106,16 @@ namespace ecruise.Api.Controllers
             {
                 // Get the trip
                 var trip = await Context.Trips.FindAsync((ulong)booking.TripId);
-                
-                if(trip == null)
+
+                if (trip == null)
                     return NotFound(new Error(202, "The trip id referenced in the booking does not exist.",
                         "An error occured. Please check the message for further information."));
             }
             else if (booking.TripId == 0)
+            {
                 booking.TripId = null;
-            
+            }
+
             booking.InvoiceItemId = null;
 
             // Construct entity from model
@@ -145,7 +147,9 @@ namespace ecruise.Api.Controllers
                 }
                 catch (Exception e)
                 {
-                    Debug.WriteLine($"Booking with id {booking.BookingId} created, but email sending to {customer.FirstName} {customer.LastName} with mail address {customer.Email} failed.\nComplete exception message: {e.Message}", "WARNING");
+                    Debug.WriteLine(
+                        $"Booking with id {booking.BookingId} created, but email sending to {customer.FirstName} {customer.LastName} with mail address {customer.Email} failed.\nComplete exception message: {e.Message}",
+                        "WARNING");
                 }
             }
 
@@ -223,7 +227,8 @@ namespace ecruise.Api.Controllers
                 // query only bookings the current customer has access to
                 .Where(b => HasAccess(b.CustomerId))
                 // filter by date
-                .Where(b => b.BookingDate.ToUniversalTime() >= startDate.ToUniversalTime() && b.BookingDate.ToUniversalTime() <= endDate.ToUniversalTime())
+                .Where(b => b.BookingDate.ToUniversalTime() >= startDate.ToUniversalTime() &&
+                            b.BookingDate.ToUniversalTime() <= endDate.ToUniversalTime())
                 .ToListAsync();
 
             // Check if any matches were found
@@ -254,7 +259,8 @@ namespace ecruise.Api.Controllers
                 // query only bookings the current customer has access to
                 .Where(b => HasAccess(b.CustomerId))
                 // filter by planned date
-                .Where(b => b.BookingDate.ToUniversalTime() >= startDate.ToUniversalTime() && b.BookingDate.ToUniversalTime() <= endDate.ToUniversalTime())
+                .Where(b => b.BookingDate.ToUniversalTime() >= startDate.ToUniversalTime() &&
+                            b.BookingDate.ToUniversalTime() <= endDate.ToUniversalTime())
                 .ToListAsync();
 
             // Check if any matches were found

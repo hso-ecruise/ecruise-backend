@@ -110,16 +110,12 @@ namespace ecruise.Api.Controllers
                 .ToListAsync();
 
             if (trips.Count == 0)
-            {
                 return NotFound(new Error(201, "Customer has no trips.",
                     "There is no trip that belongs to this customer."));
-            }
 
             if (trips.FirstOrDefault(t => t.CarId == id) == null)
-            {
                 return NotFound(new Error(201, "Car with requested id has no trips.",
                     "There is no trip that belongs to the car with the requested id."));
-            }
 
             // Remember lastKnownPositionDate
             var lastKnownPositionDate = car.LastKnownPositionDate;
@@ -127,10 +123,10 @@ namespace ecruise.Api.Controllers
             // Write the car in the search list
             var config = await Context.Configurations.FindAsync((ulong)1);
             var searchedCarsString = config.SearchedCars;
-            
+
             List<ulong> listOfSearchedCarIds = new List<ulong>();
 
-            if(searchedCarsString != string.Empty)
+            if (searchedCarsString != string.Empty)
                 listOfSearchedCarIds = searchedCarsString.Split(',').Select(ulong.Parse).ToList();
 
             // Check if car not already in (e.g. by multiple same requests)
@@ -163,10 +159,7 @@ namespace ecruise.Api.Controllers
 
                 // Check if the date has changed
                 if (car.LastKnownPositionDate != lastKnownPositionDate)
-                {
-                    // The date has changed so the update must have been done
                     return Ok(CarAssembler.AssembleModel(car));
-                }
             }
         }
 
@@ -192,7 +185,7 @@ namespace ecruise.Api.Controllers
                     $"There is no maintenance that has the id {id}."));
 
             // Get the configuration
-            var config = await Context.Configurations.FindAsync((ulong) 1);
+            var config = await Context.Configurations.FindAsync((ulong)1);
 
             var searchedCarsString = config.SearchedCars;
 
@@ -213,7 +206,8 @@ namespace ecruise.Api.Controllers
 
         // PATCH: /Cars/1/chargingState
         [HttpPatch("{id}/chargingState")]
-        public async Task<IActionResult> PatchChargingStateAsync(ulong id, [FromBody] Car.ChargingStateEnum chargingState)
+        public async Task<IActionResult> PatchChargingStateAsync(ulong id,
+            [FromBody] Car.ChargingStateEnum chargingState)
         {
             // forbid if not admin
             if (!HasAccess())
@@ -365,7 +359,7 @@ namespace ecruise.Api.Controllers
         }
 
         // GET: /Cars/closest-to/58/8?radius=100
-        // ReSharper disable PossibleInvalidOperationException
+// ReSharper disable PossibleInvalidOperationException
         [HttpGet(@"closest-to/{latitude}/{longitude}", Name = "GetClosestCar")]
         public async Task<IActionResult> GetClosestCarChargingStationAsync(double latitude, double longitude,
             [FromQuery] int radius)
@@ -382,7 +376,8 @@ namespace ecruise.Api.Controllers
 
             // Return 404 No Content if there are no matching cars
             if (dbcars.Count == 0)
-                return NotFound(new Error(201, "There are no cars in the database.", "There is no cars in the database."));
+                return NotFound(new Error(201, "There are no cars in the database.",
+                    "There is no cars in the database."));
 
             // Render cars ordered by distance
             // if radius == 0: get only closest car
@@ -398,13 +393,11 @@ namespace ecruise.Api.Controllers
 
             // Check if any found
             if (closest.Count == 0)
-            {
                 return NoContent();
-            }
 
             // If radius is zero (or not set) get only first element
             if (radius == 0)
-                return Ok(CarAssembler.AssembleModelList(new List<DbCar> { closest.FirstOrDefault() }));
+                return Ok(CarAssembler.AssembleModelList(new List<DbCar> {closest.FirstOrDefault()}));
 
             return Ok(CarAssembler.AssembleModelList(closest));
         }

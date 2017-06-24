@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -10,7 +9,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using DbInvoice = ecruise.Database.Models.Invoice;
 using DbInvoiceItem = ecruise.Database.Models.InvoiceItem;
-using Invoice = ecruise.Models.Invoice;
 using InvoiceItem = ecruise.Models.InvoiceItem;
 
 namespace ecruise.Api.Controllers
@@ -154,7 +152,7 @@ namespace ecruise.Api.Controllers
 
             return Ok(InvoiceItemAssembler.AssembleModelList(items));
         }
-        
+
         // POST: /Invoices/1/items
         [HttpPost("{id}/items", Name = "CreateNewInvoiceItemAsync")]
         public async Task<IActionResult> PostAsync(ulong id, [FromBody] InvoiceItem invoiceItem)

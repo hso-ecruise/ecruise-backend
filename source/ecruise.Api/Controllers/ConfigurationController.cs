@@ -48,7 +48,8 @@ namespace ecruise.Api.Controllers
             await Context.SaveChangesAsync();
 
             // Return a reference to the patch object
-            return Ok(new PostReference(configuration.ConfigurationId, $"{BasePath}/configuration/{configuration.ConfigurationId}"));
+            return Ok(new PostReference(configuration.ConfigurationId,
+                $"{BasePath}/configuration/{configuration.ConfigurationId}"));
         }
     }
 }
