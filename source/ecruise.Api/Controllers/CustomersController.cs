@@ -165,7 +165,7 @@ namespace ecruise.Api.Controllers
             await Context.SaveChangesAsync();
 
             // send confirmation email
-            await c.SendMail("Bestätige deine eMail-Änderung",
+            await c.SendMail("Deine neue E-Mail-Adresse",
                 _razorEngine.Parse("CustomerConfirmEmailChange.cshtml", new
                 {
                     customerId = c.CustomerId,
