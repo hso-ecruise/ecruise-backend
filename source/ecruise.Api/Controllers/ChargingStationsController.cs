@@ -81,7 +81,7 @@ namespace ecruise.Api.Controllers
         }
 
         // GET: /ChargingStations/5/decrement-slots-occupied
-        [HttpPatch("{id}/decrement-slots-occupied")]
+        [HttpGet("{id}/decrement-slots-occupied")]
         public async Task<IActionResult> DecrementSlotsOccupied(ulong id)
         {
             // Forbid if not admin
