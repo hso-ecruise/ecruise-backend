@@ -101,7 +101,7 @@ namespace ecruise.Api.Controllers
                     $"There is no chargin station that has the id {id}."));
 
             // Check the slots occupied
-            if (chargingStation.Slots == 0)
+            if (chargingStation.SlotsOccupied == 0)
                 return BadRequest(new Error(302, "SlotsOccupied is already zero",
                     "The occupied slots could not be decremented because there are already zero slots occupied"));
 
