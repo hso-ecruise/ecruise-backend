@@ -88,6 +88,9 @@ namespace ecruise.Api.Controllers
                 return NotFound(new Error(202, "The customer id referenced in the booking does not exist.",
                     "An error occured. Please check the message for further information."));
 
+            if (dbCustomer.Activated == false || dbCustomer.Verified == false)
+                return Unauthorized();
+
             // forbid if current customer is accessing a different user's booking
             if (!HasAccess(booking.CustomerId))
                 return Unauthorized();
