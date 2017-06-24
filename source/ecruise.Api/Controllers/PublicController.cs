@@ -27,7 +27,7 @@ namespace ecruise.Api.Controllers
 
         // POST: /public/login/login@ecruise.me
         [HttpPost("Login/{email}", Name = "Login")]
-        public async Task<IActionResult> Login([FromRoute] string email, [FromBody] string password)
+        public async Task<IActionResult> LoginAsync([FromRoute] string email, [FromBody] string password)
         {
             if (!ModelState.IsValid)
                 return BadRequest(new Error(401, GetModelStateErrorString(),
@@ -87,7 +87,7 @@ namespace ecruise.Api.Controllers
 
         // GET: /public/activate/login@ecruise.me/F3E64113EAC3432FFE968942674E98C6B01987F69EADEA90EEA1F8C809AB3DEE
         [HttpGet("activate/{email}/{token}", Name = "ActivateAccount")]
-        public async Task<IActionResult> Activate([FromRoute] string email, [FromRoute] string token)
+        public async Task<IActionResult> ActivateAsync([FromRoute] string email, [FromRoute] string token)
         {
             // Find matching customer
             DbCustomer customer = await Context.Customers.FirstOrDefaultAsync(c => c.Email == email);
@@ -123,11 +123,9 @@ namespace ecruise.Api.Controllers
 
         // POST: /public/register
         [HttpPost("register", Name = "Register")]
-        public async Task<IActionResult> Post([FromBody] Registration r)
+        public async Task<IActionResult> PostAsync([FromBody] Registration r)
         {
-            // TODO(Lyrex): Implement proper way to create a user (email activation mail, etc.)
-
-            if (!ModelState.IsValid)
+            if (r == null || !ModelState.IsValid)
                 return BadRequest(new Error(301, GetModelStateErrorString(),
                     "An error occured. Please check the message for further information."));
 

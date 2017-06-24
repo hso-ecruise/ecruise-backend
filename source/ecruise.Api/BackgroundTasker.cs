@@ -71,7 +71,6 @@ namespace ecruise.Api
                     return;
 
 
-
                 // Search a matching car for every booking
                 foreach (var booking in startingBookings)
                 {
@@ -102,7 +101,7 @@ namespace ecruise.Api
                     {
                         Console.Error.WriteLine(
                             $"WARNING: CarReservator has not found a matching car for booking with id {booking.BookingId}." +
-                            $"Trying on next iteration.");
+                            "Trying on next iteration.");
 
                         continue;
                     }
@@ -119,7 +118,7 @@ namespace ecruise.Api
                     {
                         Console.Error.WriteLine(
                             $"ERROR: CarReservator has not found the matched car with id {closestCar.CarId} for booking with id {booking.BookingId}." +
-                            $"Trying on next iteration.");
+                            "Trying on next iteration.");
 
                         continue;
                     }
@@ -157,16 +156,16 @@ namespace ecruise.Api
                                      "</head>" +
                                      "<body>" +
                                      "<div>" +
-                                     "<div style = \"white-space: pre-line;\">" +
-                                     $"Hallo {customer.FirstName}!<br/>" +
+                                     "<div id=\"content\">" +
+                                     $"Hallo {customer.FirstName}!<br/><br/>" +
                                      $"Deiner Fahrt am {booking.PlannedDate.Value:f} wurde soeben ein Auto zugeordnet!<br/>" +
                                      $"Dein Auto hat die Nummer {closestCar.CarId}, das Kennzeichen \"{closestCar.LicensePlate}\" " +
                                      $"und steht an der Ladestation {matchingCarChargingStation.ChargingStationId}.<br/>" +
-                                     $"Du findest es hier: <a href=" +
+                                     "Du findest es hier: <a href=" +
                                      $"\"https://www.google.de/maps/place/{closestCar.LastKnownPositionLatitude.ToString().Replace(",", ".")}" +
                                      $",{closestCar.LastKnownPositionLongitude.ToString().Replace(",", ".")}\">" +
                                      $" {closestCar.LastKnownPositionLatitude.ToString().Replace(",", ".")},{closestCar.LastKnownPositionLongitude.ToString().Replace(",", ".")} </a>.<br/>" +
-                                     "Viel Spaß wünscht dir<br/>" +
+                                     "Viel Spa&szlig; w&uuml;nscht dir<br/>" +
                                      "Dein eCruise-Team!" +
                                      "</div>" +
                                      "</div>" +
@@ -179,7 +178,8 @@ namespace ecruise.Api
                     }
                     catch (Exception e)
                     {
-                        Debug.WriteLine($"Caught exception in CarReservator. The car {closestCar.CarId} was reserved, but the mail could not be sent to {customer.Email}. The full exception code: {e.Message}");
+                        Debug.WriteLine(
+                            $"Caught exception in CarReservator. The car {closestCar.CarId} was reserved, but the mail could not be sent to {customer.Email}. The full exception code: {e.Message}");
                     }
                 }
 
@@ -250,13 +250,27 @@ namespace ecruise.Api
 
                     try
                     {
-                        // Send invoice mail to customer
-                        await customerModel.SendMail($"Deine Rechnung für {monthStart:MMMM}",
+                        var mailString =
+                            "<!DOCTYPE html>" +
+                            "<html>" +
+                            "<head>" +
+                            "<meta charset = \"utf-8\">" +
+                            "</head>" +
+                            "<body>" +
+                            "<div>" +
+                            "<div id=\"content\">" +
                             $"Hallo {customerModel.FirstName}!<br/><br/>" +
-                            $"Dein Rechnungsbetrag für {monthStart:MMMM} beläuft sich auf: €{tuple.Item1.TotalAmount}" +
-                            $"Bitte überwese den Betrag innerhalb von 2 Wochen.<br/>" +
-                            $"Freundliche Grüße<br/>" +
-                            $"Dein eCruise Team");
+                            $"Dein Rechnungsbetrag f&uuml;r {monthStart:MMMM} bel&auml;uft sich auf: &euro;{tuple.Item1.TotalAmount}" +
+                            "Bitte &uuml;berwese den Betrag innerhalb von 2 Wochen.<br/>" +
+                            "Freundliche Gr&uuml;&szlig;e<br/>" +
+                            "Dein eCruise Team" +
+                            "</div>" +
+                            "</div>" +
+                            "</body>" +
+                            "</html> ";
+
+                        // Send invoice mail to customer
+                        await customerModel.SendMail($"Deine Rechnung für {monthStart:MMMM}", mailString);
                     }
                     catch (SmtpCommandException)
                     {
@@ -302,7 +316,8 @@ namespace ecruise.Api
                 }
                 catch (Exception e)
                 {
-                    Debug.WriteLine($"{DateTime.Now}: {nameof(StatisticCreator)} has caught an exception when calculating the average charge level: {e.Message}");
+                    Debug.WriteLine(
+                        $"{DateTime.Now}: {nameof(StatisticCreator)} has caught an exception when calculating the average charge level: {e.Message}");
                 }
 
                 // Calculate cars in use

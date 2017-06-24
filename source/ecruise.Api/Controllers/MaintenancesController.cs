@@ -18,7 +18,7 @@ namespace ecruise.Api.Controllers
 
         // GET: /Maintenances
         [HttpGet(Name = "GetAllMaintenances")]
-        public async Task<IActionResult> Get()
+        public async Task<IActionResult> GetOneAsync()
         {
             // forbid if not admin
             if (!HasAccess())
@@ -34,7 +34,7 @@ namespace ecruise.Api.Controllers
 
         // GET: /Maintenances/5
         [HttpGet("{id}", Name = "GetMaintenance")]
-        public async Task<IActionResult> Get(ulong id)
+        public async Task<IActionResult> GetAllAsync(ulong id)
         {
             // forbid if not admin
             if (!HasAccess())
@@ -55,13 +55,13 @@ namespace ecruise.Api.Controllers
 
         // POST: /Maintenances
         [HttpPost(Name = "CreateMaintenance")]
-        public async Task<IActionResult> Post([FromBody] Maintenance m)
+        public async Task<IActionResult> PostAsync([FromBody] Maintenance m)
         {
             // forbid if not admin
             if (!HasAccess())
                 return Unauthorized();
 
-            if (!ModelState.IsValid)
+            if (m == null || !ModelState.IsValid)
                 return BadRequest(new Error(400, GetModelStateErrorString(),
                     "An error occured. Please check the message for further information."));
 

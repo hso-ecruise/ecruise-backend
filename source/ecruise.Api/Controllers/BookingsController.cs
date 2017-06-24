@@ -26,7 +26,7 @@ namespace ecruise.Api.Controllers
 
         // GET: /Bookings
         [HttpGet(Name = "GetAllBookings")]
-        public async Task<IActionResult> GetAll()
+        public async Task<IActionResult> GetAllAsync()
         {
             // Get all bookings from database
             var bookings = await Context.Bookings
@@ -44,7 +44,7 @@ namespace ecruise.Api.Controllers
 
         // GET: /Bookings/5
         [HttpGet("{id}", Name = "GetBooking")]
-        public async Task<IActionResult> Get(ulong id)
+        public async Task<IActionResult> GetAsync(ulong id)
         {
             // Check for correct value
             if (!ModelState.IsValid)
@@ -67,7 +67,7 @@ namespace ecruise.Api.Controllers
 
         // POST: /Bookings
         [HttpPost(Name = "PostBooking")]
-        public async Task<IActionResult> Post([FromBody] Booking booking)
+        public async Task<IActionResult> PostAsync([FromBody] Booking booking)
         {
             // Check if new bookings are allowed
             var config = await Context.Configurations.FindAsync((ulong)1);
@@ -77,13 +77,13 @@ namespace ecruise.Api.Controllers
                         "An error occured.Please check the message for further information."));
 
             // Check for correct value
-            if (!ModelState.IsValid)
+            if (booking == null || !ModelState.IsValid)
                 return BadRequest(new Error(301, GetModelStateErrorString(),
                     "The given data could not be converted to a booking. Please check the message for further information."));
 
             // Check booking for logical validity
             // Check customer
-            var dbCustomer = await Context.Customers.FindAsync((ulong) booking.CustomerId);
+            var dbCustomer = await Context.Customers.FindAsync((ulong)booking.CustomerId);
             if (dbCustomer == null)
                 return NotFound(new Error(202, "The customer id referenced in the booking does not exist.",
                     "An error occured. Please check the message for further information."));
@@ -106,14 +106,16 @@ namespace ecruise.Api.Controllers
             {
                 // Get the trip
                 var trip = await Context.Trips.FindAsync((ulong)booking.TripId);
-                
-                if(trip == null)
+
+                if (trip == null)
                     return NotFound(new Error(202, "The trip id referenced in the booking does not exist.",
                         "An error occured. Please check the message for further information."));
             }
             else if (booking.TripId == 0)
+            {
                 booking.TripId = null;
-            
+            }
+
             booking.InvoiceItemId = null;
 
             // Construct entity from model
@@ -145,7 +147,9 @@ namespace ecruise.Api.Controllers
                 }
                 catch (Exception e)
                 {
-                    Debug.WriteLine($"Booking with id {booking.BookingId} created, but email sending to {customer.FirstName} {customer.LastName} with mail address {customer.Email} failed.\nComplete exception message: {e.Message}", "WARNING");
+                    Debug.WriteLine(
+                        $"Booking with id {booking.BookingId} created, but email sending to {customer.FirstName} {customer.LastName} with mail address {customer.Email} failed.\nComplete exception message: {e.Message}",
+                        "WARNING");
                 }
             }
 
@@ -159,7 +163,7 @@ namespace ecruise.Api.Controllers
 
         // GET: /Bookings/by-trip/5
         [HttpGet("by-trip/{tripId}", Name = "GetBookingsByTrip")]
-        public async Task<IActionResult> GetByTripId(ulong tripId)
+        public async Task<IActionResult> GetByTripIdAsync(ulong tripId)
         {
             // Check for correct value
             if (!ModelState.IsValid)
@@ -182,7 +186,7 @@ namespace ecruise.Api.Controllers
 
         // GET: /Bookings/by-customer/5
         [HttpGet("by-customer/{customerId}", Name = "GetBookingsByCustomer")]
-        public IActionResult GetByCustomerId(ulong customerId)
+        public IActionResult GetByCustomerIdAsync(ulong customerId)
         {
             // Check for correct value
             if (!ModelState.IsValid)
@@ -205,7 +209,7 @@ namespace ecruise.Api.Controllers
 
         // GET: /Bookings/by-booking-date/<date>
         [HttpGet("by-booking-date/{date}", Name = "GetBookingsByBookingDate")]
-        public async Task<IActionResult> GetByBookingDate(string date)
+        public async Task<IActionResult> GetByBookingDateAsync(string date)
         {
             // Transform string to date
             DateTime requestedDateTime;
@@ -223,7 +227,8 @@ namespace ecruise.Api.Controllers
                 // query only bookings the current customer has access to
                 .Where(b => HasAccess(b.CustomerId))
                 // filter by date
-                .Where(b => b.BookingDate.ToUniversalTime() >= startDate.ToUniversalTime() && b.BookingDate.ToUniversalTime() <= endDate.ToUniversalTime())
+                .Where(b => b.BookingDate.ToUniversalTime() >= startDate.ToUniversalTime() &&
+                            b.BookingDate.ToUniversalTime() <= endDate.ToUniversalTime())
                 .ToListAsync();
 
             // Check if any matches were found
@@ -236,7 +241,7 @@ namespace ecruise.Api.Controllers
 
         // GET: /Bookings/by-planned-date/<date>
         [HttpGet("by-planned-date/{date}", Name = "GetBookingsByPlannedDate")]
-        public async Task<IActionResult> GetByPlannedDate(string date)
+        public async Task<IActionResult> GetByPlannedDateAsync(string date)
         {
             // Transform string to date
             DateTime requestedDateTime;
@@ -254,7 +259,8 @@ namespace ecruise.Api.Controllers
                 // query only bookings the current customer has access to
                 .Where(b => HasAccess(b.CustomerId))
                 // filter by planned date
-                .Where(b => b.BookingDate.ToUniversalTime() >= startDate.ToUniversalTime() && b.BookingDate.ToUniversalTime() <= endDate.ToUniversalTime())
+                .Where(b => b.BookingDate.ToUniversalTime() >= startDate.ToUniversalTime() &&
+                            b.BookingDate.ToUniversalTime() <= endDate.ToUniversalTime())
                 .ToListAsync();
 
             // Check if any matches were found
