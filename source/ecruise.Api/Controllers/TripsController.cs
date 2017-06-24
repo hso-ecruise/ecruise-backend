@@ -10,12 +10,14 @@ using ecruise.Models.Assemblers;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using DbBooking = ecruise.Database.Models.Booking;
 using DbCarChargingStation = ecruise.Database.Models.CarChargingStation;
 using DbTrip = ecruise.Database.Models.Trip;
 using DbInvoice = ecruise.Database.Models.Invoice;
 using DbInvoiceItem = ecruise.Database.Models.InvoiceItem;
 using DbCarMaintenance = ecruise.Database.Models.CarMaintenance;
 using DbMaintenance = ecruise.Database.Models.Maintenance;
+using Booking = ecruise.Models.Booking;
 using Trip = ecruise.Models.Trip;
 
 namespace ecruise.Api.Controllers
@@ -133,6 +135,14 @@ namespace ecruise.Api.Controllers
             var insertedTrip = await Context.Trips.AddAsync(insertTrip);
 
             await Context.SaveChangesAsync();
+
+            // Create booking for trip
+            Booking booking = new Booking(0, trip.CustomerId, (uint)insertedTrip.Entity.TripId, null, chargingStation.Latitude, chargingStation.Longitude, insertedTrip.Entity.StartDate, null);
+
+            DbBooking dbBooking = BookingAssembler.AssembleEntity(0, booking);
+
+            // Add it to the database
+            await Context.Bookings.AddAsync(dbBooking);
 
             // Send a confirmation mail to customer
             var customer = CustomerAssembler.AssembleModel(dbCustomer);
