@@ -20,7 +20,7 @@ namespace ecruise.Api.Controllers
 
         // GET: /car-charging-stations
         [HttpGet(Name = "GetAllCarChargingStations")]
-        public async Task<IActionResult> GetAllCarChargingStations()
+        public async Task<IActionResult> GetAllCarChargingStationsAsync()
         {
             // forbid if not admin
             if (!HasAccess())
@@ -39,7 +39,7 @@ namespace ecruise.Api.Controllers
 
         // GET: /car-charging-stations/by-car/5
         [HttpGet("by-car/{carId}", Name = "GetCarChargingStationsByCar")]
-        public async Task<IActionResult> GetByCarId(ulong carId)
+        public async Task<IActionResult> GetByCarIdAsync(ulong carId)
         {
             // forbid if not admin
             if (!HasAccess())
@@ -64,7 +64,7 @@ namespace ecruise.Api.Controllers
 
         // GET: /car-charging-stations/by-charging-station/5
         [HttpGet("by-charging-station/{chargingStationId}", Name = "GetCarChargingStationsByChargingStation")]
-        public async Task<IActionResult> GetByChargingStationId(ulong chargingStationId)
+        public async Task<IActionResult> GetByChargingStationIdAsync(ulong chargingStationId)
         {
             // forbid if not admin
             if (!HasAccess())
@@ -88,7 +88,7 @@ namespace ecruise.Api.Controllers
 
         // POST: /car-charging-stations
         [HttpPost]
-        public async Task<IActionResult> Post([FromBody] CarChargingStation carChargingStation)
+        public async Task<IActionResult> PostAsync([FromBody] CarChargingStation carChargingStation)
         {
             // forbid if not admin
             if (!HasAccess())
@@ -152,7 +152,7 @@ namespace ecruise.Api.Controllers
 
         // Patch: /car-charging-stations/5/charge-end
         [HttpPatch("{id}/charge-end")]
-        public async Task<IActionResult> Patch(ulong id, [FromBody] string chargeEnd)
+        public async Task<IActionResult> PatchAsync(ulong id, [FromBody] string chargeEnd)
         {
             // forbid if not admin
             if (!HasAccess())

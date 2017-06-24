@@ -22,7 +22,7 @@ namespace ecruise.Api.Controllers
 
         // GET: /ChargingStations
         [HttpGet(Name = "GetAllChargingStations")]
-        public async Task<IActionResult> GetAll()
+        public async Task<IActionResult> GetAllAsync()
         {
             // create a list of all charging stations
             List<DbChargingStation> chargingStations = await Context.ChargingStations.ToListAsync();
@@ -36,7 +36,7 @@ namespace ecruise.Api.Controllers
 
         // POST: /ChargingStations
         [HttpPost(Name = "CreateChargingStation")]
-        public async Task<IActionResult> Post([FromBody] ChargingStation chargingStation)
+        public async Task<IActionResult> PostAsync([FromBody] ChargingStation chargingStation)
         {
             // forbid if not admin
             if (!HasAccess())
@@ -62,7 +62,7 @@ namespace ecruise.Api.Controllers
 
         // GET: /ChargingStations/5
         [HttpGet("{id}", Name = "GetChargingStation")]
-        public async Task<IActionResult> Get(ulong id)
+        public async Task<IActionResult> GetAsync(ulong id)
         {
             // validate user input
             if (!ModelState.IsValid)
@@ -82,7 +82,7 @@ namespace ecruise.Api.Controllers
 
         // GET: /ChargingStations/5/decrement-slots-occupied
         [HttpPatch("{id}/decrement-slots-occupied")]
-        public async Task<IActionResult> DecrementSlotsOccupied(ulong id)
+        public async Task<IActionResult> DecrementSlotsOccupiedAsync(ulong id)
         {
             // Forbid if not admin
             if (!HasAccess())
@@ -118,7 +118,7 @@ namespace ecruise.Api.Controllers
 
         // GET: /ChargingStations/closest-to/58/8
         [HttpGet("closest-to/{latitude}/{longitude}", Name = "GetClosestChargingStation")]
-        public async Task<IActionResult> GetClosestChargingStation(double latitude, double longitude, [FromQuery] uint minFreeSlots, [FromQuery] uint radius)
+        public async Task<IActionResult> GetClosestChargingStationAsync(double latitude, double longitude, [FromQuery] uint minFreeSlots, [FromQuery] uint radius)
         {
             // validate user input
             if (!ModelState.IsValid)

@@ -17,7 +17,7 @@ namespace ecruise.Api.Controllers
 
         // GET: api/Statistics
         [HttpGet(Name = "GetAllStatistics")]
-        public async Task<IActionResult> Get()
+        public async Task<IActionResult> GetOneAsync()
         {
             // forbid if not admin
             if (!HasAccess())
@@ -30,7 +30,7 @@ namespace ecruise.Api.Controllers
 
         // GET: api/Statistics/5
         [HttpGet("{date}", Name = "GetStatisticByDate")]
-        public async Task<IActionResult> Get(string date)
+        public async Task<IActionResult> GetAllAsync(string date)
         {
             // forbid if not admin
             if (!HasAccess())

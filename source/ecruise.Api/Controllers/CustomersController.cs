@@ -28,7 +28,7 @@ namespace ecruise.Api.Controllers
 
         // GET: /Customers
         [HttpGet(Name = "GetAllCustomers")]
-        public async Task<IActionResult> GetAll()
+        public async Task<IActionResult> GetAllAsync()
         {
             // create a list of all customers
             List<DbCustomer> customers = await Context.Customers
@@ -45,7 +45,7 @@ namespace ecruise.Api.Controllers
 
         // GET: /Customers/5
         [HttpGet("{id}", Name = "GetCustomer")]
-        public async Task<IActionResult> GetOne(ulong id)
+        public async Task<IActionResult> GetOneAsync(ulong id)
         {
             // forbid if user is accessing different user's ressources
             if (!HasAccess(id))
@@ -69,7 +69,7 @@ namespace ecruise.Api.Controllers
 
         // PATCH: /Customers/5/password
         [HttpPatch("{id}/password", Name = "UpdateCustomerPassword")]
-        public async Task<IActionResult> UpdatePassword(ulong id, [FromBody] string password)
+        public async Task<IActionResult> UpdatePasswordAsync(ulong id, [FromBody] string password)
         {
             // forbid if user is accessing different user's ressources
             if (!HasAccess(id))
@@ -120,7 +120,7 @@ namespace ecruise.Api.Controllers
 
         // PATCH: /Customers/5/email
         [HttpPatch("{id}/email", Name = "UpdateCustomerEmail")]
-        public async Task<IActionResult> UpdateEmail(ulong id, [FromBody] string email)
+        public async Task<IActionResult> UpdateEmailAsync(ulong id, [FromBody] string email)
         {
             // forbid if user is accessing different user's ressources
             if (!HasAccess(id))
@@ -180,7 +180,7 @@ namespace ecruise.Api.Controllers
 
         // PATCH: /Customers/5/phone-number
         [HttpPatch("{id}/phone-number", Name = "UpdateCustomerPhoneNumber")]
-        public async Task<IActionResult> UpdatePhoneNumber(ulong id, [FromBody] string phoneNumber)
+        public async Task<IActionResult> UpdatePhoneNumberAsync(ulong id, [FromBody] string phoneNumber)
         {
             // forbid if user is accessing different user's ressources
             if (!HasAccess(id))
@@ -226,7 +226,7 @@ namespace ecruise.Api.Controllers
 
         // PATCH: /Customers/5/address
         [HttpPatch("{id}/address", Name = "UpdateCustomerAddress")]
-        public async Task<IActionResult> UpdateAddress(ulong id, [FromBody] Address address)
+        public async Task<IActionResult> UpdateAddressAsync(ulong id, [FromBody] Address address)
         {
             // forbid if user is accessing different user's ressources
             if (!HasAccess(id))
@@ -283,7 +283,7 @@ namespace ecruise.Api.Controllers
 
         // PATCH: /Customers/5/verified
         [HttpPatch("{id}/verified", Name = "UpdateCustomerVerified")]
-        public async Task<IActionResult> UpdateVerified(ulong id, [FromBody] bool verified)
+        public async Task<IActionResult> UpdateVerifiedAsync(ulong id, [FromBody] bool verified)
         {
             // forbid if user is accessing different user's ressources
             if (!HasAccess())
@@ -312,7 +312,7 @@ namespace ecruise.Api.Controllers
 
         // PATCH: /Customers/5/chipcarduid
         [HttpPatch("{id}/chipcarduid", Name = "UpdateCustomerChipCardUid")]
-        public async Task<IActionResult> UpdateChipCardUid(ulong id, [FromBody] string chipCardUid)
+        public async Task<IActionResult> UpdateChipCardUidAsync(ulong id, [FromBody] string chipCardUid)
         {
             // forbid if user is accessing different user's ressources
             if (!HasAccess())
@@ -341,7 +341,7 @@ namespace ecruise.Api.Controllers
 
         // GET: /Customers/by-lastname/5
         [HttpGet("by-lastname/{name}", Name = "GetCustomerByLastName")]
-        public async Task<IActionResult> GetCustomerByLastName(string name)
+        public async Task<IActionResult> GetCustomerByLastNameAsync(string name)
         {
             List<DbCustomer> customers = await Context.Customers
                 // only query customers, the current customer has access to
@@ -359,7 +359,7 @@ namespace ecruise.Api.Controllers
 
         // GET /customer/{customerId}/confirm-email/{newMail}/{token}
         [HttpGet("{id}/confirm-email/{newMail}/{token}", Name = "CustomerConfirmEmailChange")]
-        public async Task<IActionResult> ConfirmEmailChange(ulong id, string newMail, string token)
+        public async Task<IActionResult> ConfirmEmailChangeAsync(ulong id, string newMail, string token)
         {
             // validate user input
             if (!ModelState.IsValid)

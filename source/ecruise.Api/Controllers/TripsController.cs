@@ -30,7 +30,7 @@ namespace ecruise.Api.Controllers
 
         // GET: /trips
         [HttpGet(Name = "GetAllTrips")]
-        public async Task<IActionResult> GetAll()
+        public async Task<IActionResult> GetAllAsync()
         {
             // create a list of all trips
             List<DbTrip> trips = await Context.Trips
@@ -47,7 +47,7 @@ namespace ecruise.Api.Controllers
 
         // GET: /trips/1
         [HttpGet("{id}", Name = "GetTrip")]
-        public async Task<IActionResult> GetOne(ulong id)
+        public async Task<IActionResult> GetOneAsync(ulong id)
         {
             // validate user input
             if (!ModelState.IsValid)
@@ -71,7 +71,7 @@ namespace ecruise.Api.Controllers
 
         // POST: /trips
         [HttpPost(Name = "CreateTrip")]
-        public async Task<IActionResult> Post([FromBody] Trip trip)
+        public async Task<IActionResult> PostAsync([FromBody] Trip trip)
         {
             // Validate user input
             if (!ModelState.IsValid)
@@ -164,7 +164,7 @@ namespace ecruise.Api.Controllers
         // PATCH: /trips/1
         [HttpPatch("{id}")]
         [SuppressMessage("ReSharper", "PossibleInvalidOperationException")]
-        public async Task<IActionResult> Patch(ulong id, [FromBody] TripUpdate trip)
+        public async Task<IActionResult> PatchAsync(ulong id, [FromBody] TripUpdate trip)
         {
             // validate user input
             if (!ModelState.IsValid)
@@ -360,7 +360,7 @@ namespace ecruise.Api.Controllers
 
         // GET: /trips/by-car/5
         [HttpGet("by-car/{carId}", Name = "GetBookingsByCar")]
-        public async Task<IActionResult> GetByCarId(ulong carId)
+        public async Task<IActionResult> GetByCarIdAsync(ulong carId)
         {
             // validate user input
             if (!ModelState.IsValid)

@@ -23,7 +23,7 @@ namespace ecruise.Api.Controllers
 
         // GET: /cars
         [HttpGet(Name = "GetAllCars")]
-        public async Task<IActionResult> GetAll()
+        public async Task<IActionResult> GetAllAsync()
         {
             // create a list of all cars
             List<DbCar> cars = await Context.Cars.ToListAsync();
@@ -38,7 +38,7 @@ namespace ecruise.Api.Controllers
 
         // POST: /Cars
         [HttpPost(Name = "CreateCar")]
-        public async Task<IActionResult> Post([FromBody] Car car)
+        public async Task<IActionResult> PostAsync([FromBody] Car car)
         {
             // forbid if not admin
             if (!HasAccess())
@@ -63,7 +63,7 @@ namespace ecruise.Api.Controllers
 
         // GET: /Cars/1
         [HttpGet("{id}", Name = "GetCar")]
-        public async Task<IActionResult> Get(ulong id)
+        public async Task<IActionResult> GetAsync(ulong id)
         {
             // validate user input
             if (!ModelState.IsValid)
@@ -90,7 +90,7 @@ namespace ecruise.Api.Controllers
 
         // GET: /Cars/1/find
         [HttpGet("{id}/find", Name = "FindCar")]
-        public async Task<IActionResult> FindCar(ulong id)
+        public async Task<IActionResult> FindCarAsync(ulong id)
         {
             // Validate user input
             if (!ModelState.IsValid)
@@ -172,7 +172,7 @@ namespace ecruise.Api.Controllers
 
         // GET: /Cars/1
         [HttpGet("{id}/is-wanted", Name = "CheckCarIsWanted")]
-        public async Task<IActionResult> CheckCarIsWanted(ulong id)
+        public async Task<IActionResult> CheckCarIsWantedAsync(ulong id)
         {
             // forbid if not admin
             if (!HasAccess())
@@ -213,7 +213,7 @@ namespace ecruise.Api.Controllers
 
         // PATCH: /Cars/1/chargingState
         [HttpPatch("{id}/chargingState")]
-        public async Task<IActionResult> PatchChargingState(ulong id, [FromBody] Car.ChargingStateEnum chargingState)
+        public async Task<IActionResult> PatchChargingStateAsync(ulong id, [FromBody] Car.ChargingStateEnum chargingState)
         {
             // forbid if not admin
             if (!HasAccess())
@@ -242,7 +242,7 @@ namespace ecruise.Api.Controllers
 
         // PATCH: /Cars/1/bookingState
         [HttpPatch("{id}/bookingState")]
-        public async Task<IActionResult> PatchBookingState(ulong id, [FromBody] Car.BookingStateEnum bookingState)
+        public async Task<IActionResult> PatchBookingStateAsync(ulong id, [FromBody] Car.BookingStateEnum bookingState)
         {
             // forbid if not admin
             if (!HasAccess())
@@ -271,7 +271,7 @@ namespace ecruise.Api.Controllers
 
         // PATCH: /Cars/1/mileage
         [HttpPatch("{id}/mileage")]
-        public async Task<IActionResult> PatchMileage(ulong id, [FromBody] uint mileage)
+        public async Task<IActionResult> PatchMileageAsync(ulong id, [FromBody] uint mileage)
         {
             // forbid if not admin
             if (!HasAccess())
@@ -300,7 +300,7 @@ namespace ecruise.Api.Controllers
 
         // PATCH: /Cars/1/chargelevel
         [HttpPatch("{id}/chargelevel")]
-        public async Task<IActionResult> PatchChargelevel(ulong id, [FromBody] double chargelevel)
+        public async Task<IActionResult> PatchChargelevelAsync(ulong id, [FromBody] double chargelevel)
         {
             // forbid if not admin
             if (!HasAccess())
@@ -329,7 +329,7 @@ namespace ecruise.Api.Controllers
 
         // PATCH: /Cars/1/position/2.512/-5.215
         [HttpPatch("{id}/position/{latitude}/{longitude}")]
-        public async Task<IActionResult> PatchPosition(ulong id, double latitude, double longitude)
+        public async Task<IActionResult> PatchPositionAsync(ulong id, double latitude, double longitude)
         {
             // forbid if not admin
             if (!HasAccess())
@@ -367,7 +367,7 @@ namespace ecruise.Api.Controllers
         // GET: /Cars/closest-to/58/8?radius=100
         // ReSharper disable PossibleInvalidOperationException
         [HttpGet(@"closest-to/{latitude}/{longitude}", Name = "GetClosestCar")]
-        public async Task<IActionResult> GetClosestCarChargingStation(double latitude, double longitude,
+        public async Task<IActionResult> GetClosestCarChargingStationAsync(double latitude, double longitude,
             [FromQuery] int radius)
         {
             // Validate user input
@@ -382,8 +382,7 @@ namespace ecruise.Api.Controllers
 
             // Return 404 No Content if there are no matching cars
             if (dbcars.Count == 0)
-                return NotFound(new Error(201, "There are no cars in the database.",
-                    $"There is no cars in the database."));
+                return NotFound(new Error(201, "There are no cars in the database.", "There is no cars in the database."));
 
             // Render cars ordered by distance
             // if radius == 0: get only closest car

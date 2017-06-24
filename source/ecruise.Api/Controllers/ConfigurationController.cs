@@ -13,7 +13,7 @@ namespace ecruise.Api.Controllers
 
         // GET: /Configuration
         [HttpGet(Name = "GetConfiguration")]
-        public async Task<IActionResult> Get()
+        public async Task<IActionResult> GetAsync()
         {
             // Forbid if not admin
             if (!HasAccess())
@@ -32,7 +32,7 @@ namespace ecruise.Api.Controllers
 
         // PATCH: /Configuration/allowNewBookings
         [HttpPatch("allowNewBookings")]
-        public async Task<IActionResult> Patch([FromBody] bool allowNewBookings)
+        public async Task<IActionResult> PatchAsync([FromBody] bool allowNewBookings)
         {
             // Forbid if not admin
             if (!HasAccess())

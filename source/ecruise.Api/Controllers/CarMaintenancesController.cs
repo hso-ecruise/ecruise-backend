@@ -20,7 +20,7 @@ namespace ecruise.Api.Controllers
 
         // GET: CarMaintenances
         [HttpGet(Name = "GetAllCarMaintenances")]
-        public async Task<IActionResult> Get()
+        public async Task<IActionResult> GetAsync()
         {
             // forbid if not admin
             if (!HasAccess())
@@ -39,7 +39,7 @@ namespace ecruise.Api.Controllers
 
         // GET: /CarMaintenances/5
         [HttpGet("{id}", Name = "GetCarMaintenance")]
-        public async Task<IActionResult> Get(ulong id)
+        public async Task<IActionResult> GetAsync(ulong id)
         {
             // forbid if not admin
             if (!HasAccess())
@@ -64,7 +64,7 @@ namespace ecruise.Api.Controllers
         // POST: CarMaintenances
         [HttpPost]
         [SuppressMessage("ReSharper", "PossibleInvalidOperationException")]
-        public async Task<IActionResult> Post([FromBody] CarMaintenance carMaintenance)
+        public async Task<IActionResult> PostAsync([FromBody] CarMaintenance carMaintenance)
         {
             // forbid if not admin
             if (!HasAccess())
@@ -166,7 +166,7 @@ namespace ecruise.Api.Controllers
 
         // PATCH: /CarMaintenances/5
         [HttpPatch("{id}")]
-        public async Task<IActionResult> Patch(ulong id, [FromBody] CarMaintenanceUpdate carMaintenanceUpdate)
+        public async Task<IActionResult> PatchAsync(ulong id, [FromBody] CarMaintenanceUpdate carMaintenanceUpdate)
         {
             // forbid if not admin
             if (!HasAccess())
@@ -208,7 +208,7 @@ namespace ecruise.Api.Controllers
 
         // GET: /CarMaintenances/by-car/5
         [HttpGet("by-car/{id}", Name = "GetCarMaintenancesByCar")]
-        public async Task<IActionResult> GetByCarId(ulong id)
+        public async Task<IActionResult> GetByCarIdAsync(ulong id)
         {
             // forbid if not admin
             if (!HasAccess())
@@ -234,7 +234,7 @@ namespace ecruise.Api.Controllers
 
         // GET: /CarMaintenances/by-maintenance/5
         [HttpGet("by-maintenance/{id}", Name = "GetCarMaintenancesByMaintenance")]
-        public async Task<IActionResult> GetByMaintenanceId(ulong id)
+        public async Task<IActionResult> GetByMaintenanceIdAsync(ulong id)
         {
             // forbid if not admin
             if (!HasAccess())
@@ -260,7 +260,7 @@ namespace ecruise.Api.Controllers
 
         // GET: /CarMaintenances/by-invoice-item/5
         [HttpGet("by-invoice-item/{id}", Name = "GetCarMaintenanceByInvoiceItem")]
-        public async Task<IActionResult> GetByInvoiceItemId(ulong id)
+        public async Task<IActionResult> GetByInvoiceItemIdAsync(ulong id)
         {
             // forbid if not admin
             if (!HasAccess())
