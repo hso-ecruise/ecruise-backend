@@ -207,7 +207,7 @@ namespace ecruise.Api.Controllers
             // send confirmation email
             var customer = CustomerAssembler.AssembleModel(dbCustomer);
 
-            await customer.SendMail("Änderung deiner Daten",
+            await customer.SendMail("Anpassung deiner Daten",
                 _razorEngine.Parse("CustomerDataChanged.cshtml", new
                 {
                     customer.FirstName,
