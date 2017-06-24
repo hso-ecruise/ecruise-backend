@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Globalization;
 using ecruise.Api.Middleware;
 using ecruise.Database.Models;
 using ecruise.Models;
@@ -25,6 +26,12 @@ namespace ecruise.Api
     {
         public Startup(IHostingEnvironment env)
         {
+            var cultureInfo = new CultureInfo("de-DE");
+            CultureInfo.CurrentCulture = cultureInfo;
+            CultureInfo.CurrentUICulture = cultureInfo;
+            CultureInfo.DefaultThreadCurrentCulture = cultureInfo;
+            CultureInfo.DefaultThreadCurrentUICulture = cultureInfo;
+
             var builder = new ConfigurationBuilder()
                 .SetBasePath(env.ContentRootPath)
                 .AddJsonFile("appsettings.json", false, true)
@@ -60,6 +67,12 @@ namespace ecruise.Api
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory,
             EcruiseContext ecruiseContext)
         {
+            var cultureInfo = new CultureInfo("de-DE");
+            CultureInfo.CurrentCulture = cultureInfo;
+            CultureInfo.CurrentUICulture = cultureInfo;
+            CultureInfo.DefaultThreadCurrentCulture = cultureInfo;
+            CultureInfo.DefaultThreadCurrentUICulture = cultureInfo;
+
             // Add logger
             loggerFactory.AddConsole(Configuration.GetSection("Logging"));
             loggerFactory.AddDebug(LogLevel.Debug);
