@@ -162,7 +162,7 @@ namespace ecruise.Api.Controllers
                                  $"Hallo {customer.FirstName}!<br/>" +
                                  "Du hast gerade eine Fahrt mit einem unserer Fahrzeuge gestartet.<br/>" + 
                                  $"Fahrtbeginn: {insertedTrip.Entity.StartDate:f}<br/>" + 
-                                 "Viel Spaß und Gute Fahrt!<br/>"+
+                                 "Viel Spa&szlig; und Gute Fahrt!<br/>"+
                                  "<br/>" +
                                  "Liebe Gr&uuml;&szlig;e<br/>"+
                                  "Dein eCruise-Team" +
