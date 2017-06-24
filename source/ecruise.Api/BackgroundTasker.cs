@@ -70,13 +70,7 @@ namespace ecruise.Api
                 if (startingBookings == null || startingBookings.Count < 1)
                     return;
 
-                // Get all fully loaded and free cars
-                var allCars = context.Cars.Where(c => c.BookingState == "AVAILABLE" && c.ChargingState == "FULL")
-                    .ToList();
 
-                // Remove entries without coordinates set
-                allCars.RemoveAll(c => c.LastKnownPositionLatitude.HasValue == false ||
-                                       c.LastKnownPositionLongitude.HasValue == false);
 
                 // Search a matching car for every booking
                 foreach (var booking in startingBookings)
@@ -84,6 +78,15 @@ namespace ecruise.Api
                     // Create GeoCoordinate for booking
                     GeoCoordinate bookedPosition =
                         new GeoCoordinate(booking.BookedPositionLatitude, booking.BookedPositionLongitude);
+
+                    // Get all fully loaded and free cars
+                    var allCars = context.Cars.Where(c => c.BookingState == "AVAILABLE" && c.ChargingState == "FULL")
+                        .ToList();
+
+                    // Remove entries without coordinates set
+                    allCars.RemoveAll(c => c.LastKnownPositionLatitude.HasValue == false ||
+                                           c.LastKnownPositionLongitude.HasValue == false);
+
 
                     // Order cars by distance to the booked position
                     allCars = allCars
