@@ -112,6 +112,14 @@ namespace ecruise.Api
 
             #endregion
 
+            // set culture info to German in middleware
+            app.Use(next => context => {
+                CultureInfo.DefaultThreadCurrentCulture = new CultureInfo("de-DE");
+                CultureInfo.DefaultThreadCurrentUICulture = new CultureInfo("de-DE");
+
+                return next(context);
+            });
+
             // use authentification middleware
             app.UseMiddleware<EcruiseAuthenticationMiddleware>();
 
