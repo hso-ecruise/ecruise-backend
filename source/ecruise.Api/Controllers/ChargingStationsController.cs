@@ -80,9 +80,9 @@ namespace ecruise.Api.Controllers
             return Ok(chargingStation);
         }
 
-        // PATCH: /ChargingStations/5/slots-occupied
-        [HttpPatch("{id}/slots-occupied")]
-        public async Task<IActionResult> PatchSlotsOccupied(ulong id, [FromBody] uint slotsOccupied)
+        // GET: /ChargingStations/5/decrement-slots-occupied
+        [HttpPatch("{id}/decrement-slots-occupied")]
+        public async Task<IActionResult> DecrementSlotsOccupied(ulong id)
         {
             // Forbid if not admin
             if (!HasAccess())
@@ -101,14 +101,13 @@ namespace ecruise.Api.Controllers
                 return NotFound(new Error(201, "ChargingStation with requested id does not exist.",
                     $"There is no chargin station that has the id {id}."));
 
-            if (slotsOccupied > chargingStation.Slots)
-            {
-                return BadRequest(new Error(303, "The number of slots occupied is not possible",
-                    $"The referenced charging station only has {chargingStation.Slots} slots."));
-            }
+            // Check the slots occupied
+            if(chargingStation.Slots == 0)
+                return BadRequest(new Error(302, "SlotsOccupied is already zero",
+                    "The occupied slots could not be decremented because there are already zero slots occupied"));
 
             // Change the value
-            chargingStation.SlotsOccupied = slotsOccupied;
+            chargingStation.SlotsOccupied--;
 
             // Save the change to the database
             await Context.SaveChangesAsync();
