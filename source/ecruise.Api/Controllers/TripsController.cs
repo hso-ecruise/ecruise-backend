@@ -83,7 +83,7 @@ namespace ecruise.Api.Controllers
                 return Unauthorized();
 
             // Check if the user is allowed to make bookings
-            var dbCustomer = await Context.Customers.FindAsync(trip.CustomerId);
+            var dbCustomer = await Context.Customers.FindAsync((ulong)trip.CustomerId);
 
             if (dbCustomer.Activated == false || dbCustomer.Verified == false)
                 return Unauthorized();
@@ -143,6 +143,8 @@ namespace ecruise.Api.Controllers
 
             // Add it to the database
             await Context.Bookings.AddAsync(dbBooking);
+
+            await Context.SaveChangesAsync();
 
             // Send a confirmation mail to customer
             var customer = CustomerAssembler.AssembleModel(dbCustomer);
