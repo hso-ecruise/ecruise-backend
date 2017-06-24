@@ -130,6 +130,10 @@ namespace ecruise.Api.Controllers
             if (car.BookingState == "BOOKED")
                 car.BookingState = "AVAILABLE";
 
+            chargingStation.SlotsOccupied = chargingStation.SlotsOccupied == 0
+                ? 0
+                : chargingStation.SlotsOccupied - 1;
+
             // Construct entity from model
             var carChargingStationEntity = CarChargingStationAssembler.AssembleEntity(0, carChargingStation);
 
