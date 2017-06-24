@@ -349,8 +349,6 @@ namespace ecruise.Api.Controllers
                 car.LastKnownPositionLongitude = longitude;
                 car.LastKnownPositionDate = DateTime.UtcNow;
 
-                // TODO Felix: Check if car was searched
-
                 transaction.Commit();
                 await Context.SaveChangesAsync();
             }

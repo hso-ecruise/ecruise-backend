@@ -125,8 +125,6 @@ namespace ecruise.Api.Controllers
         [HttpPost("register", Name = "Register")]
         public async Task<IActionResult> PostAsync([FromBody] Registration r)
         {
-            // TODO(Lyrex): Implement proper way to create a user (email activation mail, etc.)
-
             if (!ModelState.IsValid)
                 return BadRequest(new Error(301, GetModelStateErrorString(),
                     "An error occured. Please check the message for further information."));
