@@ -61,7 +61,7 @@ namespace ecruise.Api.Controllers
             if (!HasAccess())
                 return Unauthorized();
 
-            if (!ModelState.IsValid)
+            if (m == null || !ModelState.IsValid)
                 return BadRequest(new Error(400, GetModelStateErrorString(),
                     "An error occured. Please check the message for further information."));
 

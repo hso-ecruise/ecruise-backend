@@ -76,7 +76,7 @@ namespace ecruise.Api.Controllers
                 return Unauthorized();
 
             // validate user input
-            if (!ModelState.IsValid)
+            if (string.IsNullOrEmpty(password) || !ModelState.IsValid)
                 return BadRequest(new Error(400, GetModelStateErrorString(),
                     "An error occured. Please check the message for further information."));
 
@@ -127,7 +127,7 @@ namespace ecruise.Api.Controllers
                 return Unauthorized();
 
             // validate user input
-            if (!ModelState.IsValid)
+            if (string.IsNullOrEmpty(email) || !ModelState.IsValid)
                 return BadRequest(new Error(400, GetModelStateErrorString(),
                     "An error occured. Please check the message for further information."));
 
@@ -187,7 +187,7 @@ namespace ecruise.Api.Controllers
                 return Unauthorized();
 
             // validate user input
-            if (!ModelState.IsValid)
+            if (string.IsNullOrEmpty(phoneNumber) || !ModelState.IsValid)
                 return BadRequest(new Error(400, GetModelStateErrorString(),
                     "An error occured. Please check the message for further information."));
 
@@ -233,7 +233,7 @@ namespace ecruise.Api.Controllers
                 return Unauthorized();
 
             // validate user input
-            if (!ModelState.IsValid)
+            if (address == null | !ModelState.IsValid)
                 return BadRequest(new Error(400, GetModelStateErrorString(),
                     "An error occured. Please check the message for further information."));
 

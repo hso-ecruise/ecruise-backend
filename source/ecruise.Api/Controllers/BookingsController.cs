@@ -77,7 +77,7 @@ namespace ecruise.Api.Controllers
                         "An error occured.Please check the message for further information."));
 
             // Check for correct value
-            if (!ModelState.IsValid)
+            if (booking == null || !ModelState.IsValid)
                 return BadRequest(new Error(301, GetModelStateErrorString(),
                     "The given data could not be converted to a booking. Please check the message for further information."));
 

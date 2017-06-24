@@ -125,7 +125,7 @@ namespace ecruise.Api.Controllers
         [HttpPost("register", Name = "Register")]
         public async Task<IActionResult> PostAsync([FromBody] Registration r)
         {
-            if (!ModelState.IsValid)
+            if (r == null || !ModelState.IsValid)
                 return BadRequest(new Error(301, GetModelStateErrorString(),
                     "An error occured. Please check the message for further information."));
 

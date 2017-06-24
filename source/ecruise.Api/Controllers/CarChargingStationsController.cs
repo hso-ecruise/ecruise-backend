@@ -95,7 +95,7 @@ namespace ecruise.Api.Controllers
                 return Unauthorized();
 
             // Check object for logical validity
-            if (!ModelState.IsValid)
+            if (carChargingStation == null || !ModelState.IsValid)
                 return BadRequest(new Error(301, GetModelStateErrorString(),
                     "The given data could not be converted to a car chargingstation object. Please check the message for further information."
                 ));
@@ -155,7 +155,7 @@ namespace ecruise.Api.Controllers
         public async Task<IActionResult> PatchAsync(ulong id, [FromBody] string chargeEnd)
         {
             // forbid if not admin
-            if (!HasAccess())
+            if (string.IsNullOrEmpty(chargeEnd) || !HasAccess())
                 return Unauthorized();
 
             // Transform string to date

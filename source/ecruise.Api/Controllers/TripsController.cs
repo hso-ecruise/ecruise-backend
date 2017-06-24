@@ -73,14 +73,14 @@ namespace ecruise.Api.Controllers
         [HttpPost(Name = "CreateTrip")]
         public async Task<IActionResult> PostAsync([FromBody] Trip trip)
         {
-            // Validate user input
-            if (!ModelState.IsValid)
-                return BadRequest(new Error(400, GetModelStateErrorString(),
-                    "An error occured. Please check the message for further information."));
-
             // Forbid if current customer is creating a different user's trip
             if (!HasAccess())
                 return Unauthorized();
+
+            // Validate user input
+            if (trip == null || !ModelState.IsValid)
+                return BadRequest(new Error(400, GetModelStateErrorString(),
+                    "An error occured. Please check the message for further information."));
 
             // Check if the user is allowed to make bookings
             var dbCustomer = await Context.Customers.FindAsync((ulong)trip.CustomerId);
@@ -168,10 +168,10 @@ namespace ecruise.Api.Controllers
         // PATCH: /trips/1
         [HttpPatch("{id}")]
         [SuppressMessage("ReSharper", "PossibleInvalidOperationException")]
-        public async Task<IActionResult> PatchAsync(ulong id, [FromBody] TripUpdate trip)
+        public async Task<IActionResult> PatchAsync(ulong id, [FromBody] TripUpdate tripUpdate)
         {
             // validate user input
-            if (!ModelState.IsValid)
+            if (tripUpdate == null || !ModelState.IsValid)
                 return BadRequest(new Error(400, GetModelStateErrorString(),
                     "An error occured. Please check the message for further information."));
 
@@ -191,8 +191,8 @@ namespace ecruise.Api.Controllers
             using (var transaction = await Context.Database.BeginTransactionAsync())
             {
                 dbtrip.EndDate = DateTime.UtcNow;
-                dbtrip.EndChargingStationId = trip.EndChargingStationId;
-                dbtrip.DistanceTravelled = trip.DistanceTravelled;
+                dbtrip.EndChargingStationId = tripUpdate.EndChargingStationId;
+                dbtrip.DistanceTravelled = tripUpdate.DistanceTravelled;
 
                 // Check if end charging station exists
                 var endChargingStation = await Context.ChargingStations.FindAsync(dbtrip.EndChargingStationId);
@@ -209,7 +209,7 @@ namespace ecruise.Api.Controllers
                 DbInvoice matchingInvoice = Context.Invoices.OrderBy(i => i.InvoiceId)
                     .LastOrDefault(i => i.CustomerId == dbtrip.CustomerId);
 
-                double calculatedAmount = trip.DistanceTravelled * 0.15 +
+                double calculatedAmount = tripUpdate.DistanceTravelled * 0.15 +
                                           2.40 * (dbtrip.EndDate.Value - dbtrip.StartDate).TotalHours;
 
                 // Add the invoice item amount to the total amount of the invoice

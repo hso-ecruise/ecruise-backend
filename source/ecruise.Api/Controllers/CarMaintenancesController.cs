@@ -70,7 +70,7 @@ namespace ecruise.Api.Controllers
             if (!HasAccess())
                 return Unauthorized();
 
-            if (ModelState.IsValid)
+            if (carMaintenance == null || ModelState.IsValid)
             {
                 // Check car maintenace for logical validity
                 // Check car
@@ -170,7 +170,7 @@ namespace ecruise.Api.Controllers
             if (!HasAccess())
                 return Unauthorized();
 
-            if (ModelState.IsValid)
+            if (carMaintenanceUpdate == null || ModelState.IsValid)
             {
                 // Check given date for logical validity
                 if (carMaintenanceUpdate.CompletedDate.ToUniversalTime() > DateTime.UtcNow)
