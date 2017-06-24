@@ -233,7 +233,7 @@ namespace ecruise.Api.Controllers
                 return Unauthorized();
 
             // validate user input
-            if (address == null | !ModelState.IsValid)
+            if (address == null || !ModelState.IsValid)
                 return BadRequest(new Error(400, GetModelStateErrorString(),
                     "An error occured. Please check the message for further information."));
 
